@@ -2,17 +2,115 @@
   const header = document.getElementById('site-header');
   const menuToggle = document.getElementById('menu-toggle');
   const siteMenu = document.getElementById('site-menu');
+  const heroBg = document.querySelector('.hero-bg-parallax');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desktopParallax = window.matchMedia('(min-width: 768px)').matches && !reducedMotion;
   const setHeaderState = () => {
     if (!header) return;
     header.classList.toggle('scrolled', window.scrollY > 12);
   };
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
+  if (heroBg && desktopParallax) {
+    const updateHeroParallax = () => {
+      const offset = window.scrollY * 0.4;
+      heroBg.style.transform = `translateY(${offset}px)`;
+    };
+    updateHeroParallax();
+    window.addEventListener('scroll', updateHeroParallax, { passive: true });
+  }
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
       menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
+  }
+
+  const revealItems = document.querySelectorAll('.reveal-item');
+  if (revealItems.length) {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15 }
+    );
+    revealItems.forEach((item) => revealObserver.observe(item));
+  }
+
+  if (desktopParallax) {
+    const parallaxPanels = document.querySelectorAll('.parallax-panel');
+    const activePanels = new Set();
+    if (parallaxPanels.length) {
+      const panelObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) activePanels.add(entry.target);
+            else activePanels.delete(entry.target);
+          });
+        },
+        { threshold: 0.15 }
+      );
+      parallaxPanels.forEach((panel) => panelObserver.observe(panel));
+
+      const updatePanelParallax = () => {
+        activePanels.forEach((panel) => {
+          const inner = panel.querySelector('img');
+          if (!inner) return;
+          const rect = panel.getBoundingClientRect();
+          const viewportCenter = window.innerHeight / 2;
+          const delta = rect.top + rect.height / 2 - viewportCenter;
+          inner.style.transform = `translateY(${delta * -0.15}px) scale(1.06)`;
+        });
+      };
+      updatePanelParallax();
+      window.addEventListener('scroll', updatePanelParallax, { passive: true });
+      window.addEventListener('resize', updatePanelParallax, { passive: true });
+    }
+  }
+
+  const trustBar = document.getElementById('trust-bar');
+  const animateCounter = (element, target, suffix = '', duration = 1200) => {
+    const startTime = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const value = Math.floor(progress * target);
+      element.textContent = `${value}${suffix}`;
+      if (progress < 1) requestAnimationFrame(tick);
+      else element.textContent = `${target}${suffix}`;
+    };
+    requestAnimationFrame(tick);
+  };
+  if (trustBar) {
+    const counters = trustBar.querySelectorAll('[data-count], [data-counter-target]');
+    let counted = false;
+    const trustObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          if (!counted && !reducedMotion) {
+            counters.forEach((counter) => {
+              const target = Number(counter.getAttribute('data-counter-target') || counter.getAttribute('data-count') || '0');
+              const suffix = counter.getAttribute('data-counter-suffix') || counter.getAttribute('data-suffix') || '';
+              animateCounter(counter, target, suffix);
+            });
+            counted = true;
+          } else {
+            counters.forEach((counter) => {
+              const target = counter.getAttribute('data-counter-target') || counter.getAttribute('data-count') || '';
+              const suffix = counter.getAttribute('data-counter-suffix') || counter.getAttribute('data-suffix') || '';
+              counter.textContent = `${target}${suffix}`;
+            });
+          }
+          trustObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.25 }
+    );
+    trustObserver.observe(trustBar);
   }
 
   document.querySelectorAll('.faq-question').forEach((button) => {
@@ -114,12 +212,31 @@
   const openCookieSettings = document.getElementById('cookie-settings-button');
   if (openCookieSettings) openCookieSettings.addEventListener('click', openModal);
 
+  const faqSection = document.getElementById('faq');
+  if (faqSection) {
+    let faqAnimated = false;
+    const faqItems = faqSection.querySelectorAll('.faq-item');
+    faqSection.querySelectorAll('.faq-question').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (faqAnimated) return;
+        faqItems.forEach((item, index) => {
+          item.style.transitionDelay = `${index * 0.08}s`;
+          item.classList.add('is-visible');
+        });
+        faqAnimated = true;
+      });
+    });
+  }
+
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
       const webhook = window.AXIS_QUOTE_WEBHOOK;
+      const fallbackMailto = `mailto:Axis-scaffolding@outlook.com?subject=Website Quote Request&body=${encodeURIComponent(
+        `Name: ${data.fullName || ''}\nPhone: ${data.phone || ''}\nEmail: ${data.email || ''}\nPostcode: ${data.postcode || ''}\nType: ${data.scaffoldingType || ''}\nDescription: ${data.briefDescription || ''}\nSource: ${data.source || ''}`
+      )}`;
       let ok = true;
       if (webhook) {
         try {
@@ -136,7 +253,10 @@
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within 24 hours.'
-          : 'Thanks. Your request is saved locally. Please call 07713245511 while webhook setup is pending.';
+          : 'Thanks. Your request is ready to send by email. Please check your email draft and send it to complete your quote request.';
+      }
+      if (!ok) {
+        window.location.href = fallbackMailto;
       }
       form.reset();
     });
