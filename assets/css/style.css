@@ -28,6 +28,33 @@ a { color: inherit; }
 img { max-width: 100%; display: block; }
 .container { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
 
+#mouse-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  will-change: left, top;
+}
+
+/* Hide on touch/mobile devices */
+@media (hover: none), (max-width: 768px) {
+  #mouse-glow {
+    display: none !important;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

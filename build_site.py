@@ -441,6 +441,7 @@ def render_page(
 <html lang="en-GB">
 {head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero)}
 <body>
+  <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
   {nav()}
   <main id="main-content">{body}</main>
@@ -528,6 +529,33 @@ p { margin: 0 0 1rem; }
 a { color: inherit; }
 img { max-width: 100%; display: block; }
 .container { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
+
+#mouse-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  will-change: left, top;
+}
+
+/* Hide on touch/mobile devices */
+@media (hover: none), (max-width: 768px) {
+  #mouse-glow {
+    display: none !important;
+  }
+}
 
 .sr-only {
   position: absolute;
@@ -1217,6 +1245,52 @@ def generate_js() -> None:
     });
   });
 })();
+
+// ── WHITE MOUSE GLOW ──────────────────────
+(function() {
+  // Only run on non-touch desktop devices
+  if (window.matchMedia('(hover: none)').matches) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+
+  var glow = document.getElementById('mouse-glow');
+  if (!glow) return;
+
+  var mouseX = window.innerWidth / 2;
+  var mouseY = window.innerHeight / 2;
+  var currentX = mouseX;
+  var currentY = mouseY;
+  var rafId;
+
+  // Smooth lerp follow (makes it feel soft and organic)
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+
+  function animate() {
+    currentX = lerp(currentX, mouseX, 0.12);
+    currentY = lerp(currentY, mouseY, 0.12);
+    glow.style.left = currentX + 'px';
+    glow.style.top  = currentY + 'px';
+    rafId = requestAnimationFrame(animate);
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }, { passive: true });
+
+  // Start animation loop
+  animate();
+
+  // Fade out when mouse leaves window
+  document.addEventListener('mouseleave', function() {
+    glow.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', function() {
+    glow.style.opacity = '1';
+  });
+})();
+// ── END MOUSE GLOW ────────────────────────
 """
     write("assets/js/main.js", js)
 
@@ -1662,6 +1736,7 @@ def generate_pages() -> None:
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
+  <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
   """ + nav() + """
   <main id="main-content">""" + thank_you_body + """</main>
@@ -1685,6 +1760,7 @@ def generate_pages() -> None:
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
+  <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
   <main id="main-content" class="not-found-wrap">
     <h1>Page Not Found</h1>
@@ -1705,7 +1781,7 @@ def generate_redirects() -> None:
     redirect_html = (
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<meta http-equiv=\"refresh\" content=\"0;url={target}\"><link rel=\"canonical\" href=\"{canonical}\">"
-        "<title>Redirecting...</title></head><body><p>Redirecting to <a href=\"{target}\">{target}</a></p>"
+        "<title>Redirecting...</title></head><body><div id=\"mouse-glow\" aria-hidden=\"true\"></div><p>Redirecting to <a href=\"{target}\">{target}</a></p>"
         "<script>window.location.replace('{target}');</script></body></html>"
     )
     redirects = {
