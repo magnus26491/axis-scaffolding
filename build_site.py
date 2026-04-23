@@ -76,7 +76,7 @@ SERVICES = [
     {
         "slug": "temporary-roofing",
         "name": "Temporary Roofing",
-        "title": "Temporary Roofing Essex | Axis Scaffolding Ltd UK",
+        "title": "Temporary Roofing Essex | Axis Scaffolding Essex Team",
         "desc": "Temporary roofing scaffolding Essex solutions in Benfleet to protect sites from weather across scaffolding Essex while works continue. Get a free quote today.",
         "summary": "Weather-protected temporary roofing structures that keep projects moving in all seasons.",
     },
@@ -1319,7 +1319,7 @@ def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding Essex | Axis Scaffolding Ltd",
+            title="Scaffolding Essex | Axis Scaffolding Ltd Benfleet Team",
             desc="Axis Scaffolding delivers trusted scaffolding Essex support from Benfleet for homes and businesses across Essex. Contact our team and get a free quote today.",
             path="/",
             body=homepage(),
@@ -1343,7 +1343,7 @@ def generate_pages() -> None:
     write(
         "services/index.html",
         render_page(
-            title="Scaffolding Services in Essex | Axis Scaffolding",
+            title="Scaffolding Services in Essex | Axis Scaffolding Team",
             desc="Explore scaffolding Essex services from Benfleet including domestic, roof and emergency access by Axis Scaffolding. Contact us and get a free quote today.",
             path="/services",
             body=services_body,
@@ -1375,7 +1375,7 @@ def generate_pages() -> None:
     write(
         "gallery/index.html",
         render_page(
-            title="Scaffolding Projects Gallery | Axis Scaffolding",
+            title="Scaffolding Projects Gallery | Axis Scaffolding Essex",
             desc="Browse scaffolding Essex projects completed by Axis Scaffolding from Benfleet across domestic and commercial sites. Review our work and get a free quote today.",
             path="/gallery",
             body=gallery_body,
@@ -1396,8 +1396,8 @@ def generate_pages() -> None:
     write(
         "about/index.html",
         render_page(
-            title="About Axis Scaffolding Ltd | Essex Scaffolders",
-            desc="Learn about Axis Scaffolding in Benfleet delivering scaffolding Essex support with CISRS certification and full insurance. Speak to us and get a free quote today.",
+            title="About Axis Scaffolding Ltd | Essex Scaffolders Team",
+            desc="Learn about Axis Scaffolding in Benfleet delivering scaffolding Essex support with CISRS certification and full insurance. Contact us for a free quote today.",
             path="/about",
             body=about_body,
             breadcrumb_items=[("Home", "/"), ("About", "/about")],
@@ -1417,7 +1417,7 @@ def generate_pages() -> None:
     write(
         "contact/index.html",
         render_page(
-            title="Contact Axis Scaffolding Essex | Free Quote",
+            title="Contact Axis Scaffolding Essex | Free Quote Support",
             desc="Contact Axis Scaffolding in Benfleet for scaffolding Essex residential and commercial support. Speak to our team now and get a free quote today.",
             path="/contact",
             body=contact_body,
@@ -1436,7 +1436,7 @@ def generate_pages() -> None:
     write(
         "quote/index.html",
         render_page(
-            title="Get a Free Scaffolding Quote | Axis Scaffolding",
+            title="Get a Free Scaffolding Quote | Axis Scaffolding Essex",
             desc="Request scaffolding Essex pricing from Axis Scaffolding in Benfleet for home and business projects. Complete the form now and get a free quote today.",
             path="/quote",
             body=quote_body,
@@ -1447,19 +1447,19 @@ def generate_pages() -> None:
     policy_defs = [
         (
             "privacy-policy",
-            "Privacy Policy | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex",
+            "Privacy Policy | Axis Scaffolding Essex Benfleet Team",
             "Read how Axis Scaffolding in Benfleet handles personal data for scaffolding Essex enquiries and projects. Review our policy and get a free quote today.",
             "Privacy Policy",
         ),
         (
             "terms-and-conditions",
-            "Terms and Conditions | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex",
+            "Terms and Conditions | Axis Scaffolding Essex Team UK",
             "Review Axis Scaffolding terms for Benfleet and scaffolding Essex services including quotations and payment terms. Contact us and get a free quote today.",
             "Terms and Conditions",
         ),
         (
             "cookie-policy",
-            "Cookie Policy | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex",
+            "Cookie Policy | Axis Scaffolding Essex Benfleet Team",
             "Understand how Axis Scaffolding uses cookies on this Benfleet scaffolding Essex website. Manage preferences anytime and get a free quote today.",
             "Cookie Policy",
         ),
