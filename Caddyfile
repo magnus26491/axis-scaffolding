@@ -1,0 +1,51 @@
+:{$PORT:8080}
+
+root * /app
+file_server
+
+# Clean URL routing — serve directory index.html files
+@about    path /about /about/
+@contact  path /contact /contact/
+@gallery  path /gallery /gallery/
+@services path /services /services/
+@quote    path /quote /quote/
+@areas    path /areas /areas/
+
+handle @about    { rewrite * /about/index.html    ; file_server }
+handle @contact  { rewrite * /contact/index.html  ; file_server }
+handle @gallery  { rewrite * /gallery/index.html  ; file_server }
+handle @services { rewrite * /services/index.html ; file_server }
+handle @quote    { rewrite * /quote/index.html    ; file_server }
+handle @areas    { rewrite * /areas/index.html    ; file_server }
+
+# Area sub-pages
+handle /areas/benfleet*      { rewrite * /areas/benfleet/index.html      ; file_server }
+handle /areas/rayleigh*      { rewrite * /areas/rayleigh/index.html      ; file_server }
+handle /areas/southend*      { rewrite * /areas/southend/index.html      ; file_server }
+handle /areas/basildon*      { rewrite * /areas/basildon/index.html      ; file_server }
+handle /areas/chelmsford*    { rewrite * /areas/chelmsford/index.html    ; file_server }
+handle /areas/canvey-island* { rewrite * /areas/canvey-island/index.html ; file_server }
+handle /areas/london*        { rewrite * /areas/london/index.html        ; file_server }
+
+# Service sub-pages
+handle /services/residential-scaffolding* { rewrite * /services/residential-scaffolding/index.html ; file_server }
+handle /services/commercial-scaffolding*  { rewrite * /services/commercial-scaffolding/index.html  ; file_server }
+handle /services/domestic-scaffolding*    { rewrite * /services/domestic-scaffolding/index.html    ; file_server }
+handle /services/roof-scaffolding*        { rewrite * /services/roof-scaffolding/index.html        ; file_server }
+handle /services/temporary-roofing*       { rewrite * /services/temporary-roofing/index.html       ; file_server }
+handle /services/emergency-scaffolding*   { rewrite * /services/emergency-scaffolding/index.html   ; file_server }
+
+# Other pages
+handle /thank-you*            { rewrite * /thank-you/index.html            ; file_server }
+handle /privacy-policy*       { rewrite * /privacy-policy/index.html       ; file_server }
+handle /terms-and-conditions* { rewrite * /terms-and-conditions/index.html ; file_server }
+
+# Cache headers
+header /assets/* Cache-Control "public, max-age=31536000, immutable"
+header /*.html   Cache-Control "public, max-age=0, must-revalidate"
+
+# 404 fallback
+handle_errors {
+    rewrite * /404.html
+    file_server
+}

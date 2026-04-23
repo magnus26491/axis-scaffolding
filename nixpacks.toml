@@ -1,8 +1,5 @@
-[start]
-cmd = "npx serve . --config serve.json -l $PORT"
-
 [phases.setup]
-nixPkgs = ["nodejs"]
+nixPkgs = ["caddy"]
 
-[phases.install]
-cmds = ["npm install -g serve"]
+[start]
+cmd = "caddy run --config /app/Caddyfile --adapter caddyfile"
