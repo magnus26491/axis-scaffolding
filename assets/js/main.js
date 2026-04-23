@@ -1,4 +1,5 @@
 (() => {
+  const CONTACT_EMAIL = 'axis-scaffolding@outlook.com';
   const header = document.getElementById('site-header');
   const menuToggle = document.getElementById('menu-toggle');
   const siteMenu = document.getElementById('site-menu');
@@ -121,13 +122,14 @@
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
       const webhook = window.AXIS_QUOTE_WEBHOOK;
+      const payload = { ...data, notification_email: CONTACT_EMAIL };
       let ok = true;
       if (webhook) {
         try {
           const res = await fetch(webhook, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
           });
           ok = res.ok;
         } catch (_err) {

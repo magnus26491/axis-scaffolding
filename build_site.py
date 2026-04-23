@@ -12,12 +12,15 @@ ROOT = Path("/workspace")
 SITE = "https://axisscaffoldingessex.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
+CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
+FORM_ACTION = 'mailto:axis-scaffolding@outlook.com'
+FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
     "address": "Fortress House, 301 High Road, Benfleet, Essex, SS7 5HA",
     "phone": "07713245511",
-    "email": "Axis-scaffolding@outlook.com",
+    "email": CONTACT_EMAIL,
     "company_no": "15050136",
 }
 
@@ -392,7 +395,9 @@ def quote_form(prefix: str, title: str) -> str:
     return f"""
 <section class="quote-form-card">
   <h3>{title}</h3>
-  <form class="axis-quote-form" data-form-name="{prefix}">
+  <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST" enctype="text/plain">
+    <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
+    <input type="hidden" name="_next" value="{FORM_NEXT}">
     <p><label for="{prefix}-name">Full Name *</label><input id="{prefix}-name" name="fullName" required></p>
     <p><label for="{prefix}-phone">Phone Number *</label><input id="{prefix}-phone" name="phone" type="tel" required></p>
     <p><label for="{prefix}-email">Email Address *</label><input id="{prefix}-email" name="email" type="email" required></p>
@@ -923,6 +928,7 @@ textarea:focus-visible {
 def generate_js() -> None:
     js = """
 (() => {
+  const CONTACT_EMAIL = 'axis-scaffolding@outlook.com';
   const header = document.getElementById('site-header');
   const menuToggle = document.getElementById('menu-toggle');
   const siteMenu = document.getElementById('site-menu');
@@ -1045,13 +1051,14 @@ def generate_js() -> None:
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
       const webhook = window.AXIS_QUOTE_WEBHOOK;
+      const payload = { ...data, notification_email: CONTACT_EMAIL };
       let ok = true;
       if (webhook) {
         try {
           const res = await fetch(webhook, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
           });
           ok = res.ok;
         } catch (_err) {
@@ -1374,7 +1381,7 @@ def generate_pages() -> None:
             "Need scaffolding Essex support from Benfleet? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> {NAP['name']}</p><p><strong>Address:</strong> {NAP['address']}</p><p><strong>Phone:</strong> <a href="tel:{NAP['phone']}">{NAP['phone']}</a></p><p><strong>Email:</strong> <a href="mailto:{NAP['email']}">{NAP['email']}</a></p><p><strong>Company No:</strong> {NAP['company_no']}</p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:07713245511">07713245511</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Fortress House, 301 High Road, Benfleet, Essex, SS7 5HA</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#f97316;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
 """
     )
     write(
@@ -1442,6 +1449,35 @@ def generate_pages() -> None:
                 breadcrumb_items=[("Home", "/"), (heading, f"/{slug}")],
             ),
         )
+
+
+    thank_you_body = """
+<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:07713245511">07713245511</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
+"""
+    write(
+        "thank-you/index.html",
+        """<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thank You | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex</title>
+  <meta name="description" content="Thank you for contacting Axis Scaffolding in Benfleet. We will respond quickly regarding your scaffolding Essex enquiry.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://axisscaffoldingessex.co.uk/thank-you">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
+  """ + nav() + """
+  <main id="main-content">""" + thank_you_body + """</main>
+  """ + footer() + """
+  """ + cookie_ui() + """
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>
+""",
+    )
 
     write(
         "404.html",
@@ -1548,11 +1584,13 @@ def generate_robots_sitemap() -> None:
         ("/privacy-policy", "0.5"),
         ("/terms-and-conditions", "0.5"),
         ("/cookie-policy", "0.5"),
+        ("/thank-you", "0.1"),
     ]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path, priority in pages:
+        changefreq = 'yearly' if path == '/thank-you' else 'monthly'
         lines.append(
-            f"  <url><loc>{SITE}{path}</loc><lastmod>{TODAY}</lastmod><changefreq>monthly</changefreq><priority>{priority}</priority></url>"
+            f"  <url><loc>{SITE}{path}</loc><lastmod>{TODAY}</lastmod><changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
         )
     lines.append("</urlset>")
     write("sitemap.xml", "\n".join(lines))
