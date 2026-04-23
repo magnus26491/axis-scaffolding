@@ -1095,6 +1095,7 @@ textarea:focus-visible {
 }
 .founder-content h2 {
   margin: 0 0 2rem;
+  text-align: center;
 }
 .founder-content p {
   color: #d1d5db;
@@ -1102,6 +1103,9 @@ textarea:focus-visible {
   margin-bottom: 1.6rem;
   font-size: 1.05rem;
   max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 .founder-credentials {
   list-style: none;
@@ -1109,6 +1113,9 @@ textarea:focus-visible {
   margin-top: 2.25rem;
   display: grid;
   gap: 0.7rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: min(100%, 620px);
 }
 .founder-cred-item {
   background: rgba(255, 255, 255, 0.05);
@@ -1116,6 +1123,7 @@ textarea:focus-visible {
   border-radius: 12px;
   padding: 0.8rem 1rem;
   color: #e5e7eb;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
