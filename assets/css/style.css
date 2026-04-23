@@ -1044,3 +1044,84 @@ textarea:focus-visible {
   object-fit: contain;
   display: block;
 }
+
+/* ── FOUNDER SECTION ── */
+.founder-section {
+  padding: 4.5rem 0;
+}
+.founder-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+.founder-image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.founder-img-circle {
+  width: min(320px, 78vw);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 18%;
+  border: 4px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.58),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: #0a0a0a;
+}
+.founder-badge {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  background: linear-gradient(135deg, #e8eaed, #c8cdd4);
+  color: #000;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+.founder-eyebrow {
+  color: #c8cdd4;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  margin: 0 0 0.5rem;
+}
+.founder-content h2 {
+  margin-bottom: 0.8rem;
+}
+.founder-content p {
+  color: #d1d5db;
+}
+.founder-credentials {
+  list-style: none;
+  padding: 0;
+  margin: 1.1rem 0 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.founder-cred-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  color: #e5e7eb;
+}
+
+@media (max-width: 900px) {
+  .founder-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .founder-credentials {
+    margin-left: auto;
+    margin-right: auto;
+    width: min(100%, 640px);
+  }
+}
