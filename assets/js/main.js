@@ -38,25 +38,66 @@
     });
   });
 
-  const track = document.getElementById('testimonial-track');
+  const track    = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
-  let idx = 0;
+  const prevBtn  = document.getElementById('carousel-prev');
+  const nextBtn  = document.getElementById('carousel-next');
+  const dotsWrap = document.getElementById('carousel-dots');
+  let idx   = 0;
   let timer = null;
+
+  const total = () => track ? track.children.length : 0;
+
+  const buildDots = () => {
+    if (!dotsWrap || !track) return;
+    dotsWrap.innerHTML = '';
+    Array.from(track.children).forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Go to review ' + (i + 1));
+      d.addEventListener('click', () => { goTo(i); resetTimer(); });
+      dotsWrap.appendChild(d);
+    });
+  };
+
+  const updateDots = () => {
+    if (!dotsWrap) return;
+    dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  };
+
+  const goTo = (n) => {
+    if (!track || total() === 0) return;
+    idx = (n + total()) % total();
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    updateDots();
+  };
+
+  const next = () => goTo(idx + 1);
+  const prev = () => goTo(idx - 1);
+
+  const resetTimer = () => {
+    clearInterval(timer);
+    if (total() > 1) timer = setInterval(next, 4500);
+  };
+
   const start = () => {
-    if (!track || track.children.length <= 1) return;
-    timer = window.setInterval(() => {
-      idx = (idx + 1) % track.children.length;
-      track.style.transform = `translateX(-${idx * 100}%)`;
-    }, 4500);
+    if (!track || total() <= 1) return;
+    timer = setInterval(next, 4500);
   };
-  const stop = () => {
-    if (timer) clearInterval(timer);
-    timer = null;
-  };
+
+  const stop = () => { clearInterval(timer); timer = null; };
+
+  if (nextBtn) nextBtn.addEventListener('click', () => { next(); resetTimer(); });
+  if (prevBtn) prevBtn.addEventListener('click', () => { prev(); resetTimer(); });
+
   if (carousel) {
     carousel.addEventListener('mouseenter', stop);
     carousel.addEventListener('mouseleave', start);
   }
+
+  buildDots();
   start();
 
   const CONSENT_KEY = 'axis_cookie_consent';

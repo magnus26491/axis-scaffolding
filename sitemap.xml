@@ -15,7 +15,12 @@
   <url><loc>https://axisscaffoldingessex.co.uk/areas/chelmsford</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://axisscaffoldingessex.co.uk/areas/chelmsford/</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://axisscaffoldingessex.co.uk/areas/clacton</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://axisscaffoldingessex.co.uk/areas/london</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url>
+    <loc>https://axisscaffoldingessex.co.uk/areas/london</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url><loc>https://axisscaffoldingessex.co.uk/areas/loughton</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://axisscaffoldingessex.co.uk/areas/rayleigh</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://axisscaffoldingessex.co.uk/areas/rayleigh/</loc><lastmod>2026-04-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>

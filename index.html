@@ -169,7 +169,7 @@
         <li>Residential and commercial experience across Essex</li>
         <li>Detailed risk-aware planning for safer works</li>
         <li>Free no-obligation quotes — same day response</li>
-      </ul>
+      <li><a href="/areas/london">London</a></li></ul>
       <a href="/quote" class="btn btn-primary">Get a Free Quote</a>
     </div>
   </div>
@@ -311,8 +311,18 @@
 <section class="section section-light">
   <div class="container">
     <h2>What Our Customers Say</h2>
-    <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
-      <div class="testimonial-track" id="testimonial-track">
+    <div class="testimonial-carousel-wrap">
+      <button class="carousel-arrow carousel-prev"
+              id="carousel-prev"
+              aria-label="Previous review">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
+        <div class="testimonial-track" id="testimonial-track">
 <div class="testimonial-card glass-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
@@ -377,14 +387,26 @@
   </div>
 </div>
 </div>
+      </div>
+
+      <button class="carousel-arrow carousel-next"
+              id="carousel-next"
+              aria-label="Next review">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 18l6-6-6-6" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
+
+    <div class="carousel-dots" id="carousel-dots" aria-hidden="true"></div>
   </div>
 </section>
 
 <section class="section" id="areas-covered">
   <div class="container">
     <h2>Areas We Cover in Essex</h2>
-    <ul class="area-pills"><li><a class="area-pill-link" href="/contact">Benfleet</a></li><li><a class="area-pill-link" href="/contact">Canvey Island</a></li><li><a class="area-pill-link" href="/contact">Rayleigh</a></li><li><a class="area-pill-link" href="/contact">Southend-on-Sea</a></li><li><a class="area-pill-link" href="/contact">Basildon</a></li><li><a class="area-pill-link" href="/contact">Chelmsford</a></li><li><a class="area-pill-link" href="/contact">Wickford</a></li><li><a class="area-pill-link" href="/contact">Hadleigh</a></li><li><a class="area-pill-link" href="/contact">Leigh-on-Sea</a></li><li><a class="area-pill-link" href="/contact">Thundersley</a></li><li><a class="area-pill-link" href="/contact">Hockley</a></li><li><a class="area-pill-link" href="/contact">Rochford</a></li></ul>
+    <ul class="area-pills"><li><a class="area-pill-link" href="/contact">Benfleet</a></li><li><a class="area-pill-link" href="/contact">Canvey Island</a></li><li><a class="area-pill-link" href="/contact">Rayleigh</a></li><li><a class="area-pill-link" href="/contact">Southend-on-Sea</a></li><li><a class="area-pill-link" href="/contact">Basildon</a></li><li><a class="area-pill-link" href="/contact">Chelmsford</a></li><li><a class="area-pill-link" href="/contact">Wickford</a></li><li><a class="area-pill-link" href="/contact">Hadleigh</a></li><li><a class="area-pill-link" href="/contact">Leigh-on-Sea</a></li><li><a class="area-pill-link" href="/contact">Thundersley</a></li><li><a class="area-pill-link" href="/contact">Hockley</a></li><li><a class="area-pill-link" href="/contact">Rochford</a></li><li><a href="/areas/london">London</a></li></ul>
     <p>Based in Benfleet, we provide scaffolding services across South Essex and surrounding areas. Contact us to confirm coverage for your project.</p>
   </div>
 </section>
@@ -433,7 +455,7 @@
 </div>
 
 <div class="faq-item">
-  <button class="faq-question" id="faq-button-1" aria-expanded="false" aria-controls="faq-panel-1">How quickly can scaffolding be erected in Benfleet?</button>
+  <button class="faq-question" id="faq-button-1" aria-expanded="false" aria-controls="faq-panel-1">How quickly can scaffolding be erected?</button>
   <div class="faq-answer" id="faq-panel-1" role="region" aria-labelledby="faq-button-1" >
     <p>Most Benfleet and South Essex installations can be scheduled quickly once your quote is approved. We plan safe access and provide a realistic start date based on project urgency and scope.</p>
   </div>
@@ -456,7 +478,10 @@
 <div class="faq-item">
   <button class="faq-question" id="faq-button-4" aria-expanded="false" aria-controls="faq-panel-4">What areas do you cover in Essex?</button>
   <div class="faq-answer" id="faq-panel-4" role="region" aria-labelledby="faq-button-4" >
-    <p>We are based in Benfleet and regularly cover Canvey Island, Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford.</p>
+    <p>We are based in Benfleet and regularly cover Canvey Island,
+  Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford,
+  Hadleigh, Leigh-on-Sea, Thundersley, Hockley, Rochford and
+  London. Call 01702 820468 to confirm coverage for your area.</p>
   </div>
 </div>
 
@@ -552,7 +577,7 @@
       </div>
     </section>
     <section><h2>Our Services</h2><ul><li><a href="/services/residential-scaffolding">Residential Scaffolding</a></li><li><a href="/services/commercial-scaffolding">Commercial Scaffolding</a></li><li><a href="/services/domestic-scaffolding">Domestic Scaffolding</a></li><li><a href="/services/roof-scaffolding">Roof Scaffolding</a></li><li><a href="/services/temporary-roofing">Temporary Roofing</a></li><li><a href="/services/emergency-scaffolding">Emergency Scaffolding</a></li></ul></section>
-    <section><h2>Areas We Cover</h2><ul><li>Benfleet</li><li>Canvey Island</li><li>Rayleigh</li><li>Southend-on-Sea</li><li>Basildon</li><li>Chelmsford</li><li>Wickford</li><li>Hadleigh</li></ul></section>
+    <section><h2>Areas We Cover</h2><ul><li>Benfleet</li><li>Canvey Island</li><li>Rayleigh</li><li>Southend-on-Sea</li><li>Basildon</li><li>Chelmsford</li><li>Wickford</li><li>Hadleigh</li><li>London</li></ul></section>
     <section>
       <h2>Contact Us</h2>
       <p>Axis Scaffolding Essex</p>
@@ -572,6 +597,23 @@
       <a href="/privacy-policy">Privacy Policy</a>
       <a href="/terms-and-conditions">Terms &amp; Conditions</a>
     </div>
+<div class="agency-credit">
+  <a href="https://mjadsystems.com"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="agency-credit-link"
+     aria-label="Website by MJ AdSystems Ltd">
+    <span class="agency-logo-box">
+      <img src="https://mjadsystems.com/favicon.ico"
+           alt="MJ AdSystems logo"
+           width="16"
+           height="16"
+           loading="lazy"
+           onerror="this.style.display='none'">
+    </span>
+    Website by MJ AdSystems Ltd
+  </a>
+</div>
   </div>
 </footer>
 
