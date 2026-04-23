@@ -197,6 +197,26 @@
 // ── END PARALLAX BANNER ───────────────────
 
 
+
+// ── SERVICES HERO PARALLAX ───────────────
+(function() {
+  var bg = document.querySelector('.services-hero-bg');
+  if (!bg) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  var hero = bg.closest('.services-hero');
+  var visible = false;
+  var obs = new IntersectionObserver(function(e) {
+    visible = e[0].isIntersecting;
+  }, { threshold: 0.01 });
+  obs.observe(hero);
+  window.addEventListener('scroll', function() {
+    if (!visible) return;
+    var rect = hero.getBoundingClientRect();
+    bg.style.transform = 'translateY(' + (rect.top * 0.3) + 'px)';
+  }, { passive: true });
+})();
+// ── END SERVICES HERO PARALLAX ───────────
+
 // ── HERO PARALLAX ─────────────────────────
 (function() {
   var heroMedia = document.querySelector('.hero-media');
