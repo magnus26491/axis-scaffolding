@@ -19,7 +19,7 @@ FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
-    "address": "Fortress House, 301 High Road, Benfleet, Essex, SS7 5HA",
+    "address": "Arterial Road, Rayleigh, Essex, SS6 7XT",
     "phone": "07713245511",
     "email": CONTACT_EMAIL,
     "company_no": "15050136",
@@ -60,35 +60,35 @@ SERVICES = [
         "slug": "commercial-scaffolding",
         "name": "Commercial Scaffolding",
         "title": "Commercial Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Commercial scaffolding Essex support from Benfleet specialists at Axis Scaffolding for developers across scaffolding Essex. Get a free quote today.",
+        "desc": "Commercial scaffolding Essex support from Rayleigh specialists at Axis Scaffolding for developers across scaffolding Essex. Get a free quote today.",
         "summary": "Reliable scaffold packages for offices, retail units, schools and commercial developments.",
     },
     {
         "slug": "domestic-scaffolding",
         "name": "Domestic Scaffolding",
         "title": "Domestic Scaffolding Essex | Axis Scaffolding Team",
-        "desc": "Domestic scaffolding Essex services from Benfleet with safe, practical access for houses and flats across scaffolding Essex. Get a free quote today.",
+        "desc": "Domestic scaffolding Essex services from Rayleigh with safe, practical access for houses and flats across scaffolding Essex. Get a free quote today.",
         "summary": "Flexible domestic scaffold installations tailored for occupied properties and local builders.",
     },
     {
         "slug": "roof-scaffolding",
         "name": "Roof Scaffolding",
         "title": "Roof Scaffolding Essex | Axis Scaffolding Essex Team",
-        "desc": "Roof scaffolding Essex installations from Benfleet for repairs and refurbishments across scaffolding Essex with dependable access. Get a free quote today.",
+        "desc": "Roof scaffolding Essex installations from Rayleigh for repairs and refurbishments across scaffolding Essex with dependable access. Get a free quote today.",
         "summary": "Specialist roof access scaffold systems for chimney, guttering and full roofline projects.",
     },
     {
         "slug": "temporary-roofing",
         "name": "Temporary Roofing",
         "title": "Temporary Roofing Essex | Axis Scaffolding Essex Team",
-        "desc": "Temporary roofing scaffolding Essex solutions in Benfleet to protect sites from weather across scaffolding Essex while works continue. Get a free quote today.",
+        "desc": "Temporary roofing scaffolding Essex solutions in Rayleigh to protect sites from weather across scaffolding Essex while works continue. Get a free quote today.",
         "summary": "Weather-protected temporary roofing structures that keep projects moving in all seasons.",
     },
     {
         "slug": "emergency-scaffolding",
         "name": "Emergency Scaffolding",
         "title": "Emergency Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Emergency scaffolding Essex response from Benfleet for urgent access and safety works across scaffolding Essex. Contact Axis Scaffolding for a free quote today.",
+        "desc": "Emergency scaffolding Essex response from Rayleigh for urgent access and safety works across scaffolding Essex. Contact Axis Scaffolding for a free quote today.",
         "summary": "Rapid-response scaffold support for urgent structural, roof or safety access requirements.",
     },
 ]
@@ -144,13 +144,13 @@ def local_business_schema() -> dict:
         "email": NAP["email"],
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Fortress House, 301 High Road, Benfleet",
-            "addressLocality": "Benfleet",
+            "streetAddress": "Arterial Road",
+            "addressLocality": "Rayleigh",
             "addressRegion": "Essex",
-            "postalCode": "SS7 5HA",
+            "postalCode": "SS6 7XT",
             "addressCountry": "GB",
         },
-        "geo": {"@type": "GeoCoordinates", "latitude": 51.5508, "longitude": 0.5614},
+        "geo": {"@type": "GeoCoordinates", "latitude": 51.5868, "longitude": 0.6044},
         "areaServed": [
             "Benfleet",
             "Canvey Island",
@@ -302,7 +302,7 @@ def footer() -> str:
         <a href="https://www.instagram.com/axis_scaffoldingessex/" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow Axis Scaffolding on Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5Zm8.9 1.35a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"/></svg>
         </a>
-        <a href="https://www.google.com/maps/search/Axis+Scaffolding+Ltd+Benfleet+Essex" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Find Axis Scaffolding on Google">
+        <a href="https://maps.google.com/?q=Arterial+Road+Rayleigh+Essex+SS6+7XT" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Find Axis Scaffolding on Google">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
         </a>
       </div>
@@ -321,7 +321,7 @@ def footer() -> str:
   <div class="container footer-bottom">
     <hr>
     <p>AXIS SCAFFOLDING LTD is registered as a limited company in England and Wales under Company Number: 15050136.</p>
-    <p>Registered Company Address: Fortress House, 301 High Road, Benfleet, England, SS7 5HA</p>
+    <p>Registered Company Address: Arterial Road, Rayleigh, England, SS6 7XT</p>
     <p>© 2026. The content on this website is owned by us and our licensors. Do not copy any content (including images) without our consent.</p>
     <div class="footer-legal-links">
       <button id="axis-footer-cookie-btn" style="background:none; border:none; color:#6b7280; font-size:0.8rem; cursor:pointer; text-decoration:underline; padding:0;">Cookie Settings</button>
@@ -1462,7 +1462,7 @@ def homepage() -> str:
     <p><span aria-hidden="true">🛠</span>10+ Years Experience</p>
     <p><span aria-hidden="true">✅</span>Fully CISRS Certified</p>
     <p><span aria-hidden="true">📋</span>Free Quotes</p>
-    <p><span aria-hidden="true">📍</span>Essex Based</p>
+    <p><span aria-hidden="true">📍</span>Based in Rayleigh</p>
   </div>
 </section>
 
@@ -1486,7 +1486,7 @@ def homepage() -> str:
         <li>Residential and commercial experience across Essex</li>
         <li>Detailed risk-aware planning for safer works</li>
       </ul>
-      <p class="about-blurb">Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Benfleet, Essex, registered in England and Wales under Company Number 15050136.</p>
+      <p class="about-blurb">Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136.</p>
       <a class="btn btn-primary" href="/quote">Get a Quote</a>
     </div>
   </div>
@@ -1513,7 +1513,7 @@ def homepage() -> str:
   <div class="container">
     <h2>Areas We Cover in Essex</h2>
     <ul class="area-pills">{area_pills()}</ul>
-    <p>Based in Benfleet, we provide scaffolding services across South Essex and surrounding areas. Contact us to confirm coverage for your project.</p>
+    <p>Based in Rayleigh, we provide scaffolding services across South Essex and surrounding areas. Contact us to confirm coverage for your project.</p>
   </div>
 </section>
 
@@ -1559,7 +1559,7 @@ def homepage() -> str:
         <span>Instagram</span>
         <small>@axis_scaffoldingessex</small>
       </a>
-      <a href="https://www.google.com/maps/search/Axis+Scaffolding+Ltd+Benfleet+Essex" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Find Axis Scaffolding on Google">
+      <a href="https://maps.google.com/?q=Arterial+Road+Rayleigh+Essex+SS6+7XT" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Find Axis Scaffolding on Google">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
         <span>Google</span>
         <small>Leave us a review</small>
@@ -1606,8 +1606,8 @@ def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding Essex | Axis Scaffolding Ltd Benfleet Team",
-            desc="Axis Scaffolding delivers trusted scaffolding Essex support from Benfleet for homes and businesses across Essex. Contact our team and get a free quote today.",
+            title="Scaffolding Essex | Axis Scaffolding Ltd Rayleigh Team",
+            desc="Axis Scaffolding delivers trusted scaffolding Essex support from Rayleigh for homes and businesses across Essex. Contact our team and get a free quote today.",
             path="/",
             body=homepage(),
             include_faq_schema=True,
@@ -1619,7 +1619,7 @@ def generate_pages() -> None:
         inner_hero(
             [("Home", "/"), ("Services", "/services")],
             "Scaffolding Services in Essex",
-            "Axis Scaffolding Ltd provides complete scaffolding Essex services from Benfleet for residential, domestic and commercial projects. Get a free quote today.",
+            "Axis Scaffolding Ltd provides complete scaffolding Essex services from Rayleigh for residential, domestic and commercial projects. Get a free quote today.",
         )
         + f"""
 <section class="section section-light"><div class="container service-listing">{service_list_cards()}</div></section>
@@ -1631,7 +1631,7 @@ def generate_pages() -> None:
         "services/index.html",
         render_page(
             title="Scaffolding Services in Essex | Axis Scaffolding Team",
-            desc="Explore scaffolding Essex services from Benfleet including domestic, roof and emergency access by Axis Scaffolding. Contact us and get a free quote today.",
+            desc="Explore scaffolding Essex services from Rayleigh including domestic, roof and emergency access by Axis Scaffolding. Contact us and get a free quote today.",
             path="/services",
             body=services_body,
             breadcrumb_items=[("Home", "/"), ("Services", "/services")],
@@ -1663,7 +1663,7 @@ def generate_pages() -> None:
         "gallery/index.html",
         render_page(
             title="Scaffolding Projects Gallery | Axis Scaffolding Essex",
-            desc="Browse scaffolding Essex projects completed by Axis Scaffolding from Benfleet across domestic and commercial sites. Review our work and get a free quote today.",
+            desc="Browse scaffolding Essex projects completed by Axis Scaffolding from Rayleigh across domestic and commercial sites. Review our work and get a free quote today.",
             path="/gallery",
             body=gallery_body,
             breadcrumb_items=[("Home", "/"), ("Gallery", "/gallery")],
@@ -1674,17 +1674,17 @@ def generate_pages() -> None:
         inner_hero(
             [("Home", "/"), ("About", "/about")],
             "About Axis Scaffolding Ltd",
-            "Axis Scaffolding Ltd delivers scaffolding Essex services from Benfleet with certified standards and practical project support. Contact us and get a free quote today.",
+            "Axis Scaffolding Ltd delivers scaffolding Essex services from Rayleigh with certified standards and practical project support. Contact us and get a free quote today.",
         )
         + """
-<section class="section"><div class="container split-grid"><div><img src="/images/project-5.webp" alt="Roof scaffolding setup at a property in Benfleet, Essex" width="640" height="800" loading="lazy" decoding="async" class="rounded-image"></div><div><h2>Why Choose Axis Scaffolding Essex?</h2><p>Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Benfleet, Essex, registered in England and Wales under Company Number 15050136.</p><p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p></div></div></section>
+<section class="section"><div class="container split-grid"><div><img src="/images/project-5.webp" alt="Roof scaffolding setup at a property in Benfleet, Essex" width="640" height="800" loading="lazy" decoding="async" class="rounded-image"></div><div><h2>Why Choose Axis Scaffolding Essex?</h2><p>Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136.</p><p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p></div></div></section>
 """
     )
     write(
         "about/index.html",
         render_page(
             title="About Axis Scaffolding Ltd | Essex Scaffolders Team",
-            desc="Learn about Axis Scaffolding in Benfleet delivering scaffolding Essex support with CISRS certification and full insurance. Contact us for a free quote today.",
+            desc="Learn about Axis Scaffolding in Rayleigh delivering scaffolding Essex support with CISRS certification and full insurance. Contact us for a free quote today.",
             path="/about",
             body=about_body,
             breadcrumb_items=[("Home", "/"), ("About", "/about")],
@@ -1695,17 +1695,17 @@ def generate_pages() -> None:
         inner_hero(
             [("Home", "/"), ("Contact", "/contact")],
             "Contact Axis Scaffolding Essex",
-            "Need scaffolding Essex support from Benfleet? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
+            "Need scaffolding Essex support from Rayleigh? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:07713245511">07713245511</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Fortress House, 301 High Road, Benfleet, Essex, SS7 5HA</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#f97316;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:07713245511">07713245511</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#f97316;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
 """
     )
     write(
         "contact/index.html",
         render_page(
             title="Contact Axis Scaffolding Essex | Free Quote Support",
-            desc="Contact Axis Scaffolding in Benfleet for scaffolding Essex residential and commercial support. Speak to our team now and get a free quote today.",
+            desc="Contact Axis Scaffolding in Rayleigh for scaffolding Essex residential and commercial support. Speak to our team now and get a free quote today.",
             path="/contact",
             body=contact_body,
             breadcrumb_items=[("Home", "/"), ("Contact", "/contact")],
@@ -1724,7 +1724,7 @@ def generate_pages() -> None:
         "quote/index.html",
         render_page(
             title="Get a Free Scaffolding Quote | Axis Scaffolding Essex",
-            desc="Request scaffolding Essex pricing from Axis Scaffolding in Benfleet for home and business projects. Complete the form now and get a free quote today.",
+            desc="Request scaffolding Essex pricing from Axis Scaffolding in Rayleigh for home and business projects. Complete the form now and get a free quote today.",
             path="/quote",
             body=quote_body,
             breadcrumb_items=[("Home", "/"), ("Quote", "/quote")],
@@ -1734,7 +1734,7 @@ def generate_pages() -> None:
     policy_defs = [
         (
             "privacy-policy",
-            "Privacy Policy | Axis Scaffolding Essex Benfleet Team",
+            "Privacy Policy | Axis Scaffolding Essex Rayleigh Team",
             "Read how Axis Scaffolding in Benfleet handles personal data for scaffolding Essex enquiries and projects. Review our policy and get a free quote today.",
             "Privacy Policy",
         ),
@@ -1746,7 +1746,7 @@ def generate_pages() -> None:
         ),
         (
             "cookie-policy",
-            "Cookie Policy | Axis Scaffolding Essex Benfleet Team",
+            "Cookie Policy | Axis Scaffolding Essex Rayleigh Team",
             "Understand how Axis Scaffolding uses cookies on this Benfleet scaffolding Essex website. Manage preferences anytime and get a free quote today.",
             "Cookie Policy",
         ),
@@ -1754,7 +1754,7 @@ def generate_pages() -> None:
     for slug, title, desc, heading in policy_defs:
         body = (
             inner_hero([("Home", "/"), (heading, f"/{slug}")], heading, f"Axis Scaffolding Ltd provides transparent legal and privacy information for Benfleet and scaffolding Essex customers.")
-            + f"""<section class="section"><div class="container"><h2>Policy Information</h2><p>This page explains our {heading.lower()} for Axis Scaffolding Ltd services delivered from Benfleet across Essex. If you need clarification, please contact our team directly by phone or email.</p></div></section>"""
+            + f"""<section class="section"><div class="container"><h2>Policy Information</h2><p>This page explains our {heading.lower()} for Axis Scaffolding Ltd services delivered from Rayleigh across Essex. If you need clarification, please contact our team directly by phone or email.</p></div></section>"""
         )
         write(
             f"{slug}/index.html",
@@ -1778,8 +1778,8 @@ def generate_pages() -> None:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Thank You | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex</title>
-  <meta name="description" content="Thank you for contacting Axis Scaffolding in Benfleet. We will respond quickly regarding your scaffolding Essex enquiry.">
+  <title>Thank You | Axis Scaffolding Essex – Scaffolding in Rayleigh, Essex</title>
+  <meta name="description" content="Thank you for contacting Axis Scaffolding in Rayleigh. We will respond quickly regarding your scaffolding Essex enquiry.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://axisscaffoldingessex.co.uk/thank-you">
   <link rel="stylesheet" href="/assets/css/style.css">
@@ -1805,8 +1805,8 @@ def generate_pages() -> None:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page Not Found | Axis Scaffolding Essex – Scaffolding in Benfleet, Essex</title>
-  <meta name="description" content="Page not found on Axis Scaffolding Essex in Benfleet. Browse scaffolding Essex services and get a free quote today.">
+  <title>Page Not Found | Axis Scaffolding Essex – Scaffolding in Rayleigh, Essex</title>
+  <meta name="description" content="Page not found on Axis Scaffolding Essex in Rayleigh. Browse scaffolding Essex services and get a free quote today.">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>

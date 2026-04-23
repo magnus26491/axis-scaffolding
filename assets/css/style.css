@@ -1047,12 +1047,12 @@ textarea:focus-visible {
 
 /* ── FOUNDER SECTION ── */
 .founder-section {
-  padding: 4.5rem 0;
+  padding: 6rem 0;
 }
 .founder-grid {
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 2rem;
+  gap: 5rem;
   align-items: center;
 }
 .founder-image-wrap {
@@ -1094,15 +1094,19 @@ textarea:focus-visible {
   margin: 0 0 0.5rem;
 }
 .founder-content h2 {
-  margin-bottom: 0.8rem;
+  margin: 0 0 2rem;
 }
 .founder-content p {
   color: #d1d5db;
+  line-height: 1.9;
+  margin-bottom: 1.6rem;
+  font-size: 1.05rem;
+  max-width: 620px;
 }
 .founder-credentials {
   list-style: none;
   padding: 0;
-  margin: 1.1rem 0 0;
+  margin-top: 2.25rem;
   display: grid;
   gap: 0.7rem;
 }
