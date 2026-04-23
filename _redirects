@@ -1,0 +1,13 @@
+/about.html /about 301
+/gallery.html /gallery 301
+/contact.html /contact 301
+/privacy.html /privacy-policy 301
+/terms.html /terms-and-conditions 301
+/cookies.html /cookie-policy 301
+/services/residential.html /services/residential-scaffolding 301
+/services/commercial.html /services/commercial-scaffolding 301
+/services/supply-erection.html /services/domestic-scaffolding 301
+/services/dismantling.html /services/emergency-scaffolding 301
+/services/loading-bays.html /services/roof-scaffolding 301
+/services/temporary-roofs.html /services/temporary-roofing 301
+/areas/* /#areas-covered 301
