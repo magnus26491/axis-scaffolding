@@ -157,43 +157,16 @@
   });
 })();
 
-// ── WHITE MOUSE GLOW ──────────────────────
+// ── INSTANT MOUSE GLOW ───────────────────
 (function() {
-  // Only run on non-touch desktop devices
   if (window.matchMedia('(hover: none)').matches) return;
   if (window.matchMedia('(max-width: 768px)').matches) return;
-
   var glow = document.getElementById('mouse-glow');
   if (!glow) return;
-
-  var mouseX = window.innerWidth / 2;
-  var mouseY = window.innerHeight / 2;
-  var currentX = mouseX;
-  var currentY = mouseY;
-  var rafId;
-
-  // Smooth lerp follow (makes it feel soft and organic)
-  function lerp(start, end, factor) {
-    return start + (end - start) * factor;
-  }
-
-  function animate() {
-    currentX = lerp(currentX, mouseX, 0.12);
-    currentY = lerp(currentY, mouseY, 0.12);
-    glow.style.left = currentX + 'px';
-    glow.style.top  = currentY + 'px';
-    rafId = requestAnimationFrame(animate);
-  }
-
   document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+    glow.style.left = e.clientX + 'px';
+    glow.style.top  = e.clientY + 'px';
   }, { passive: true });
-
-  // Start animation loop
-  animate();
-
-  // Fade out when mouse leaves window
   document.addEventListener('mouseleave', function() {
     glow.style.opacity = '0';
   });
@@ -201,7 +174,27 @@
     glow.style.opacity = '1';
   });
 })();
-// ── END MOUSE GLOW ────────────────────────
+// ── END MOUSE GLOW ───────────────────────
+
+// ── PARALLAX BANNER ───────────────────────
+(function() {
+  var bannerBg = document.querySelector('.parallax-banner-bg');
+  if (!bannerBg) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  var banner = bannerBg.closest('.parallax-banner');
+  var isVisible = false;
+  var observer = new IntersectionObserver(function(entries) {
+    isVisible = entries[0].isIntersecting;
+  }, { threshold: 0.01 });
+  observer.observe(banner);
+  window.addEventListener('scroll', function() {
+    if (!isVisible) return;
+    var rect = banner.getBoundingClientRect();
+    var offset = rect.top * 0.35;
+    bannerBg.style.transform = 'translateY(' + offset + 'px)';
+  }, { passive: true });
+})();
+// ── END PARALLAX BANNER ───────────────────
 
 
 // ── HERO PARALLAX ─────────────────────────
