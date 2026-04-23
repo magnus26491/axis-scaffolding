@@ -1,0 +1,42 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/assets/**",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "**/*.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/gallery",               "destination": "/gallery/index.html" },
+    { "source": "/about",                 "destination": "/about/index.html" },
+    { "source": "/contact",               "destination": "/contact/index.html" },
+    { "source": "/services",              "destination": "/services/index.html" },
+    { "source": "/quote",                 "destination": "/quote/index.html" },
+    { "source": "/areas",                 "destination": "/areas/index.html" },
+    { "source": "/areas/benfleet",        "destination": "/areas/benfleet/index.html" },
+    { "source": "/areas/rayleigh",        "destination": "/areas/rayleigh/index.html" },
+    { "source": "/areas/southend",        "destination": "/areas/southend/index.html" },
+    { "source": "/areas/basildon",        "destination": "/areas/basildon/index.html" },
+    { "source": "/areas/chelmsford",      "destination": "/areas/chelmsford/index.html" },
+    { "source": "/areas/canvey-island",   "destination": "/areas/canvey-island/index.html" },
+    { "source": "/areas/london",          "destination": "/areas/london/index.html" },
+    { "source": "/services/residential-scaffolding",  "destination": "/services/residential-scaffolding/index.html" },
+    { "source": "/services/commercial-scaffolding",   "destination": "/services/commercial-scaffolding/index.html" },
+    { "source": "/services/domestic-scaffolding",     "destination": "/services/domestic-scaffolding/index.html" },
+    { "source": "/services/roof-scaffolding",         "destination": "/services/roof-scaffolding/index.html" },
+    { "source": "/services/temporary-roofing",        "destination": "/services/temporary-roofing/index.html" },
+    { "source": "/services/emergency-scaffolding",    "destination": "/services/emergency-scaffolding/index.html" },
+    { "source": "/thank-you",             "destination": "/thank-you/index.html" },
+    { "source": "/privacy-policy",        "destination": "/privacy-policy/index.html" },
+    { "source": "/terms-and-conditions",  "destination": "/terms-and-conditions/index.html" }
+  ]
+}

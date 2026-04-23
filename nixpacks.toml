@@ -1,0 +1,8 @@
+[start]
+cmd = "npx serve . --config serve.json -l $PORT"
+
+[phases.setup]
+nixPkgs = ["nodejs"]
+
+[phases.install]
+cmds = ["npm install -g serve"]
