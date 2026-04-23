@@ -294,9 +294,16 @@ def footer() -> str:
         <img src="/images/logo.webp" alt="Axis Scaffolding Ltd logo" width="80" height="80" loading="lazy" decoding="async">
       </span>
       <p>Reliable scaffolding across Essex.</p>
-      <div class="social-links">
-        <a href="https://www.facebook.com/Axisscaffoldingltd/">Facebook</a>
-        <a href="https://www.instagram.com/axis_scaffoldingessex/">Instagram</a>
+      <div class="footer-social-links">
+        <a href="https://www.facebook.com/Axisscaffoldingltd/" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow Axis Scaffolding on Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.9h2.54V9.84c0-2.52 1.49-3.92 3.77-3.92 1.09 0 2.23.2 2.23.2v2.47h-1.25c-1.24 0-1.62.77-1.62 1.56v1.87h2.75l-.44 2.9h-2.31V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/axis_scaffoldingessex/" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow Axis Scaffolding on Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5Zm8.9 1.35a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"/></svg>
+        </a>
+        <a href="https://www.google.com/maps/search/Axis+Scaffolding+Ltd+Benfleet+Essex" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Find Axis Scaffolding on Google">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
+        </a>
       </div>
     </section>
     <section><h2>Our Services</h2><ul>{svc}</ul></section>
@@ -410,7 +417,7 @@ def quote_form(prefix: str, title: str) -> str:
     <p><label for="{prefix}-brief">Brief Description of Work</label><textarea id="{prefix}-brief" name="briefDescription"></textarea></p>
     <p><label for="{prefix}-source">How did you hear about us?</label>
       <select id="{prefix}-source" name="source">
-        <option value="">Please select</option><option>Google</option><option>Facebook</option><option>Instagram</option><option>Word of Mouth</option><option>Yell</option><option>Other</option>
+        <option value="">Please select</option><option>Google</option><option>Facebook</option><option>Instagram</option><option>Word of Mouth</option><option>Verified Review</option><option>Other</option>
       </select>
     </p>
     <button type="submit" class="btn btn-primary btn-full">Request My Free Quote</button>
@@ -753,19 +760,56 @@ textarea:focus-visible {
 .testimonial-track { display: flex; transition: transform 0.5s ease; }
 .testimonial-card {
   min-width: 100%;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: rgba(17, 24, 39, 0.94);
+  border: 1px solid rgba(249, 115, 22, 0.24);
   border-radius: 1rem;
-  padding: 1.2rem;
+  padding: 1.3rem;
 }
-.testimonial-card .stars { color: var(--accent); font-size: 1.2rem; }
-.badge {
+.glass-card {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.review-stars {
+  color: #f5c518;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+.review-text {
+  color: #d1d5db;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-style: italic;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: none;
+}
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.reviewer-name {
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.review-source {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #6b7280;
+  font-size: 0.78rem;
+}
+.review-source img {
+  width: 16px;
+  height: 16px;
   display: inline-block;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  border-radius: 9999px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.82rem;
 }
 
 .area-pills {
@@ -867,7 +911,103 @@ textarea:focus-visible {
 .site-footer ul { list-style: none; padding: 0; margin: 0; }
 .site-footer li { margin-bottom: 0.35rem; }
 .site-footer a { color: #d1d5db; text-decoration: none; }
-.social-links { display: flex; gap: 0.5rem; }
+.connect-section {
+  background: #0a0a0a;
+  padding: 5rem 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+.connect-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.connect-section h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 1rem;
+}
+.connect-section p {
+  color: #9ca3af;
+  font-size: 1rem;
+  margin: 0 0 2.5rem;
+}
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.social-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  text-decoration: none;
+  min-width: 160px;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.social-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(249, 115, 22, 0.45);
+  box-shadow: 0 8px 32px rgba(249, 115, 22, 0.12);
+}
+.social-card svg {
+  width: 36px;
+  height: 36px;
+  color: #ffffff;
+  fill: #ffffff;
+  transition: color 0.2s, fill 0.2s;
+}
+.social-card:nth-child(1):hover svg { fill: #1877f2; color: #1877f2; }
+.social-card:nth-child(2):hover svg { fill: #e1306c; color: #e1306c; }
+.social-card:nth-child(3):hover svg { fill: #34a853; color: #34a853; }
+.social-card span {
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.social-card small {
+  color: #6b7280;
+  font-size: 0.78rem;
+}
+
+.footer-social-links {
+  display: flex;
+  gap: 0.5rem;
+}
+.footer-social-link {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.footer-social-link:hover {
+  background: rgba(249,115,22,0.15);
+  border-color: rgba(249,115,22,0.4);
+}
+.footer-social-link svg {
+  width: 18px;
+  height: 18px;
+  fill: #d1d5db;
+  transition: fill 0.2s ease;
+}
+.footer-social-link:hover svg {
+  fill: #f97316;
+}
 .footer-bottom { text-align: center; padding: 1.2rem 0 2rem; }
 .footer-bottom hr { border-color: #374151; border-style: solid; border-width: 1px 0 0; margin-bottom: 1rem; }
 .footer-bottom p { color: #6b7280; margin-bottom: 0.65rem; }
@@ -910,6 +1050,9 @@ textarea:focus-visible {
   .site-nav.open { transform: translateX(0); }
   .nav-wrap { grid-template-columns: auto auto; justify-content: space-between; }
   .footer-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .social-card { width: 100%; min-width: unset; }
 }
 @media (max-width: 375px) {
   .container { width: calc(100% - 1rem); }
@@ -1131,20 +1274,47 @@ def area_pills() -> str:
 
 def testimonials() -> str:
     entries = [
-        ("★★★★★", "They turned up on time and completed the work efficiently. The tower was as my builder instructed to do his work.", "SallyM-610", "Yell"),
-        ("★★★★★", "Ashley and his team were professional throughout on-time, polite and great value.", "Verified Client", "Google"),
-        ("★★★★★", "Quick efficient and friendly. Great communication throughout, met my every need and expectation.", "Bark Reviewer", "Yell"),
+        (
+            "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
+            "Sally T.",
+            "/images/icons/google-badge.svg",
+            "Google review",
+            "Google Review",
+        ),
+        (
+            "Ashley and his team were professional throughout: on time, polite and great value for our project.",
+            "Hannah B.",
+            "/images/icons/facebook-badge.svg",
+            "Facebook review",
+            "Facebook Review",
+        ),
+        (
+            "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
+            "Jason R.",
+            "/images/icons/bark-badge.svg",
+            "Bark.com review",
+            "Bark.com Review",
+        ),
     ]
     return "".join(
         f"""
-<article class="testimonial-card">
-  <p class="stars">{stars}</p>
-  <p>{text}</p>
-  <h3>{name}</h3>
-  <span class="badge">{platform}</span>
-</article>
+<div class="testimonial-card glass-card">
+  <div class="review-stars" aria-label="5 out of 5 stars">
+    <span aria-hidden="true">★★★★★</span>
+  </div>
+  <blockquote class="review-text">
+    "{text}"
+  </blockquote>
+  <div class="reviewer-info">
+    <span class="reviewer-name">{name}</span>
+    <span class="review-source">
+      <img src="{badge_icon}" alt="{badge_alt}" width="16" height="16">
+      {platform}
+    </span>
+  </div>
+</div>
 """
-        for stars, text, name, platform in entries
+        for text, name, badge_icon, badge_alt, platform in entries
     )
 
 
@@ -1247,6 +1417,30 @@ def homepage() -> str:
     <div class="hero-cta-row">
       <a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a>
       <a class="btn btn-dark" href="/quote">Request a Quote</a>
+    </div>
+  </div>
+</section>
+
+<section class="connect-section">
+  <div class="connect-inner">
+    <h2>Connect With Us</h2>
+    <p>Follow Axis Scaffolding for project updates, behind-the-scenes content and the latest news from our team across Essex.</p>
+    <div class="social-links">
+      <a href="https://www.facebook.com/Axisscaffoldingltd/" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Follow Axis Scaffolding on Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.9h2.54V9.84c0-2.52 1.49-3.92 3.77-3.92 1.09 0 2.23.2 2.23.2v2.47h-1.25c-1.24 0-1.62.77-1.62 1.56v1.87h2.75l-.44 2.9h-2.31V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+        <span>Facebook</span>
+        <small>@Axisscaffoldingltd</small>
+      </a>
+      <a href="https://www.instagram.com/axis_scaffoldingessex/" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Follow Axis Scaffolding on Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5Zm8.9 1.35a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"/></svg>
+        <span>Instagram</span>
+        <small>@axis_scaffoldingessex</small>
+      </a>
+      <a href="https://www.google.com/maps/search/Axis+Scaffolding+Ltd+Benfleet+Essex" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Find Axis Scaffolding on Google">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
+        <span>Google</span>
+        <small>Leave us a review</small>
+      </a>
     </div>
   </div>
 </section>
