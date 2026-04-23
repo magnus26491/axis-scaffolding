@@ -150,7 +150,7 @@
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within 24 hours.'
-          : 'Thanks. Your request is saved locally. Please call 07713245511 while webhook setup is pending.';
+          : 'Thanks. Your request is saved locally. Please call 01702 820468 while webhook setup is pending.';
       }
       form.reset();
     });
@@ -202,3 +202,90 @@
   });
 })();
 // ── END MOUSE GLOW ────────────────────────
+
+
+// ── HERO PARALLAX ─────────────────────────
+(function() {
+  var heroMedia = document.querySelector('.hero-media');
+  if (!heroMedia) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  heroMedia.style.top    = '-20%';
+  heroMedia.style.height = '140%';
+  window.addEventListener('scroll', function() {
+    heroMedia.style.transform = 'translateY(' + (window.scrollY * 0.4) + 'px)';
+  }, { passive: true });
+})();
+
+// ── STEPPED SECTION PARALLAX ──────────────
+(function() {
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+  var bgs = document.querySelectorAll('.stepped-media-bg');
+  if (!bgs.length) return;
+  var visible = new Set();
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) visible.add(e.target);
+      else visible.delete(e.target);
+    });
+  }, { threshold: 0.05 });
+  bgs.forEach(function(bg) { observer.observe(bg); });
+  window.addEventListener('scroll', function() {
+    visible.forEach(function(bg) {
+      var section = bg.closest('.stepped-section');
+      if (!section) return;
+      var rect = section.getBoundingClientRect();
+      bg.style.transform = 'translateY(' + (rect.top * 0.12) + 'px)';
+    });
+  }, { passive: true });
+})();
+
+// ── SCROLL REVEAL ─────────────────────────
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var els = document.querySelectorAll(
+    '.service-card, .testimonial-card, .faq-item, ' +
+    '.stepped-content, .stepped-media, .project-item, ' +
+    '.trust-item, .social-card, .area-pills li'
+  );
+  if (!els.length) return;
+  els.forEach(function(el, i) {
+    el.style.opacity   = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.55s ease ' + (i % 4 * 0.08) +
+                          's, transform 0.55s ease ' + (i % 4 * 0.08) + 's';
+  });
+  var ro = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity   = '1';
+        entry.target.style.transform = 'none';
+        ro.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(function(el) { ro.observe(el); });
+})();
+
+// ── ANIMATED COUNTERS ─────────────────────
+(function() {
+  var counters = document.querySelectorAll('[data-counter-target]');
+  if (!counters.length) return;
+  var co = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      var el     = entry.target;
+      var target = parseInt(el.dataset.counterTarget, 10);
+      var suffix = el.dataset.counterSuffix || '';
+      var dur    = 1500;
+      var start  = performance.now();
+      (function tick(now) {
+        var p = Math.min((now - start) / dur, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(e * target) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      })(performance.now());
+      co.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(function(el) { co.observe(el); });
+})();
