@@ -7,6 +7,17 @@
     if (!header) return;
     header.classList.toggle('scrolled', window.scrollY > 12);
   };
+  const currentHost = window.location.hostname.toLowerCase();
+  if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
+    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const moveBanner = document.getElementById('domain-move-banner');
+    const canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
+    if (moveBanner) moveBanner.hidden = false;
+    window.setTimeout(() => {
+      window.location.replace(nextUrl);
+    }, 2200);
+  }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
   if (menuToggle && siteMenu) {
@@ -145,3 +156,49 @@
     });
   });
 })();
+
+// ── WHITE MOUSE GLOW ──────────────────────
+(function() {
+  // Only run on non-touch desktop devices
+  if (window.matchMedia('(hover: none)').matches) return;
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+
+  var glow = document.getElementById('mouse-glow');
+  if (!glow) return;
+
+  var mouseX = window.innerWidth / 2;
+  var mouseY = window.innerHeight / 2;
+  var currentX = mouseX;
+  var currentY = mouseY;
+  var rafId;
+
+  // Smooth lerp follow (makes it feel soft and organic)
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+
+  function animate() {
+    currentX = lerp(currentX, mouseX, 0.12);
+    currentY = lerp(currentY, mouseY, 0.12);
+    glow.style.left = currentX + 'px';
+    glow.style.top  = currentY + 'px';
+    rafId = requestAnimationFrame(animate);
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }, { passive: true });
+
+  // Start animation loop
+  animate();
+
+  // Fade out when mouse leaves window
+  document.addEventListener('mouseleave', function() {
+    glow.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', function() {
+    glow.style.opacity = '1';
+  });
+})();
+// ── END MOUSE GLOW ────────────────────────

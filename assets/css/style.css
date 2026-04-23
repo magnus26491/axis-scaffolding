@@ -28,6 +28,33 @@ a { color: inherit; }
 img { max-width: 100%; display: block; }
 .container { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
 
+#mouse-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  will-change: left, top;
+}
+
+/* Hide on touch/mobile devices */
+@media (hover: none), (max-width: 768px) {
+  #mouse-glow {
+    display: none !important;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -276,6 +303,11 @@ textarea:focus-visible {
   margin-bottom: 0.75rem;
   display: block;
 }
+.review-stars span {
+  color: #f5c518 !important;
+  display: inline-block;
+  line-height: 1;
+}
 .review-text {
   color: #d1d5db;
   font-size: 0.95rem;
@@ -319,7 +351,10 @@ textarea:focus-visible {
   flex-wrap: wrap;
   gap: 0.6rem;
 }
-.area-pills a {
+.area-pills li {
+  display: inline-flex;
+}
+.area-pill-link {
   display: inline-block;
   padding: 0.45rem 0.9rem;
   border: 1px solid var(--accent);
@@ -328,7 +363,7 @@ textarea:focus-visible {
   color: var(--text-dark);
   font-weight: 500;
 }
-.area-pills a:hover { background: var(--accent); color: #fff; }
+.area-pill-link:hover { background: var(--accent); color: #fff; }
 
 .faq-wrap { max-width: 900px; }
 .faq-item { border-bottom: 1px solid var(--border); }
@@ -518,6 +553,18 @@ textarea:focus-visible {
   text-decoration: underline;
   cursor: pointer;
   font: inherit;
+}
+.domain-move-banner {
+  background: #fff7ed;
+  border-bottom: 1px solid rgba(249, 115, 22, 0.35);
+  color: #7c2d12;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+.domain-move-banner a {
+  color: #c2410c;
+  text-decoration: underline;
 }
 
 .not-found-wrap {
