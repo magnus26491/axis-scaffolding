@@ -1030,8 +1030,8 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 4px;
@@ -1039,8 +1039,8 @@ textarea:focus-visible {
   flex-shrink: 0;
 }
 .agency-logo-box img {
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   display: block;
 }

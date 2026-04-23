@@ -8,15 +8,20 @@
     header.classList.toggle('scrolled', window.scrollY > 12);
   };
   const currentHost = window.location.hostname.toLowerCase();
-  if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
-    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const OLD_HOSTS = ['axisscaffolding.co.uk', 'www.axisscaffolding.co.uk'];
+  const NEW_HOST  = 'axisscaffoldingessex.co.uk';
+  if (OLD_HOSTS.includes(currentHost)) {
+    const nextUrl = 'https://' + NEW_HOST +
+      window.location.pathname +
+      window.location.search +
+      window.location.hash;
     const moveBanner = document.getElementById('domain-move-banner');
     const canonicalTag = document.querySelector('link[rel="canonical"]');
     if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
     if (moveBanner) moveBanner.hidden = false;
-    window.setTimeout(() => {
+    window.setTimeout(function() {
       window.location.replace(nextUrl);
-    }, 2200);
+    }, 1500);
   }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
