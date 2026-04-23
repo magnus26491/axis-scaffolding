@@ -1,16 +1,23 @@
 :root {
-  --bg-base:       #000000;
-  --bg-depth:      #0a0a0a;
-  --glass-bg:      rgba(255, 255, 255, 0.05);
-  --glass-border:  rgba(255, 255, 255, 0.12);
-  --accent:        #f97316;
-  --accent-hover:  #ea6a0a;
-  --accent-glow:   rgba(249, 115, 22, 0.20);
-  --text-primary:  #ffffff;
-  --text-body:     #e5e7eb;
-  --text-muted:    #9ca3af;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glass:  rgba(255, 255, 255, 0.14);
+  --bg-base:          #000000;
+  --bg-depth:         #0a0a0a;
+  --glass-bg:         rgba(255, 255, 255, 0.05);
+  --glass-border:     rgba(255, 255, 255, 0.12);
+  --accent:           #c8cdd4;
+  --accent-light:     #e8eaed;
+  --accent-dark:      #8e949c;
+  --accent-hover:     #b0b7bf;
+  --accent-glow:      rgba(200, 205, 212, 0.12);
+  --accent-gradient:  linear-gradient(135deg,
+                        #e8eaed 0%,
+                        #9ba3ab 40%,
+                        #c8cdd4 60%,
+                        #e2e5e8 100%);
+  --text-primary:     #ffffff;
+  --text-body:        #e5e7eb;
+  --text-muted:       #9ca3af;
+  --border-subtle:    rgba(255, 255, 255, 0.08);
+  --border-glass:     rgba(255, 255, 255, 0.14);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -496,7 +503,7 @@ textarea:focus-visible {
 .faq-item.open {
   background:rgba(255,255,255,0.07) !important;
   border-color:rgba(255,255,255,0.28) !important;
-  border-left:3px solid #f97316 !important;
+  border-left:3px solid #c8cdd4 !important;
 }
 .faq-question {
   width:100%; text-align:left;
@@ -578,8 +585,8 @@ textarea:focus-visible {
 }
 .social-card:hover {
   transform:translateY(-6px);
-  border-color:rgba(249,115,22,0.45);
-  box-shadow:0 8px 32px rgba(249,115,22,0.12);
+  border-color:rgba(200,205,212,0.45);
+  box-shadow:0 8px 32px rgba(200,205,212,0.12);
 }
 .social-card svg {
   width: 36px; height: 36px;
@@ -618,7 +625,7 @@ textarea:focus-visible {
   transition:background 0.2s, border-color 0.2s;
 }
 .footer-social-link:hover {
-  background:rgba(249,115,22,0.15);
+  background:rgba(200,205,212,0.15);
   border-color:rgba(255,255,255,0.28);
 }
 .footer-social-link svg {
@@ -709,4 +716,91 @@ textarea:focus-visible {
 @media (max-width:320px) { .hero h1 { font-size:2rem; } }
 @media (min-width:1440px) {
   .container { width:min(1280px,calc(100% - 3rem)); }
+}
+
+
+.btn-primary {
+  background: linear-gradient(135deg,
+    #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    0 4px 15px rgba(200,205,212,0.15) !important;
+  transition: all 0.25s ease !important;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg,
+    #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    0 6px 20px rgba(200,205,212,0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.cta-pill {
+  background: linear-gradient(135deg,
+    #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.cta-banner {
+  background: linear-gradient(135deg,
+    #111314 0%, #1e2124 50%, #111314 100%) !important;
+  border-top: 1px solid rgba(200,205,212,0.2) !important;
+  border-bottom: 1px solid rgba(200,205,212,0.2) !important;
+}
+.cta-banner h2, .cta-banner p  { color: #ffffff !important; }
+.cta-banner .btn-primary {
+  background: linear-gradient(135deg,
+    #e8eaed 0%, #9ba3ab 40%, #c8cdd4 100%) !important;
+  color: #000000 !important;
+}
+
+.cta-link {
+  background: linear-gradient(90deg, #e8eaed, #9ba3ab, #c8cdd4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+@supports not (-webkit-background-clip: text) {
+  .cta-link { color: #c8cdd4 !important;
+              -webkit-text-fill-color: unset !important; }
+}
+
+.usp-list li::before {
+  background: linear-gradient(135deg, #e8eaed, #9ba3ab);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+@supports not (-webkit-background-clip: text) {
+  .usp-list li::before { color: #c8cdd4 !important; }
+}
+
+.faq-item.open {
+  border-left: 3px solid #c8cdd4 !important;
+  background: rgba(200,205,212,0.04) !important;
+}
+.area-pills a:hover {
+  background: linear-gradient(135deg, #e8eaed, #c8cdd4) !important;
+  color: #000000 !important;
+  border-color: transparent !important;
+}
+.area-pills a { border-color: #c8cdd4 !important; color: #c8cdd4 !important; }
+
+.parallax-banner-tag {
+  background: linear-gradient(90deg, #e8eaed, #9ba3ab, #c8cdd4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.service-icon {
+  background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
 }
