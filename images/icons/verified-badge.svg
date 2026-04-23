@@ -1,0 +1,7 @@
+<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="verifiedBadgeTitle verifiedBadgeDesc">
+  <title id="verifiedBadgeTitle">Verified review badge</title>
+  <desc id="verifiedBadgeDesc">Verified review source icon</desc>
+  <circle cx="12" cy="12" r="11" fill="#0f172a"/>
+  <path d="M12 4.5l2.35 1.29 2.67-.18 1.07 2.45 2.12 1.64-.83 2.53.83 2.53-2.12 1.64-1.07 2.45-2.67-.18L12 19.5l-2.35 1.29-2.67.18-1.07-2.45L3.79 17l.83-2.53-.83-2.53 2.12-1.64 1.07-2.45 2.67.18L12 4.5Z" fill="#f59e0b"/>
+  <path d="M9.95 14.7l-2.1-2.1 1.14-1.14 1.01 1.02 3.05-3.05 1.14 1.14-4.24 4.13Z" fill="#ffffff"/>
+</svg>

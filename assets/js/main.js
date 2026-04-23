@@ -7,6 +7,17 @@
     if (!header) return;
     header.classList.toggle('scrolled', window.scrollY > 12);
   };
+  const currentHost = window.location.hostname.toLowerCase();
+  if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
+    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const moveBanner = document.getElementById('domain-move-banner');
+    const canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
+    if (moveBanner) moveBanner.hidden = false;
+    window.setTimeout(() => {
+      window.location.replace(nextUrl);
+    }, 2200);
+  }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
   if (menuToggle && siteMenu) {

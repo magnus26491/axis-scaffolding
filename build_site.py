@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path("/workspace")
 SITE = "https://axisscaffoldingessex.co.uk"
+OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
@@ -382,6 +383,15 @@ def cookie_ui() -> str:
 """
 
 
+def moved_site_banner() -> str:
+    return """
+<div id="domain-move-banner" class="domain-move-banner" hidden>
+  We've moved! Visit us at
+  <a href="https://axisscaffoldingessex.co.uk" rel="canonical">axisscaffoldingessex.co.uk</a>
+</div>
+"""
+
+
 def faq_accordion() -> str:
     parts = []
     for idx, (q, a) in enumerate(FAQS):
@@ -444,6 +454,7 @@ def render_page(
   <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
   {nav()}
+  {moved_site_banner()}
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
@@ -805,6 +816,11 @@ textarea:focus-visible {
   margin-bottom: 0.75rem;
   display: block;
 }
+.review-stars span {
+  color: #f5c518 !important;
+  display: inline-block;
+  line-height: 1;
+}
 .review-text {
   color: #d1d5db;
   font-size: 0.95rem;
@@ -848,7 +864,10 @@ textarea:focus-visible {
   flex-wrap: wrap;
   gap: 0.6rem;
 }
-.area-pills a {
+.area-pills li {
+  display: inline-flex;
+}
+.area-pill-link {
   display: inline-block;
   padding: 0.45rem 0.9rem;
   border: 1px solid var(--accent);
@@ -857,7 +876,7 @@ textarea:focus-visible {
   color: var(--text-dark);
   font-weight: 500;
 }
-.area-pills a:hover { background: var(--accent); color: #fff; }
+.area-pill-link:hover { background: var(--accent); color: #fff; }
 
 .faq-wrap { max-width: 900px; }
 .faq-item { border-bottom: 1px solid var(--border); }
@@ -1048,6 +1067,18 @@ textarea:focus-visible {
   cursor: pointer;
   font: inherit;
 }
+.domain-move-banner {
+  background: #fff7ed;
+  border-bottom: 1px solid rgba(249, 115, 22, 0.35);
+  color: #7c2d12;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+.domain-move-banner a {
+  color: #c2410c;
+  text-decoration: underline;
+}
 
 .not-found-wrap {
   min-height: 100vh;
@@ -1107,6 +1138,17 @@ def generate_js() -> None:
     if (!header) return;
     header.classList.toggle('scrolled', window.scrollY > 12);
   };
+  const currentHost = window.location.hostname.toLowerCase();
+  if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
+    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const moveBanner = document.getElementById('domain-move-banner');
+    const canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
+    if (moveBanner) moveBanner.hidden = false;
+    window.setTimeout(() => {
+      window.location.replace(nextUrl);
+    }, 2200);
+  }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
   if (menuToggle && siteMenu) {
@@ -1343,28 +1385,35 @@ def service_list_cards() -> str:
 
 
 def area_pills() -> str:
-    return "".join(f'<li><a href="/contact">{area}</a></li>' for area in AREAS)
+    return "".join(f'<li><a class="area-pill-link" href="/contact">{area}</a></li>' for area in AREAS)
 
 
 def testimonials() -> str:
     entries = [
         (
             "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
-            "Sally T.",
+            "Sally M.",
             "/images/icons/google-badge.svg",
             "Google review",
             "Google Review",
         ),
         (
             "Ashley and his team were professional throughout: on time, polite and great value for our project.",
-            "Hannah B.",
-            "/images/icons/facebook-badge.svg",
-            "Facebook review",
-            "Facebook Review",
+            "Hannah M.",
+            "/images/icons/verified-badge.svg",
+            "Verified review",
+            "Verified Review",
         ),
         (
             "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
             "Jason R.",
+            "/images/icons/bark-badge.svg",
+            "Bark.com review",
+            "Bark.com Review",
+        ),
+        (
+            "Very professional setup, clear communication and tidy dismantling at the end of works.",
+            "Verified Customer",
             "/images/icons/bark-badge.svg",
             "Bark.com review",
             "Bark.com Review",
@@ -1739,6 +1788,7 @@ def generate_pages() -> None:
   <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
   """ + nav() + """
+  """ + moved_site_banner() + """
   <main id="main-content">""" + thank_you_body + """</main>
   """ + footer() + """
   """ + cookie_ui() + """
@@ -1762,6 +1812,7 @@ def generate_pages() -> None:
 <body>
   <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
+  """ + moved_site_banner() + """
   <main id="main-content" class="not-found-wrap">
     <h1>Page Not Found</h1>
     <p>Sorry, we couldn't find that page. Let us help you find what you need.</p>
@@ -1818,6 +1869,8 @@ def generate_redirects() -> None:
         "_redirects",
         "\n".join(
             [
+                f"{OLD_SITE}/* {SITE}/:splat 301!",
+                f"https://www.axisscaffolding.co.uk/* {SITE}/:splat 301!",
                 "/about.html /about 301",
                 "/gallery.html /gallery 301",
                 "/contact.html /contact 301",
