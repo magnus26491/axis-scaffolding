@@ -1,4 +1,60 @@
 (() => {
+  const hexCanvas = document.getElementById('hexBg');
+  if (hexCanvas) {
+    const ctx = hexCanvas.getContext('2d');
+    let fadeTick = 0;
+    const HEX_MIN_OPACITY = 0.08;
+    const HEX_MAX_OPACITY = 0.15;
+
+    const resizeHexCanvas = () => {
+      hexCanvas.width = window.innerWidth;
+      hexCanvas.height = window.innerHeight;
+      drawHexGrid();
+    };
+
+    const drawHexGrid = () => {
+      if (!ctx) return;
+      const w = hexCanvas.width;
+      const h = hexCanvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const size = 36;
+      const hexW = size * 2;
+      const hexH = Math.sqrt(3) * size;
+      const cols = Math.ceil(w / (hexW * 0.75)) + 2;
+      const rows = Math.ceil(h / hexH) + 2;
+      const opacity = HEX_MIN_OPACITY +
+        (HEX_MAX_OPACITY - HEX_MIN_OPACITY) * ((Math.sin(fadeTick) + 1) / 2);
+      ctx.strokeStyle = `rgba(232,234,237,${opacity.toFixed(3)})`;
+      ctx.lineWidth = 0.8;
+      for (let row = -1; row < rows; row += 1) {
+        for (let col = -1; col < cols; col += 1) {
+          const x = col * hexW * 0.75;
+          const y = row * hexH + (col % 2 === 0 ? 0 : hexH / 2);
+          ctx.beginPath();
+          for (let i = 0; i < 6; i += 1) {
+            const angle = (Math.PI / 180) * (60 * i - 30);
+            const px = x + size * Math.cos(angle);
+            const py = y + size * Math.sin(angle);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+    };
+
+    const animateHexGrid = () => {
+      fadeTick += 0.012;
+      drawHexGrid();
+      window.requestAnimationFrame(animateHexGrid);
+    };
+
+    window.addEventListener('resize', resizeHexCanvas);
+    resizeHexCanvas();
+    animateHexGrid();
+  }
+
   const CONTACT_EMAIL = 'axis-scaffolding@outlook.com';
   const header = document.getElementById('site-header');
   const menuToggle = document.getElementById('menu-toggle');
