@@ -39,6 +39,8 @@ html, body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
+  opacity: 0.12;
+  will-change: opacity, transform;
 }
 
 body > *:not(#hexBg) {
@@ -110,6 +112,14 @@ textarea:focus-visible {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(255,255,255,0.07);
   transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  pointer-events: none;
+  z-index: -1;
 }
 .site-header.scrolled {
   background: rgba(0,0,0,0.92) !important;
@@ -231,6 +241,10 @@ textarea:focus-visible {
 .section-light { background:#0a0a0a !important; }
 .section-dark  { background:#000000 !important; }
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
+
+/* Keep dark sections slightly translucent so hex canvas remains visible */
+.section-light { background: rgba(10, 10, 10, 0.92) !important; }
+.section-dark  { background: rgba(0, 0, 0, 0.90) !important; }
 
 /* ── GLASS CARDS ── */
 .glass-card,
@@ -536,7 +550,7 @@ textarea:focus-visible {
 
 /* ── CONNECT SECTION ── */
 .connect-section {
-  background:#000000;
+  background: rgba(0, 0, 0, 0.90);
   padding:5rem 2rem; text-align:center;
   border-top:1px solid rgba(255,255,255,0.07);
 }
@@ -581,7 +595,7 @@ textarea:focus-visible {
 
 /* ── FOOTER ── */
 .site-footer {
-  background:rgba(255,255,255,0.03) !important;
+  background: rgba(0, 0, 0, 0.88) !important;
   border-top:1px solid rgba(255,255,255,0.08) !important;
   color:#9ca3af; padding-top:3rem;
 }
@@ -626,7 +640,7 @@ textarea:focus-visible {
 
 /* ── INNER PAGES ── */
 .inner-hero {
-  background:#0a0a0a !important;
+  background: rgba(10, 10, 10, 0.92) !important;
   padding:8rem 0 3rem;
 }
 .inner-hero h1 { margin-bottom:0.6rem; color:#ffffff; }
@@ -640,7 +654,7 @@ textarea:focus-visible {
   min-height:100vh; display:grid;
   place-content:center; gap:0.8rem;
   text-align:center; padding:2rem;
-  background:#000000;
+  background: rgba(0, 0, 0, 0.92);
 }
 
 /* ── SCROLL REVEAL ── */
@@ -685,6 +699,28 @@ textarea:focus-visible {
   .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
+
+  /* Boost mobile visibility while preserving readability */
+  .section-dark,
+  .section-light,
+  .inner-hero,
+  .connect-section,
+  .not-found-wrap {
+    background: rgba(0, 0, 0, 0.84) !important;
+  }
+
+  #hexBg {
+    opacity: 0.15;
+  }
+}
+@media (max-width:640px) {
+  .services-grid,.service-listing,.projects-grid { grid-template-columns:1fr; }
+  .split-grid { grid-template-columns:1fr; }
+  .inner-hero { padding: 6.5rem 0 2.5rem; }
+  .hero-cta-row,
+  .cta-banner-inner .hero-cta-row { width: 100%; }
+  .hero-cta-row .btn,
+  .cta-banner-inner .hero-cta-row .btn { width: 100%; }
 }
 @media (max-width:480px) {
   .social-card { width:100%; min-width:unset; }

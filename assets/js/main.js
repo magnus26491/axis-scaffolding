@@ -3,29 +3,57 @@
   if (hexCanvas) {
     const ctx = hexCanvas.getContext('2d');
     let fadeTick = 0;
+    const MOBILE_BREAKPOINT = 768;
+    const MOBILE_HEX_SIZE = 34;
+    const DESKTOP_HEX_SIZE = 36;
+    const MOBILE_LINE_WIDTH = 1.0;
+    const DESKTOP_LINE_WIDTH = 0.8;
+    const isMobileViewport = () => window.innerWidth <= MOBILE_BREAKPOINT;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const HEX_MIN_OPACITY = 0.08;
     const HEX_MAX_OPACITY = 0.15;
+    const HEX_MIN_OPACITY_MOBILE = 0.10;
+    const HEX_MAX_OPACITY_MOBILE = 0.15;
+    let rafId = null;
+    let currentDpr = 1;
+    let hexSize = isMobileViewport() ? MOBILE_HEX_SIZE : DESKTOP_HEX_SIZE;
+    let lineWidth = isMobileViewport() ? MOBILE_LINE_WIDTH : DESKTOP_LINE_WIDTH;
+    let lastFrameTs = 0;
+    let frameInterval = isMobileViewport() ? 1000 / 18 : 1000 / 30;
 
     const resizeHexCanvas = () => {
-      hexCanvas.width = window.innerWidth;
-      hexCanvas.height = window.innerHeight;
+      const mobile = isMobileViewport();
+      currentDpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+      hexSize = mobile ? MOBILE_HEX_SIZE : DESKTOP_HEX_SIZE;
+      lineWidth = mobile ? MOBILE_LINE_WIDTH : DESKTOP_LINE_WIDTH;
+      frameInterval = mobile ? 1000 / 18 : 1000 / 30;
+      hexCanvas.dataset.mobileVisible = mobile ? '1' : '0';
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      hexCanvas.width = Math.floor(vw * currentDpr);
+      hexCanvas.height = Math.floor(vh * currentDpr);
+      hexCanvas.style.width = `${vw}px`;
+      hexCanvas.style.height = `${vh}px`;
+      if (ctx) ctx.setTransform(currentDpr, 0, 0, currentDpr, 0, 0);
       drawHexGrid();
     };
 
     const drawHexGrid = () => {
       if (!ctx) return;
-      const w = hexCanvas.width;
-      const h = hexCanvas.height;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
       ctx.clearRect(0, 0, w, h);
-      const size = 36;
+      const size = hexSize;
       const hexW = size * 2;
       const hexH = Math.sqrt(3) * size;
       const cols = Math.ceil(w / (hexW * 0.75)) + 2;
       const rows = Math.ceil(h / hexH) + 2;
-      const opacity = HEX_MIN_OPACITY +
-        (HEX_MAX_OPACITY - HEX_MIN_OPACITY) * ((Math.sin(fadeTick) + 1) / 2);
+      const minOpacity = isMobileViewport() ? HEX_MIN_OPACITY_MOBILE : HEX_MIN_OPACITY;
+      const maxOpacity = isMobileViewport() ? HEX_MAX_OPACITY_MOBILE : HEX_MAX_OPACITY;
+      const opacity = minOpacity +
+        (maxOpacity - minOpacity) * ((Math.sin(fadeTick) + 1) / 2);
       ctx.strokeStyle = `rgba(232,234,237,${opacity.toFixed(3)})`;
-      ctx.lineWidth = 0.8;
+      ctx.lineWidth = lineWidth;
       for (let row = -1; row < rows; row += 1) {
         for (let col = -1; col < cols; col += 1) {
           const x = col * hexW * 0.75;
@@ -44,15 +72,31 @@
       }
     };
 
-    const animateHexGrid = () => {
-      fadeTick += 0.012;
-      drawHexGrid();
-      window.requestAnimationFrame(animateHexGrid);
+    const animateHexGrid = (timestamp = 0) => {
+      const mobile = isMobileViewport();
+      if (timestamp - lastFrameTs >= frameInterval) {
+        fadeTick += mobile ? 0.009 : 0.012;
+        drawHexGrid();
+        lastFrameTs = timestamp;
+      }
+      rafId = window.requestAnimationFrame(animateHexGrid);
     };
 
-    window.addEventListener('resize', resizeHexCanvas);
+    window.addEventListener('resize', resizeHexCanvas, { passive: true });
     resizeHexCanvas();
-    animateHexGrid();
+    if (prefersReducedMotion) {
+      drawHexGrid();
+    } else {
+      animateHexGrid();
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!document.hidden && !prefersReducedMotion && !rafId) {
+        animateHexGrid();
+      }
+    });
   }
 
   const CONTACT_EMAIL = 'axis-scaffolding@outlook.com';
