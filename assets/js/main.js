@@ -14,6 +14,10 @@
     const HEX_MAX_OPACITY = 0.15;
     const HEX_MIN_OPACITY_MOBILE = 0.10;
     const HEX_MAX_OPACITY_MOBILE = 0.15;
+    const STATIC_HEX_CPU_CORES_THRESHOLD = 4;
+    const STATIC_HEX_MOBILE_WIDTH = 480;
+    const staticHexMode = prefersReducedMotion ||
+      ((navigator.hardwareConcurrency || 8) <= STATIC_HEX_CPU_CORES_THRESHOLD && window.innerWidth <= STATIC_HEX_MOBILE_WIDTH);
     let rafId = null;
     let currentDpr = 1;
     let hexSize = isMobileViewport() ? MOBILE_HEX_SIZE : DESKTOP_HEX_SIZE;
@@ -50,8 +54,9 @@
       const rows = Math.ceil(h / hexH) + 2;
       const minOpacity = isMobileViewport() ? HEX_MIN_OPACITY_MOBILE : HEX_MIN_OPACITY;
       const maxOpacity = isMobileViewport() ? HEX_MAX_OPACITY_MOBILE : HEX_MAX_OPACITY;
-      const opacity = minOpacity +
-        (maxOpacity - minOpacity) * ((Math.sin(fadeTick) + 1) / 2);
+      const opacity = staticHexMode
+        ? minOpacity
+        : minOpacity + (maxOpacity - minOpacity) * ((Math.sin(fadeTick) + 1) / 2);
       ctx.strokeStyle = `rgba(232,234,237,${opacity.toFixed(3)})`;
       ctx.lineWidth = lineWidth;
       for (let row = -1; row < rows; row += 1) {
@@ -84,16 +89,20 @@
 
     window.addEventListener('resize', resizeHexCanvas, { passive: true });
     resizeHexCanvas();
-    if (prefersReducedMotion) {
+    if (staticHexMode) {
+      hexCanvas.classList.add('is-static');
+      hexCanvas.dataset.hexMode = 'static';
       drawHexGrid();
     } else {
+      hexCanvas.classList.remove('is-static');
+      hexCanvas.dataset.hexMode = 'animated';
       animateHexGrid();
     }
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && rafId) {
         window.cancelAnimationFrame(rafId);
         rafId = null;
-      } else if (!document.hidden && !prefersReducedMotion && !rafId) {
+      } else if (!document.hidden && !staticHexMode && !rafId) {
         animateHexGrid();
       }
     });
