@@ -231,23 +231,22 @@
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
+      const webhook = window.AXIS_QUOTE_WEBHOOK;
+      if (!webhook) return;
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
       const payload = { ...data, notification_email: CONTACT_EMAIL };
       let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        ok = res.ok;
+      } catch (_err) {
+        ok = false;
       }
       if (message) {
         message.textContent = ok

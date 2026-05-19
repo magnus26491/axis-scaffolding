@@ -106,17 +106,18 @@
             </a>
           </div>
 
-          <div class="glass-card" style="padding:2rem;">
+          <div class="quote-form-card glass-card" style="padding:2rem;">
             <h2 style="font-size:1.2rem; margin-bottom:1.5rem;">
               Quick Enquiry — London
             </h2>
-            <form action="https://formsubmit.co/axis-scaffolding@outlook.com"
+            <form class="axis-quote-form" data-form-name="london" action="https://formsubmit.co/axis-scaffolding@outlook.com"
                   method="POST">
               <input type="hidden" name="_subject"
                      value="London Scaffolding Enquiry — Axis Scaffolding">
               <input type="hidden" name="_next"
                      value="https://axisscaffoldingessex.co.uk/thank-you">
               <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
               <input type="hidden" name="area" value="London">
               <p>
                 <label for="lon-name">Name *</label>
@@ -141,6 +142,7 @@
               <button type="submit" class="btn btn-primary btn-full">
                 Request London Quote
               </button>
+              <p class="form-message" aria-live="polite"></p>
             </form>
           </div>
         </div>
