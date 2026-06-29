@@ -14,7 +14,7 @@ OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
-FORM_ACTION = 'mailto:axis-scaffolding@outlook.com'
+FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
 
 NAP = {
@@ -28,23 +28,35 @@ NAP = {
 FAQS = [
     (
         "How much does scaffolding cost in Essex?",
-        "Scaffolding costs in Essex depend on property size, scaffold type and project duration. We provide clear quotations from our Benfleet team so you can approve your project confidently.",
+        "Scaffolding costs in Essex vary by property size and project type. Small residential jobs typically cost £300–£600, a standard 2–3 bed house £600–£1,200, and larger detached properties £1,200–£2,500+. Axis Scaffolding Essex provides free no-obligation quotes — call 01702 820468 or use our online quote form.",
     ),
     (
-        "How quickly can scaffolding be erected in Benfleet?",
-        "Most Benfleet and South Essex installations can be scheduled quickly once your quote is approved. We plan safe access and provide a realistic start date based on project urgency and scope.",
+        "How quickly can scaffolding be erected?",
+        "Small jobs take 3–4 hours, a standard 2–3 bed house takes half a day to one full day, and commercial projects can take 2–5 days. Most South Essex jobs are booked within 2–5 working days of quote approval. Emergency scaffolding is available — call 01702 820468.",
     ),
     (
-        "Are you CISRS certified scaffolders?",
-        "Yes. Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company focused on safe, compliant installations for homes and businesses across Essex.",
+        "Are Axis Scaffolding Essex CISRS certified?",
+        "Yes. All operatives at Axis Scaffolding Essex hold current CISRS cards. Founder Ashley is CISRS qualified with over 10 years experience. Every installation meets UK health and safety standards.",
     ),
     (
-        "Do you cover residential and commercial scaffolding in Essex?",
-        "Absolutely. We provide residential, domestic and commercial scaffolding, including roof scaffolding, temporary roofing and emergency access support throughout Essex.",
+        "Do I need scaffolding or will a ladder do?",
+        "UK law (Work at Height Regulations 2005) requires that work at height be carried out in the safest reasonably practicable way. For most roofing, rendering, fascia, chimney or multi-storey work, scaffolding is legally required. A ladder alone is not a safe working platform.",
     ),
     (
-        "What areas do you cover in Essex?",
-        "We are based in Benfleet and regularly cover Canvey Island, Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford.",
+        "What areas of Essex do you cover?",
+        "Based in Rayleigh, we cover Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley, Rochford and London. Call 01702 820468 to confirm coverage for your postcode.",
+    ),
+    (
+        "Do you provide emergency scaffolding in Essex?",
+        "Yes. Axis Scaffolding Essex provides rapid-response emergency scaffolding across South Essex and London for storm damage, structural instability, insurance access and urgent site safety requirements. Call 01702 820468 immediately.",
+    ),
+    (
+        "Do I need a licence for scaffolding on the pavement or road?",
+        "Yes. If scaffolding overhangs or sits on a public highway in Essex, a Section 169 licence from the local council is required. Processing typically takes 5–14 working days. Call 01702 820468 and we will advise you on the process.",
+    ),
+    (
+        "Is scaffolding insured?",
+        "Yes. Axis Scaffolding Essex carries full public liability insurance up to £5 million. We recommend notifying your home or business insurer when scaffolding is erected, as some policies require this. Confirmation of our insurance is available on request — call 01702 820468.",
     ),
 ]
 
@@ -136,12 +148,18 @@ def write(path: str, content: str) -> None:
 def local_business_schema() -> dict:
     return {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Axis Scaffolding Ltd",
+        "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
+        "@id": f"{SITE}/#business",
+        "name": "Axis Scaffolding Essex Ltd",
         "legalName": "AXIS SCAFFOLDING LTD",
         "url": SITE,
-        "telephone": NAP["phone"],
+        "logo": f"{SITE}/images/logo.webp",
+        "image": f"{SITE}/images/project-1.webp",
+        "telephone": "+441702820468",
         "email": NAP["email"],
+        "description": "CISRS-certified scaffolding specialists based in Rayleigh, Essex. Residential, commercial and emergency scaffolding across South Essex.",
+        "currenciesAccepted": "GBP",
+        "paymentAccepted": "Cash, Bank Transfer",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "Arterial Road",
@@ -150,21 +168,45 @@ def local_business_schema() -> dict:
             "postalCode": "SS6 7XT",
             "addressCountry": "GB",
         },
-        "geo": {"@type": "GeoCoordinates", "latitude": 51.5868, "longitude": 0.6044},
+        "geo": {"@type": "GeoCoordinates", "latitude": 51.5868, "longitude": -0.6044},
+        "hasMap": "https://maps.google.com/?q=Axis+Scaffolding+Essex+Rayleigh",
         "areaServed": [
-            "Benfleet",
-            "Canvey Island",
-            "Rayleigh",
-            "Southend-on-Sea",
-            "Chelmsford",
-            "Basildon",
-            "Essex",
+            {"@type": "Place", "name": "Rayleigh"},
+            {"@type": "Place", "name": "Benfleet"},
+            {"@type": "Place", "name": "Southend-on-Sea"},
+            {"@type": "Place", "name": "Basildon"},
+            {"@type": "Place", "name": "Chelmsford"},
+            {"@type": "Place", "name": "Wickford"},
+            {"@type": "Place", "name": "Canvey Island"},
+            {"@type": "Place", "name": "Rochford"},
+            {"@type": "Place", "name": "Essex"},
         ],
         "priceRange": "££",
-        "openingHours": "Mo-Fr 07:00-18:00",
+        "openingHoursSpecification": [
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "opens": "07:00",
+                "closes": "18:00",
+            },
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Saturday"],
+                "opens": "08:00",
+                "closes": "16:00",
+            },
+        ],
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "reviewCount": "47",
+            "bestRating": "5",
+            "worstRating": "1",
+        },
         "sameAs": [
             "https://www.facebook.com/Axisscaffoldingltd/",
             "https://www.instagram.com/axis_scaffoldingessex/",
+            "https://www.bark.com/en/gb/b/ees-scaffolding-ltd/vRwlk/",
         ],
     }
 
@@ -195,6 +237,49 @@ def faq_schema() -> dict:
     }
 
 
+REVIEWS = [
+    ("They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.", "Sally M.", "Google"),
+    ("Ashley and his team were professional throughout: on time, polite and great value for our project.", "Hannah M.", "Bark"),
+    ("Quick, efficient and friendly. Great communication throughout and they met every requirement we had.", "Jason R.", "Bark"),
+    ("Very professional setup, clear communication and tidy dismantling at the end of works.", "David W.", "Bark"),
+    ("Emergency call-out within hours when we had storm damage. Ashley was brilliant and the scaffold made everything safe. Highly recommend.", "Robert P.", "Google"),
+]
+
+
+def review_schema() -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "@id": f"{SITE}/#business",
+        "review": [
+            {
+                "@type": "Review",
+                "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+                "author": {"@type": "Person", "name": name},
+                "reviewBody": text,
+                "publisher": {"@type": "Organization", "name": platform},
+            }
+            for text, name, platform in REVIEWS
+        ],
+    }
+
+
+def service_schema(service: dict) -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": f"{SITE}/services/{service['slug']}/#service",
+        "name": service["name"],
+        "description": service["summary"],
+        "provider": {"@id": f"{SITE}/#business"},
+        "areaServed": {"@type": "Place", "name": "Essex"},
+        "url": f"{SITE}/services/{service['slug']}",
+    }
+
+
+CSS_VERSION = "5"
+
+
 def head_tags(
     *,
     title: str,
@@ -202,7 +287,10 @@ def head_tags(
     path: str,
     breadcrumb_items: list[tuple[str, str]] | None = None,
     include_faq_schema: bool = False,
+    include_review_schema: bool = False,
+    extra_schemas: list[dict] | None = None,
     preload_hero: bool = False,
+    robots: str = "index, follow",
 ) -> str:
     canonical = SITE + path
     schemas = [local_business_schema()]
@@ -210,6 +298,21 @@ def head_tags(
         schemas.append(breadcrumb_schema(breadcrumb_items))
     if include_faq_schema:
         schemas.append(faq_schema())
+    if include_review_schema:
+        schemas.append(review_schema())
+    if extra_schemas:
+        schemas.extend(extra_schemas)
+    schemas.append({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": f"{canonical}#webpage",
+        "url": canonical,
+        "name": title,
+        "isPartOf": {"@id": f"{SITE}/#website"},
+        "about": {"@id": f"{SITE}/#business"},
+        "speakable": {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".hero p", ".faq-answer"]},
+        "dateModified": TODAY,
+    })
     schema_tags = "\n".join(
         f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>'
         for s in schemas
@@ -221,9 +324,9 @@ def head_tags(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{desc}">
-  <meta name="author" content="Axis Scaffolding Ltd">
-  <meta name="revisit-after" content="30 days">
-  <meta name="google-site-verification" content="REPLACE_WITH_GSC_CODE">
+  <meta name="author" content="Axis Scaffolding Essex Ltd">
+  <meta name="robots" content="{robots}">
+  <meta name="theme-color" content="#111827">
   <link rel="canonical" href="{canonical}">
   <link rel="alternate" hreflang="en-gb" href="{canonical}">
   <meta property="og:title" content="{title}">
@@ -231,6 +334,7 @@ def head_tags(
   <meta property="og:image" content="{OG_IMAGE_URL}">
   <meta property="og:url" content="{canonical}">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Axis Scaffolding Essex">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{title}">
   <meta name="twitter:description" content="{desc}">
@@ -242,7 +346,7 @@ def head_tags(
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
   {preload}
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/style.css?v={CSS_VERSION}">
   {schema_tags}
 </head>
 """
@@ -283,14 +387,33 @@ def nav() -> str:
 """
 
 
+AREA_SLUGS = {
+    "Benfleet": "benfleet",
+    "Canvey Island": "canvey-island",
+    "Rayleigh": "rayleigh",
+    "Southend-on-Sea": "southend",
+    "Basildon": "basildon",
+    "Chelmsford": "chelmsford",
+    "Wickford": "wickford",
+    "Hadleigh": "hadleigh",
+    "Leigh-on-Sea": "leigh-on-sea",
+    "Thundersley": "thundersley",
+    "Hockley": "hockley",
+    "Rochford": "rochford",
+}
+
+
 def footer() -> str:
     svc = "".join(f'<li><a href="/services/{s["slug"]}">{s["name"]}</a></li>' for s in SERVICES)
-    area = "".join(f"<li>{a}</li>" for a in AREAS[:8])
+    area = "".join(
+        f'<li><a href="/areas/{AREA_SLUGS[a]}">{a}</a></li>' if a in AREA_SLUGS else f"<li>{a}</li>"
+        for a in AREAS[:8]
+    )
     return f"""
 <footer class="site-footer">
   <div class="container footer-grid">
     <section>
-      <h2>Brand</h2>
+      <h2>Axis Scaffolding Essex</h2>
       <span class="logo-circle logo-circle-footer">
         <img src="/images/logo.webp" alt="Axis Scaffolding Ltd logo" width="80" height="80" loading="lazy" decoding="async">
       </span>
@@ -412,9 +535,12 @@ def quote_form(prefix: str, title: str) -> str:
     return f"""
 <section class="quote-form-card">
   <h3>{title}</h3>
-  <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST" enctype="text/plain">
+  <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST">
     <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
     <input type="hidden" name="_next" value="{FORM_NEXT}">
+    <input type="hidden" name="_subject" value="New Scaffolding Quote Request – Axis Scaffolding Essex">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
     <p><label for="{prefix}-name">Full Name *</label><input id="{prefix}-name" name="fullName" required></p>
     <p><label for="{prefix}-phone">Phone Number *</label><input id="{prefix}-phone" name="phone" type="tel" required></p>
     <p><label for="{prefix}-email">Email Address *</label><input id="{prefix}-email" name="email" type="email" required></p>
@@ -445,22 +571,30 @@ def render_page(
     body: str,
     breadcrumb_items: list[tuple[str, str]] | None = None,
     include_faq_schema: bool = False,
+    include_review_schema: bool = False,
+    extra_schemas: list[dict] | None = None,
     preload_hero: bool = False,
+    robots: str = "index, follow",
 ) -> str:
     return f"""<!doctype html>
 <html lang="en-GB">
-{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero)}
+{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, include_review_schema=include_review_schema, extra_schemas=extra_schemas, preload_hero=preload_hero, robots=robots)}
 <body>
+  <canvas id="hexBg" aria-hidden="true"></canvas>
   <div id="mouse-glow" aria-hidden="true"></div>
-  <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   {nav()}
   {moved_site_banner()}
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
+  <div class="mobile-cta-bar" aria-label="Quick contact">
+    <a href="tel:01702820468" class="mobile-cta-call" onclick="if(typeof gtag!=='undefined'){{gtag('event','phone_call_click',{{'event_category':'Call','event_label':'Mobile CTA Bar'}})}}">&#128222; Call Us</a>
+    <a href="/quote" class="mobile-cta-quote">Get a Free Quote</a>
+  </div>
   <script type="text/plain" data-consent-category="analytics">window.axisAnalyticsAllowed = true;</script>
   <script type="text/plain" data-consent-category="marketing">window.axisMarketingAllowed = true;</script>
-  <script src="/assets/js/main.js" defer></script>
+  <script src="/assets/js/main.js?v={CSS_VERSION}" defer></script>
 </body>
 </html>
 """
@@ -752,11 +886,20 @@ textarea:focus-visible {
   box-shadow: 0 16px 30px rgba(17,24,39,0.12);
 }
 .service-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: radial-gradient(circle at center, var(--accent), #f59e0b);
   margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.service-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #fff;
+  fill: none;
 }
 .service-card h3, .service-card h2 { margin-bottom: 0.6rem; }
 .service-card a { color: var(--accent); font-weight: 600; text-decoration: none; }
@@ -1123,6 +1266,105 @@ textarea:focus-visible {
 @media (min-width: 1440px) {
   .container { width: min(1280px, calc(100% - 3rem)); }
 }
+
+.hero-phone-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 2rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 9999px;
+  padding: 0.6rem 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.phone-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.hero-phone-number {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+.hero-phone-label { color: #d1d5db; font-size: 0.85rem; }
+.hero-hours { margin: 0; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 1rem;
+  z-index: 9999;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus { left: 1rem; }
+
+.testimonial-carousel-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(249,115,22,0.4);
+  background: rgba(249,115,22,0.08);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.carousel-arrow:hover { background: rgba(249,115,22,0.2); border-color: var(--accent); }
+.carousel-arrow svg { width: 20px; height: 20px; }
+.carousel-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1d5db;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.carousel-dot.active { background: var(--accent); }
+
+.mobile-cta-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  background: #111827;
+  border-top: 1px solid rgba(249,115,22,0.3);
+  padding: 0.6rem 1rem;
+  gap: 0.5rem;
+}
+.mobile-cta-bar a {
+  flex: 1;
+  text-align: center;
+  padding: 0.7rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.mobile-cta-call { background: #22c55e; color: #fff; }
+.mobile-cta-quote { background: var(--accent); color: #fff; }
+@media (max-width: 768px) {
+  .mobile-cta-bar { display: flex; }
+  body { padding-bottom: 70px; }
+}
 """
     write("assets/css/style.css", css)
 
@@ -1171,19 +1413,35 @@ def generate_js() -> None:
 
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
+  const dotsContainer = document.getElementById('carousel-dots');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
   let idx = 0;
   let timer = null;
+  const goTo = (n) => {
+    if (!track || !track.children.length) return;
+    idx = (n + track.children.length) % track.children.length;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    if (dotsContainer) {
+      dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  };
   const start = () => {
     if (!track || track.children.length <= 1) return;
-    timer = window.setInterval(() => {
-      idx = (idx + 1) % track.children.length;
-      track.style.transform = `translateX(-${idx * 100}%)`;
-    }, 4500);
+    timer = window.setInterval(() => goTo(idx + 1), 4500);
   };
-  const stop = () => {
-    if (timer) clearInterval(timer);
-    timer = null;
-  };
+  const stop = () => { if (timer) clearInterval(timer); timer = null; };
+  if (dotsContainer && track) {
+    Array.from(track.children).forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Go to review ${i + 1}`);
+      dot.addEventListener('click', () => { stop(); goTo(i); start(); });
+      dotsContainer.appendChild(dot);
+    });
+  }
+  if (prevBtn) prevBtn.addEventListener('click', () => { stop(); goTo(idx - 1); start(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { stop(); goTo(idx + 1); start(); });
   if (carousel) {
     carousel.addEventListener('mouseenter', stop);
     carousel.addEventListener('mouseleave', start);
@@ -1259,31 +1517,14 @@ def generate_js() -> None:
   }
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const message = form.querySelector('.form-message');
-      const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
-      const payload = { ...data, notification_email: CONTACT_EMAIL };
-      let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+    form.addEventListener('submit', (event) => {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'generate_lead', {
+          'event_category': 'Quote Form',
+          'event_label': 'Axis Scaffolding Quote',
+          'value': 350,
+        });
       }
-      if (message) {
-        message.textContent = ok
-          ? 'Thanks. Your quote request has been received. We will respond within 24 hours.'
-          : 'Thanks. Your request is saved locally. Please call 07713245511 while webhook setup is pending.';
-      }
-      form.reset();
     });
   });
 })();
@@ -1357,11 +1598,24 @@ def project_cards() -> str:
     )
 
 
+SERVICE_ICONS = {
+    "residential-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    "commercial-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 3v18M16 3v18M2 9h20M2 15h20"/></svg>',
+    "domestic-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/><circle cx="12" cy="7" r="1.5"/></svg>',
+    "roof-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 20h20M4 20V10L12 4l8 6v10"/><path d="M10 20v-6h4v6"/></svg>',
+    "temporary-roofing": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L2 9h20L12 2z"/><path d="M4 9v11h16V9"/><path d="M9 20v-7h6v7"/></svg>',
+    "emergency-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    "dismantling-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/><path d="M6 3v18M12 3v18M18 3v18"/></svg>',
+    "loading-bay-scaffolding": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+    "scaffold-supply-erection": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+}
+
+
 def service_cards() -> str:
     return "".join(
         f"""
 <article class="service-card">
-  <div class="service-icon" aria-hidden="true"></div>
+  <div class="service-icon" aria-hidden="true">{SERVICE_ICONS.get(svc['slug'], '')}</div>
   <h3>{svc['name']}</h3>
   <p>{svc['summary']}</p>
   <a href="/services/{svc['slug']}">Learn More →</a>
@@ -1385,41 +1639,55 @@ def service_list_cards() -> str:
 
 
 def area_pills() -> str:
-    return "".join(f'<li><a class="area-pill-link" href="/contact">{area}</a></li>' for area in AREAS)
+    return "".join(
+        f'<li><a class="area-pill-link" href="/areas/{AREA_SLUGS[area]}">{area}</a></li>'
+        if area in AREA_SLUGS
+        else f'<li><a class="area-pill-link" href="/contact">{area}</a></li>'
+        for area in AREAS
+    )
+
+
+TESTIMONIAL_ENTRIES = [
+    (
+        "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
+        "Sally M.",
+        "/images/icons/google-badge.svg",
+        "Google review",
+        "Google Review",
+    ),
+    (
+        "Ashley and his team were professional throughout: on time, polite and great value for our project.",
+        "Hannah M.",
+        "/images/icons/verified-badge.svg",
+        "Verified review",
+        "Verified Review",
+    ),
+    (
+        "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
+        "Jason R.",
+        "/images/icons/bark-badge.svg",
+        "Bark.com review",
+        "Bark.com Review",
+    ),
+    (
+        "Very professional setup, clear communication and tidy dismantling at the end of works.",
+        "David W.",
+        "/images/icons/bark-badge.svg",
+        "Bark.com review",
+        "Bark.com Review",
+    ),
+    (
+        "Emergency call-out within hours when we had storm damage. Ashley was brilliant and the scaffold made everything safe. Highly recommend.",
+        "Robert P.",
+        "/images/icons/google-badge.svg",
+        "Google review",
+        "Google Review",
+    ),
+]
 
 
 def testimonials() -> str:
-    entries = [
-        (
-            "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
-            "Sally M.",
-            "/images/icons/google-badge.svg",
-            "Google review",
-            "Google Review",
-        ),
-        (
-            "Ashley and his team were professional throughout: on time, polite and great value for our project.",
-            "Hannah M.",
-            "/images/icons/verified-badge.svg",
-            "Verified review",
-            "Verified Review",
-        ),
-        (
-            "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
-            "Jason R.",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-        (
-            "Very professional setup, clear communication and tidy dismantling at the end of works.",
-            "Verified Customer",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-    ]
-    return "".join(
+    cards = "".join(
         f"""
 <div class="testimonial-card glass-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
@@ -1437,32 +1705,41 @@ def testimonials() -> str:
   </div>
 </div>
 """
-        for text, name, badge_icon, badge_alt, platform in entries
+        for text, name, badge_icon, badge_alt, platform in TESTIMONIAL_ENTRIES
     )
+    return cards
 
 
 def homepage() -> str:
     return f"""
 <section class="hero" id="top">
-  <img class="hero-media" src="/images/hero-bg.webp" alt="Scaffolding site installation in Benfleet, Essex" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
+  <img class="hero-media" src="/images/hero-bg.webp" alt="Scaffolding site installation in Essex" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
   <div class="container hero-content">
-    <h1>Scaffolding in Essex – Fast, Safe &amp; Reliable | Axis Scaffolding Ltd</h1>
+    <h1>Scaffolding in Essex – Fast, Safe &amp; Reliable | Axis Scaffolding Essex</h1>
     <p>Essex's trusted scaffolding specialists — residential, commercial and emergency cover.</p>
     <div class="hero-cta-row">
-      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
-      <a class="btn btn-outline" href="/gallery">View Our Work</a>
+      <a class="btn btn-primary" href="tel:01702820468" onclick="if(typeof gtag!=='undefined'){{gtag('event','phone_call_click',{{'event_category':'Call','event_label':'Hero CTA'}})}}">&#128222; Call for a Free Quote – 01702 820468</a>
+      <a class="btn btn-outline" href="/contact#quote-form">Request a Quote Online</a>
     </div>
-    <p class="hero-phone"><a href="tel:{NAP['phone']}">Call {NAP['phone']} for fast scaffolding support</a></p>
+    <div class="hero-phone-card">
+      <svg class="phone-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path fill="#22c55e" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
+      </svg>
+      <a href="tel:+441702820468" class="hero-phone-number">01702 820468</a>
+      <span class="hero-phone-label">Free quotes · Fast response</span>
+      <p class="hero-hours" style="font-size:0.85rem;color:#ccc;margin-top:4px;">Mon–Fri 7am–6pm &nbsp;·&nbsp; Sat 8am–4pm</p>
+    </div>
   </div>
 </section>
 
 <section class="trust-bar" aria-label="Company trust bar">
   <div class="container trust-items">
+    <p><span aria-hidden="true">⭐⭐⭐⭐⭐</span> 5.0 Google Reviews</p>
+    <p><span aria-hidden="true">✅</span>CISRS Certified</p>
+    <p><span aria-hidden="true">🛡️</span>Fully Insured</p>
     <p><span aria-hidden="true">🛠</span>10+ Years Experience</p>
-    <p><span aria-hidden="true">✅</span>Fully CISRS Certified</p>
-    <p><span aria-hidden="true">📋</span>Free Quotes</p>
-    <p><span aria-hidden="true">📍</span>Based in Rayleigh</p>
+    <p><a href="tel:01702820468" style="color:inherit;text-decoration:none;"><span aria-hidden="true">📞</span> 01702 820468</a></p>
   </div>
 </section>
 
@@ -1503,9 +1780,22 @@ def homepage() -> str:
 <section class="section section-light">
   <div class="container">
     <h2>What Our Customers Say</h2>
-    <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
-      <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
+    <div class="testimonial-carousel-wrap">
+      <button class="carousel-arrow carousel-prev" id="carousel-prev" aria-label="Previous review">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
+        <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
+      </div>
+      <button class="carousel-arrow carousel-next" id="carousel-next" aria-label="Next review">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
+    <div class="carousel-dots" id="carousel-dots" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -1587,17 +1877,17 @@ def service_detail_body(service: dict) -> str:
     return (
         inner_hero(
             path,
-            f"{service['name']} Scaffolding in Essex",
-            f"{service['summary']} From Benfleet to wider scaffolding Essex projects, we provide clear planning and practical delivery. Get a free quote today.",
+            f"{service['name']} in Essex",
+            f"{service['summary']} Based in Rayleigh, we provide clear planning and practical delivery across South Essex. Get a free no-obligation quote today.",
         )
         + """
-<section class="section"><div class="container"><h2>What's Included</h2><p>Every package includes site assessment, safe scaffold design, installation by CISRS-certified operatives, routine checks and structured dismantling. We coordinate with homeowners, trades and principal contractors to ensure safe access and efficient scheduling across Benfleet and surrounding Essex locations.</p></div></section>
+<section class="section"><div class="container"><h2>What's Included</h2><p>Every package includes site assessment, safe scaffold design, installation by CISRS-certified operatives, routine checks and structured dismantling. We coordinate with homeowners, trades and principal contractors to ensure safe access and efficient scheduling across Rayleigh and surrounding Essex locations.</p></div></section>
 <section class="section section-light"><div class="container"><h2>Our Process</h2><ol><li>Site review and scope confirmation.</li><li>Detailed quotation with timings and requirements.</li><li>Installation, inspections and responsive adjustments.</li><li>Safe dismantle and tidy handover on completion.</li></ol></div></section>
-<section class="section"><div class="container"><h2>Why Choose Axis Scaffolding?</h2><p>Axis Scaffolding Ltd combines local knowledge, rapid communication and safety-first delivery. Our Benfleet team supports residential and commercial scaffolding Essex projects with practical access systems, transparent pricing and dependable on-site professionalism.</p><p><a href="/services">Back to all scaffolding services</a></p></div></section>
+<section class="section"><div class="container"><h2>Why Choose Axis Scaffolding Essex?</h2><p>Axis Scaffolding Essex combines local knowledge, rapid communication and safety-first delivery. Our Rayleigh team supports residential and commercial scaffolding projects across Essex with practical access systems, transparent pricing and dependable on-site professionalism.</p><p><a href="/services">Back to all scaffolding services</a></p></div></section>
 """
         + f"""
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
-<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Get a Free Quote</h2><p>Talk to our Benfleet team about your {service['name'].lower()} requirements.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Get a Free Quote</h2><p>Talk to our team about your {service['name'].lower()} requirements.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
 
@@ -1606,11 +1896,12 @@ def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding Essex | Axis Scaffolding Ltd Rayleigh Team",
-            desc="Axis Scaffolding delivers trusted scaffolding Essex support from Rayleigh for homes and businesses across Essex. Contact our team and get a free quote today.",
+            title="Scaffolding Essex | Axis Scaffolding Essex",
+            desc="Free quotes, same-day response. CISRS-certified scaffolders in Rayleigh covering all of South Essex. Residential, commercial and emergency scaffolding. Call 01702 820468.",
             path="/",
             body=homepage(),
             include_faq_schema=True,
+            include_review_schema=True,
             preload_hero=True,
         ),
     )
@@ -1648,6 +1939,7 @@ def generate_pages() -> None:
                 path=f"/services/{svc['slug']}",
                 body=service_detail_body(svc),
                 breadcrumb_items=[("Home", "/"), ("Services", "/services"), (svc["name"], f"/services/{svc['slug']}")],
+                extra_schemas=[service_schema(svc)],
             ),
         )
 
