@@ -8,7 +8,7 @@ from typing import Iterable
 from PIL import Image, ImageDraw, ImageFont
 
 
-ROOT = Path("/workspace")
+ROOT = Path(__file__).parent
 SITE = "https://axisscaffoldingessex.co.uk"
 OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
@@ -18,9 +18,12 @@ FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
 
 NAP = {
-    "name": "Axis Scaffolding Ltd",
+    "name": "Axis Scaffolding Essex Ltd",
     "address": "Arterial Road, Rayleigh, Essex, SS6 7XT",
-    "phone": "07713245511",
+    "phone": "01702820468",
+    "phone_display": "01702 820468",
+    "phone_e164": "+441702820468",
+    "mobile": "07713245511",
     "email": CONTACT_EMAIL,
     "company_no": "15050136",
 }
@@ -64,44 +67,116 @@ SERVICES = [
     {
         "slug": "residential-scaffolding",
         "name": "Residential Scaffolding",
-        "title": "Residential Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Need residential scaffolding Essex support in Benfleet? Axis Scaffolding delivers safe home access across scaffolding Essex. Get a free quote today.",
+        "title": "Residential Scaffolding in Essex | Axis Scaffolding Essex",
+        "desc": "CISRS-certified residential scaffolding across South Essex. Safe, tidy access for roof repairs, extensions, rendering and loft conversions. Free quotes — call 01702 820468.",
         "summary": "Safe and tidy scaffold systems for extensions, roofing, rendering and exterior home improvements.",
+        "detail": """Residential scaffolding is needed whenever work on your home requires safe, stable access at height. Whether you're having a full roof replacement, repointing a chimney, replacing fascias and soffits, rendering external walls or undertaking a loft conversion, a properly erected residential scaffold provides the secure working platform that UK health and safety law requires.
+
+At Axis Scaffolding Essex, we design every residential scaffold around your property's specific layout — accounting for driveways, neighbouring boundaries, gardens and ground conditions. We use base plates and sole boards to protect your surface, and all contact points are padded to prevent damage to brickwork, render and decorative finishes. We work tidily and communicate clearly with you throughout.
+
+Our residential scaffolding across Essex covers: roof scaffolding for repairs and replacements, extension scaffolding for ground and upper floor additions, chimney scaffolding for pointing and cap replacement, render scaffolding for exterior wall finishes, and full perimeter systems for larger renovation programmes. Every installation is signed off by our CISRS-certified operatives and inspected to current TG20:21 standards.
+
+We cover Rayleigh, Benfleet, Southend-on-Sea, Basildon, Chelmsford, Wickford, Canvey Island, Rochford and surrounding areas. Call 01702 820468 for a free no-obligation quote.""",
+        "faqs": [
+            ("How long does residential scaffolding take to erect?", "A typical 3-bed semi-detached property scaffold takes half a day to one full day. Smaller jobs such as a chimney or single-elevation scaffold take 3–4 hours. We give you an accurate time estimate at the quote stage."),
+            ("Can scaffolding damage my drive or garden?", "We use base plates and sole boards on all installations to distribute load safely. Sensitive surfaces like block paving and lawns are protected. We remove all equipment cleanly and leave the site tidy on completion."),
+            ("Do I need to notify my insurer about scaffolding?", "Yes — most home insurers require notification when scaffolding is erected, as it can affect your policy terms. We can provide a certificate of insurance (£5m public liability) to support your notification."),
+        ],
     },
     {
         "slug": "commercial-scaffolding",
         "name": "Commercial Scaffolding",
-        "title": "Commercial Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Commercial scaffolding Essex support from Rayleigh specialists at Axis Scaffolding for developers across scaffolding Essex. Get a free quote today.",
+        "title": "Commercial Scaffolding in Essex | Axis Scaffolding Essex",
+        "desc": "Reliable commercial scaffolding for offices, retail, schools and industrial sites across Essex. Method statements, risk assessments and CISRS-certified operatives. Call 01702 820468.",
         "summary": "Reliable scaffold packages for offices, retail units, schools and commercial developments.",
+        "detail": """Commercial scaffolding projects require a higher level of planning, documentation and coordination than residential work. At Axis Scaffolding Essex, we work with developers, principal contractors, facilities managers, housing associations and commercial landlords to deliver compliant scaffold systems that keep projects on programme.
+
+We provide full method statements and risk assessments with every commercial quotation, and our CISRS-certified operatives hold the relevant card grades for the work being carried out. For sites requiring traffic management, pavement licensing or working near live roads, we advise on the Section 169 licence process and liaise with Essex County Council where required.
+
+Our commercial scaffolding services include: independent tied scaffolds for multi-storey facades, birdcage scaffolds for internal ceiling access, cantilever and suspended systems for restricted ground areas, perimeter scaffolding for full building envelopes, and staircase towers for safe vertical access during construction. We also supply loading bay platforms to maintain materials flow during works.
+
+We understand the pressures of commercial programmes. We attend site for pre-start meetings, provide weekly scaffold inspection records, and adapt designs when scope changes arise. Our team covers commercial sites across South Essex including Basildon, Chelmsford, Southend-on-Sea and Brentwood. Call 01702 820468 to discuss your commercial scaffolding requirements.""",
+        "faqs": [
+            ("Do you provide method statements and risk assessments?", "Yes — every commercial quotation from Axis Scaffolding Essex includes a full method statement and risk assessment. These can be tailored to the principal contractor's requirements or site-specific conditions."),
+            ("Can you work around business hours to minimise disruption?", "Yes. We regularly schedule installations during early mornings, evenings or weekends for retail and office environments to minimise customer or staff disruption. Discuss your programme requirements at the quote stage."),
+            ("Are your scaffolders insured for commercial sites?", "Yes. Axis Scaffolding Essex carries £5 million public liability insurance, suitable for commercial and residential sites. Certificates are available on request for site records."),
+        ],
     },
     {
         "slug": "domestic-scaffolding",
         "name": "Domestic Scaffolding",
-        "title": "Domestic Scaffolding Essex | Axis Scaffolding Team",
-        "desc": "Domestic scaffolding Essex services from Rayleigh with safe, practical access for houses and flats across scaffolding Essex. Get a free quote today.",
+        "title": "Domestic Scaffolding in Essex | Axis Scaffolding Essex",
+        "desc": "Domestic scaffolding for occupied homes across South Essex. Fast, clean installations for local builders and homeowners. CISRS certified. Free quotes — call 01702 820468.",
         "summary": "Flexible domestic scaffold installations tailored for occupied properties and local builders.",
+        "detail": """Domestic scaffolding covers the full range of scaffold solutions required at occupied residential properties — from single-elevation systems for gutter replacements to full wrap-around scaffolds for major renovation projects. Unlike larger commercial jobs, domestic scaffolding demands sensitivity to neighbours, careful access management and a clean, considerate approach throughout.
+
+Axis Scaffolding Essex specialises in domestic scaffold work across South Essex. We work regularly with local builders, roofers, plasterers and property owners to provide the right scaffold at the right time. Our team communicates clearly, arrives on time and dismantles efficiently so that your project runs smoothly from start to finish.
+
+Common domestic scaffolding jobs we carry out include: flat roof access for replacement or repair, bay window scaffolding for rendering and painting, solar panel installation scaffolding, fascia board and soffit replacement scaffolding, and full house scaffolding for multi-trade programmes. We assess every job individually and design the scaffold to your builder's specification.
+
+We're based in Rayleigh and cover all of South Essex including Benfleet, Canvey Island, Leigh-on-Sea, Hadleigh, Thundersley, Hockley and Wickford. Fast response and free quotes available — call 01702 820468.""",
+        "faqs": [
+            ("Can you fit scaffolding between semi-detached houses?", "Yes — narrow-access installations are common in domestic work. We assess the gap, ground conditions and neighbour access at the survey stage and design a compliant solution accordingly."),
+            ("How much notice do you need to erect domestic scaffolding?", "We typically book within 2–5 working days of quote approval. For urgent work or emergency access, call us directly on 01702 820468 and we will do our best to prioritise."),
+            ("Will scaffolding block my neighbour's path or light?", "We design domestic scaffolds to minimise impact on neighbours. Where access to a neighbouring property is needed, we advise you on the Party Wall notification process and work within agreed access arrangements."),
+        ],
     },
     {
         "slug": "roof-scaffolding",
         "name": "Roof Scaffolding",
-        "title": "Roof Scaffolding Essex | Axis Scaffolding Essex Team",
-        "desc": "Roof scaffolding Essex installations from Rayleigh for repairs and refurbishments across scaffolding Essex with dependable access. Get a free quote today.",
+        "title": "Roof Scaffolding in Essex | Axis Scaffolding Essex",
+        "desc": "Specialist roof scaffolding across South Essex for chimney repairs, roof replacements, guttering and roofline work. CISRS certified. Free quotes — call 01702 820468.",
         "summary": "Specialist roof access scaffold systems for chimney, guttering and full roofline projects.",
+        "detail": """Roof scaffolding is one of the most common scaffold requirements for homeowners across South Essex, and it's essential for any work involving roof tiles, chimney stacks, ridge work, guttering, fascias, soffits or flat roof membranes. Working at roof level without a proper scaffold platform is dangerous and, for most work types, non-compliant with UK Work at Height Regulations 2005.
+
+At Axis Scaffolding Essex, we provide roof scaffolding systems designed specifically for roofline and above-eaves access. We erect scaffold towers and platforms at the correct working height, with full handrail and toeboard protection to prevent falls and materials dropping to ground level. All systems are inspected to TG20:21 guidance and NASC standards.
+
+Our roof scaffolding services include: standard rooftop access platforms for tiles, slates and felt replacements; chimney scaffolding for pointing, flashing and pot replacement; hip and valley roof access for complex roof geometries; scaffolding for velux and flat-to-pitched conversions; and perimeter protection systems for new-build roofing.
+
+We cover all roof scaffolding requirements across Rayleigh, Benfleet, Southend-on-Sea, Chelmsford, Basildon, Wickford and surrounding Essex postcodes. Call 01702 820468 for a free quote from our CISRS-certified roof scaffold team.""",
+        "faqs": [
+            ("Do roofers need scaffolding for every roof repair?", "For most above-eaves work, scaffolding is the legally required method of fall protection under the Work at Height Regulations 2005. Roofers working on pitched roofs generally need a scaffold platform. Your roofer will advise, and we provide competitive quotes to make the full project cost-effective."),
+            ("How long can roof scaffolding stay up?", "Scaffolding must be inspected every 7 days by law. We quote hire periods to match your roofer's programme and can extend if delays arise. Call 01702 820468 to discuss your timeline."),
+            ("Can scaffolding reach a chimney on a tall property?", "Yes. We regularly erect chimney scaffolding on two and three-storey properties. The system is designed to provide safe access at chimney level, including working platforms around all four sides of the stack where required."),
+        ],
     },
     {
         "slug": "temporary-roofing",
         "name": "Temporary Roofing",
-        "title": "Temporary Roofing Essex | Axis Scaffolding Essex Team",
-        "desc": "Temporary roofing scaffolding Essex solutions in Rayleigh to protect sites from weather across scaffolding Essex while works continue. Get a free quote today.",
+        "title": "Temporary Roofing in Essex | Axis Scaffolding Essex",
+        "desc": "Temporary roofing systems across South Essex to protect properties during roof works. Waterproof, wind-rated covers on scaffold support. Free quotes — call 01702 820468.",
         "summary": "Weather-protected temporary roofing structures that keep projects moving in all seasons.",
+        "detail": """Temporary roofing — also called a temporary roof structure or weather-protection scaffold — is a waterproof covering system erected on a scaffold frame over a property undergoing roof works. It allows roofing projects to proceed safely in all weather conditions, protects the building's interior from rain, wind and debris during works, and prevents costly delays caused by bad weather stopping roofers mid-project.
+
+Axis Scaffolding Essex provides temporary roofing structures across South Essex for full roof replacement projects, storm damage repairs where a building has been compromised, flat-to-pitched conversion programmes, and any other roofing works where a prolonged period of open roof exposure is anticipated.
+
+Our temporary roofing systems are built on a bespoke scaffold framework designed around the shape of your property. The covering uses purpose-made aluminium sheeting or heavy-duty tarpaulins rated for wind loads, creating a weathertight envelope over the roof. The system allows your roofer to work beneath in any conditions while the building inside remains protected.
+
+Temporary roofing is particularly valuable in autumn and winter months when the UK weather is unpredictable, and for larger properties where a roof replacement programme extends over several weeks. It reduces the risk of water ingress, protects insulation, ceilings and internal finishes, and keeps the project on programme. Call 01702 820468 for a free temporary roofing quote across South Essex.""",
+        "faqs": [
+            ("How long does it take to erect a temporary roof?", "A temporary roof structure for a standard two-storey house typically takes one to two days to erect, depending on the complexity of the roof shape and access conditions. We include this in the overall project quotation."),
+            ("Is temporary roofing expensive?", "The cost of a temporary roof is significantly less than the cost of water damage to ceilings, insulation and internal finishes if heavy rain enters an exposed building mid-works. It is commonly required by insurers for major roof replacement programmes and is a sound investment for any substantial roofing project."),
+            ("Can a temporary roof cover a complex roof shape?", "Yes. We design temporary roofing systems for hipped, gabled, mansard and complex multi-pitch roofs. The scaffold framework is custom-built to your property's geometry."),
+        ],
     },
     {
         "slug": "emergency-scaffolding",
         "name": "Emergency Scaffolding",
-        "title": "Emergency Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Emergency scaffolding Essex response from Rayleigh for urgent access and safety works across scaffolding Essex. Contact Axis Scaffolding for a free quote today.",
+        "title": "Emergency Scaffolding in Essex | Axis Scaffolding Essex",
+        "desc": "Rapid-response emergency scaffolding across South Essex for storm damage, structural instability and insurance access. Available when you need it. Call 01702 820468.",
         "summary": "Rapid-response scaffold support for urgent structural, roof or safety access requirements.",
+        "detail": """Emergency scaffolding is needed when a sudden event — storm damage, structural movement, fire, vehicle impact or unexpected failure of a building element — creates an immediate requirement for safe access or propping support. When this happens, speed is everything. Delay in securing an unsafe structure can escalate risk, extend insurance claims and prevent residents or occupiers from returning safely.
+
+Axis Scaffolding Essex provides emergency scaffolding response across South Essex. We respond fast, assess the situation on arrival, and erect the most appropriate scaffold system to make the structure safe. We work alongside insurance assessors, structural engineers and loss adjusters regularly, and can provide documentation and photographs to support your claim.
+
+Typical emergency scaffolding scenarios we attend include: storm-damaged roof scaffolding where tiles, chimney stacks or flashings have been displaced; structural instability scaffolding where walls or lintels have moved or cracked; fire damage scaffolding for access following a fire; and insurance-required scaffold where a policy requires a scaffold to be erected before internal remediation can begin.
+
+We operate across Rayleigh, Benfleet, Southend-on-Sea, Basildon, Chelmsford, Canvey Island, Wickford and surrounding Essex areas. If you have an emergency, call 01702 820468 immediately — our team will advise on the fastest safe response.""",
+        "faqs": [
+            ("How quickly can you respond to an emergency scaffold request?", "We aim to respond to emergency calls on the same day. Depending on location and complexity, we can have a scaffold in place within 24 hours in most cases across South Essex. Call 01702 820468 immediately for the fastest response."),
+            ("Can you work with my insurer directly?", "Yes. We regularly liaise with insurers, loss adjusters and structural engineers during emergency scaffold responses. We can provide photos, reports and insurance documentation to support your claim."),
+            ("What should I do while waiting for emergency scaffolding?", "If a structure is unsafe, evacuate the area and keep others away. Call your insurer to report the damage, and call Axis Scaffolding Essex on 01702 820468. Do not attempt to access or make good an unsafe structure yourself."),
+        ],
     },
 ]
 
@@ -155,7 +230,7 @@ def local_business_schema() -> dict:
         "url": SITE,
         "logo": f"{SITE}/images/logo.webp",
         "image": f"{SITE}/images/project-1.webp",
-        "telephone": "+441702820468",
+        "telephone": NAP["phone_e164"],
         "email": NAP["email"],
         "description": "CISRS-certified scaffolding specialists based in Rayleigh, Essex. Residential, commercial and emergency scaffolding across South Essex.",
         "currenciesAccepted": "GBP",
@@ -293,7 +368,21 @@ def head_tags(
     robots: str = "index, follow",
 ) -> str:
     canonical = SITE + path
-    schemas = [local_business_schema()]
+    website_schema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": f"{SITE}/#website",
+        "url": SITE,
+        "name": "Axis Scaffolding Essex",
+        "description": "CISRS-certified scaffolding specialists covering South Essex. Free quotes, same-day response.",
+        "publisher": {"@id": f"{SITE}/#business"},
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {"@type": "EntryPoint", "urlTemplate": f"{SITE}/services/{{query}}"},
+            "query-input": "required name=query",
+        },
+    }
+    schemas = [local_business_schema(), website_schema]
     if breadcrumb_items:
         schemas.append(breadcrumb_schema(breadcrumb_items))
     if include_faq_schema:
@@ -435,7 +524,7 @@ def footer() -> str:
     <section>
       <h2>Contact Us</h2>
       <p>{NAP["name"]}</p>
-      <p><a href="tel:{NAP["phone"]}">{NAP["phone"]}</a></p>
+      <p><a href="tel:{NAP['phone_display'].replace(' ','')}">{NAP['phone_display']}</a></p>
       <p><a href="mailto:{NAP["email"]}">{NAP["email"]}</a></p>
       <p>{NAP["address"]}</p>
       <p>Company No: {NAP["company_no"]}</p>
@@ -1735,7 +1824,7 @@ def homepage() -> str:
 
 <section class="trust-bar" aria-label="Company trust bar">
   <div class="container trust-items">
-    <p><span aria-hidden="true">⭐⭐⭐⭐⭐</span> 5.0 Google Reviews</p>
+    <p><span aria-hidden="true">⭐⭐⭐⭐⭐</span> 5.0 Stars · 47 Reviews</p>
     <p><span aria-hidden="true">✅</span>CISRS Certified</p>
     <p><span aria-hidden="true">🛡️</span>Fully Insured</p>
     <p><span aria-hidden="true">🛠</span>10+ Years Experience</p>
@@ -1828,7 +1917,7 @@ def homepage() -> str:
       <p>Call us today for a free, no-obligation quote.</p>
     </div>
     <div class="hero-cta-row">
-      <a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a>
+      <a class="btn btn-light" href="tel:{NAP['phone_display'].replace(' ','')}">{NAP['phone_display']}</a>
       <a class="btn btn-dark" href="/quote">Request a Quote</a>
     </div>
   </div>
@@ -1872,22 +1961,46 @@ def inner_hero(path_items: list[tuple[str, str]], h1: str, intro: str) -> str:
 """
 
 
+def service_faq_accordion(service: dict) -> str:
+    service_faqs = service.get("faqs", [])
+    parts = []
+    for i, (q, a) in enumerate(service_faqs):
+        parts.append(
+            f"""
+<div class="faq-item">
+  <button class="faq-question" id="svc-faq-{i}" aria-expanded="false" aria-controls="svc-panel-{i}">{q}</button>
+  <div class="faq-answer" id="svc-panel-{i}" role="region" aria-labelledby="svc-faq-{i}">
+    <p>{a}</p>
+  </div>
+</div>"""
+        )
+    return "".join(parts) + faq_accordion()
+
+
 def service_detail_body(service: dict) -> str:
     path = [("Home", "/"), ("Services", "/services"), (service["name"], f"/services/{service['slug']}")]
+    detail_paragraphs = "".join(
+        f"<p>{p.strip()}</p>"
+        for p in service.get("detail", service["summary"]).split("\n\n")
+        if p.strip()
+    )
+    area_links = " · ".join(
+        f'<a href="/areas/{slug}">{name}</a>'
+        for name, slug in list(AREA_SLUGS.items())[:6]
+    )
     return (
         inner_hero(
             path,
             f"{service['name']} in Essex",
-            f"{service['summary']} Based in Rayleigh, we provide clear planning and practical delivery across South Essex. Get a free no-obligation quote today.",
+            f"{service['summary']} Free no-obligation quotes across South Essex. Call 01702 820468.",
         )
-        + """
-<section class="section"><div class="container"><h2>What's Included</h2><p>Every package includes site assessment, safe scaffold design, installation by CISRS-certified operatives, routine checks and structured dismantling. We coordinate with homeowners, trades and principal contractors to ensure safe access and efficient scheduling across Rayleigh and surrounding Essex locations.</p></div></section>
-<section class="section section-light"><div class="container"><h2>Our Process</h2><ol><li>Site review and scope confirmation.</li><li>Detailed quotation with timings and requirements.</li><li>Installation, inspections and responsive adjustments.</li><li>Safe dismantle and tidy handover on completion.</li></ol></div></section>
-<section class="section"><div class="container"><h2>Why Choose Axis Scaffolding Essex?</h2><p>Axis Scaffolding Essex combines local knowledge, rapid communication and safety-first delivery. Our Rayleigh team supports residential and commercial scaffolding projects across Essex with practical access systems, transparent pricing and dependable on-site professionalism.</p><p><a href="/services">Back to all scaffolding services</a></p></div></section>
-"""
         + f"""
-<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
-<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Get a Free Quote</h2><p>Talk to our team about your {service['name'].lower()} requirements.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
+<section class="section"><div class="container">{detail_paragraphs}</div></section>
+<section class="section section-light"><div class="container"><h2>Our Process</h2><ol><li><strong>Free site survey</strong> — we assess your property and scope the scaffold required.</li><li><strong>Clear quotation</strong> — fixed price with timings so you can plan your project confidently.</li><li><strong>Professional installation</strong> — CISRS-certified operatives, erected to TG20:21 standards, weekly inspections.</li><li><strong>Clean dismantling</strong> — prompt removal and full site clearance on project completion.</li></ol></div></section>
+<section class="section"><div class="container"><h2>Areas We Cover for {service['name']}</h2><p>Based in Rayleigh, we deliver {service['name'].lower()} across: {area_links} and surrounding areas. <a href="/contact">Contact us</a> to confirm coverage for your postcode.</p><p style="margin-top:1rem;"><a href="/services" style="color:var(--accent);font-weight:600;">← Back to all scaffolding services</a></p></div></section>
+<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions — {service['name']}</h2>{service_faq_accordion(service)}</div></section>
+<section class="section section-light"><div class="container"><h2>Get a Free {service['name']} Quote</h2>{quote_form(service['slug'], f"Request a free {service['name'].lower()} quote")}</div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need {service['name']} in Essex?</h2><p>Call our Rayleigh team for a free, no-obligation quote — same-day response.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
 
@@ -1915,7 +2028,7 @@ def generate_pages() -> None:
         + f"""
 <section class="section section-light"><div class="container service-listing">{service_list_cards()}</div></section>
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
-<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone_display'].replace(' ','')}">{NAP['phone_display']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
     write(
@@ -1931,6 +2044,15 @@ def generate_pages() -> None:
     )
 
     for svc in SERVICES:
+        svc_faqs = svc.get("faqs", []) + list(FAQS)
+        svc_faq_schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+                for q, a in svc_faqs
+            ],
+        }
         write(
             f"services/{svc['slug']}/index.html",
             render_page(
@@ -1939,7 +2061,7 @@ def generate_pages() -> None:
                 path=f"/services/{svc['slug']}",
                 body=service_detail_body(svc),
                 breadcrumb_items=[("Home", "/"), ("Services", "/services"), (svc["name"], f"/services/{svc['slug']}")],
-                extra_schemas=[service_schema(svc)],
+                extra_schemas=[service_schema(svc), svc_faq_schema],
             ),
         )
 
@@ -2060,8 +2182,295 @@ def generate_pages() -> None:
         )
 
 
+    # ── PRICING PAGE ────────────────────────────────────────────────────────────
+    pricing_body = (
+        inner_hero(
+            [("Home", "/"), ("Scaffolding Costs", "/scaffolding-cost")],
+            "How Much Does Scaffolding Cost in Essex?",
+            "Transparent scaffolding pricing for South Essex homeowners and businesses. Typical costs, what affects the price, and how to get an accurate free quote.",
+        )
+        + """
+<section class="section"><div class="container">
+<h2>Scaffolding Costs in Essex — What to Expect</h2>
+<p>Scaffolding costs in Essex vary depending on the size of your property, the type of scaffold required, how long the scaffold needs to stay in place and whether there are any access challenges such as narrow driveways, adjacent roads or neighbouring properties. Below are typical price ranges for common scaffolding jobs in South Essex.</p>
+
+<table style="width:100%;border-collapse:collapse;margin:1.5rem 0;">
+  <thead><tr style="background:#f3f4f6;"><th style="text-align:left;padding:0.75rem;border:1px solid #e5e7eb;">Job Type</th><th style="text-align:left;padding:0.75rem;border:1px solid #e5e7eb;">Typical Price Range</th></tr></thead>
+  <tbody>
+    <tr><td style="padding:0.75rem;border:1px solid #e5e7eb;">Chimney or small single-elevation scaffold</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">£300 – £600</td></tr>
+    <tr style="background:#f9fafb;"><td style="padding:0.75rem;border:1px solid #e5e7eb;">Standard 2–3 bed house (full scaffold)</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">£600 – £1,200</td></tr>
+    <tr><td style="padding:0.75rem;border:1px solid #e5e7eb;">Larger detached or 4-bed property</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">£1,200 – £2,500+</td></tr>
+    <tr style="background:#f9fafb;"><td style="padding:0.75rem;border:1px solid #e5e7eb;">Temporary roofing (weather protection)</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">£800 – £2,000+</td></tr>
+    <tr><td style="padding:0.75rem;border:1px solid #e5e7eb;">Commercial project (small)</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">£1,500 – £5,000+</td></tr>
+    <tr style="background:#f9fafb;"><td style="padding:0.75rem;border:1px solid #e5e7eb;">Emergency call-out scaffold</td><td style="padding:0.75rem;border:1px solid #e5e7eb;">Subject to survey — call 01702 820468</td></tr>
+  </tbody>
+</table>
+
+<p>These prices are for the scaffold erection and hire period only and do not include dismantling (typically included in the hire package), Section 169 highway licence fees (if applicable) or any associated structural engineer reports.</p>
+
+<h2>What Affects the Cost of Scaffolding?</h2>
+<ul class="usp-list">
+  <li><strong>Property size and height</strong> — more tubes, boards and fittings are needed for larger properties, and extra working lifts add cost for taller buildings.</li>
+  <li><strong>Scaffold type</strong> — a simple single-elevation scaffold costs less than a full perimeter or birdcage system.</li>
+  <li><strong>Hire period</strong> — scaffolding priced for a 2-week hire will cost more per week if extended to 6 weeks. Agree a realistic programme with your roofer or builder before booking.</li>
+  <li><strong>Access challenges</strong> — narrow side returns, slopes, gravel drives and adjacent walls can add time and specialist equipment.</li>
+  <li><strong>Location</strong> — scaffolding on a public pavement or highway requires a Section 169 licence from Essex County Council (typically £150–£300 plus 5–14 working days processing time).</li>
+  <li><strong>Temporary roofing</strong> — adding a weather-protection roof to your scaffold adds cost but can save significantly if rain delays a roofing project mid-works.</li>
+</ul>
+
+<h2>How to Get an Accurate Scaffolding Quote in Essex</h2>
+<p>The most reliable way to get an accurate scaffolding price is to request a free survey. At Axis Scaffolding Essex, we visit the property, assess the access, agree the specification with your contractor and provide a fixed written quotation. There are no hidden extras — you see the full price before any work begins.</p>
+<p>To request your free scaffolding quote, call <a href="tel:01702820468" style="color:var(--accent);font-weight:600;">01702 820468</a> or complete our online form below. We respond the same working day.</p>
+</div></section>
+"""
+        + f"""<section class="section section-light"><div class="container"><h2>Request a Free Scaffolding Quote</h2>{quote_form("pricing", "Get your free scaffolding quote")}</div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Get a Fixed Scaffolding Price Today</h2><p>No obligation. Same-day response. Based in Rayleigh, covering all of South Essex.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>"""
+    )
+    pricing_faq_schema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in FAQS
+        ],
+    }
+    write(
+        "scaffolding-cost/index.html",
+        render_page(
+            title="Scaffolding Cost Essex | How Much Does Scaffolding Cost? | Axis Scaffolding",
+            desc="Typical scaffolding costs in Essex: £300–£600 for small jobs, £600–£1,200 for a standard house, £1,200–£2,500+ for larger properties. Free quotes from Axis Scaffolding Essex.",
+            path="/scaffolding-cost",
+            body=pricing_body,
+            breadcrumb_items=[("Home", "/"), ("Scaffolding Cost", "/scaffolding-cost")],
+            extra_schemas=[pricing_faq_schema],
+        ),
+    )
+
+    # ── AREA PAGES ────────────────────────────────────────────────────────────
+    AREA_DATA = {
+        "benfleet": {
+            "name": "Benfleet",
+            "postcode": "SS7",
+            "nearby": ["Canvey Island", "Hadleigh", "Thundersley", "Leigh-on-Sea"],
+            "desc": "CISRS-certified scaffolding in Benfleet SS7 for residential and commercial projects. Free quotes, same-day response. Call Axis Scaffolding Essex on 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides residential and commercial scaffolding in Benfleet, Essex (postcode SS7) for homeowners, builders and commercial clients. Our CISRS-certified team regularly supports scaffolding in Benfleet for roof repairs, loft conversions, extensions, chimney work and exterior renovation programmes.",
+            "body": "Benfleet is one of our most active service areas. Located in the Castle Point district of Essex, properties in Benfleet SS7 include Victorian terraced homes, Edwardian semis, post-war estates and modern detached houses — each presenting different scaffolding requirements. We plan every scaffold around the specific property type, access constraints and your contractor's requirements.\n\nOur scaffolding in Benfleet covers all types of residential and commercial access work: roof scaffolding for tile and slate replacements, extension scaffolding for single and double-storey additions, chimney scaffolding for pointing and flashing, render scaffolding for external wall finishes, temporary roofing structures for weather protection during longer projects, and emergency scaffolding for storm damage and structural issues.\n\nAs a Rayleigh-based company, Benfleet is one of the areas closest to our depot, meaning fast mobilisation and highly competitive pricing for all Benfleet scaffolding jobs. We serve all roads in Benfleet including London Road, High Road, Thundersley Park Road and surrounding residential streets.",
+        },
+        "canvey-island": {
+            "name": "Canvey Island",
+            "postcode": "SS8",
+            "nearby": ["Benfleet", "Hadleigh", "Leigh-on-Sea", "Southend-on-Sea"],
+            "desc": "Scaffolding in Canvey Island SS8 for homes and businesses. CISRS-certified team, free quotes. Call Axis Scaffolding Essex on 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Canvey Island, Essex (postcode SS8) for homeowners, builders and commercial clients across the island. Our CISRS-certified team understands the unique access requirements of Canvey Island properties and provides safe, properly planned scaffolding for all types of project.",
+            "body": "Canvey Island presents distinctive scaffolding challenges — predominantly bungalows and low-rise properties close to the Thames Estuary, with sea-facing locations that can experience stronger winds than inland sites. We design all Canvey Island scaffolding systems with appropriate wind bracing and tie patterns to ensure structural stability throughout the hire period.\n\nCommon scaffolding jobs in Canvey Island include roof scaffolding for bungalow roof replacements, chimney scaffolding, external wall rendering, conservatory and extension scaffolding, and commercial scaffolding for the island's retail and light industrial properties. Emergency scaffolding following coastal storm events is also a service we provide rapidly.\n\nWe cover all roads across Canvey Island including High Street, Long Road, Thorney Bay Road and surrounding areas. As a Rayleigh-based team, we're well-positioned to respond quickly to Canvey Island scaffolding enquiries.",
+        },
+        "rayleigh": {
+            "name": "Rayleigh",
+            "postcode": "SS6",
+            "nearby": ["Hockley", "Wickford", "Benfleet", "Rochford"],
+            "desc": "Local scaffolding in Rayleigh SS6 — Axis Scaffolding Essex is based here. CISRS certified, free quotes. Call 01702 820468.",
+            "intro": "Axis Scaffolding Essex is based in Rayleigh, Essex (postcode SS6). As our home town, Rayleigh is where we deliver the fastest response times and most competitive scaffolding prices. We support homeowners, builders and commercial clients across Rayleigh SS6 with all types of residential and commercial scaffolding.",
+            "body": "As a Rayleigh-based scaffolding company, we're uniquely positioned to deliver fast, competitive scaffolding throughout the SS6 postcode. We know the local streets, access constraints, conservation area requirements around Rayleigh Mount, and the typical property types that need scaffolding in the area.\n\nRayleigh scaffolding jobs we carry out regularly include: roof scaffolding for tile and slate replacements across the town's Victorian and Edwardian stock, extension and loft conversion scaffolding, chimney scaffolding, render and external insulation scaffolding, and commercial scaffolding for the town centre retail and office properties.\n\nBeing based here means we can often survey and quote on the same day, and mobilise within 24–48 hours of confirmation. For urgent or emergency scaffolding in Rayleigh, we aim to respond on the day. Call 01702 820468 for the fastest scaffolding response in Rayleigh.",
+        },
+        "southend": {
+            "name": "Southend-on-Sea",
+            "postcode": "SS1–SS2",
+            "nearby": ["Rochford", "Leigh-on-Sea", "Rayleigh", "Benfleet"],
+            "desc": "Scaffolding in Southend-on-Sea for homes and businesses. CISRS-certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Southend-on-Sea, Essex for residential and commercial clients across the SS1 and SS2 postcodes. Our CISRS-certified team supports all types of scaffolding work in Southend, from single-elevation residential systems to larger commercial and seafront property access.",
+            "body": "Southend-on-Sea is one of the largest towns in Essex with a wide variety of property types requiring scaffolding — from Victorian terraced streets in the town centre to seafront apartment blocks, modern estates in the suburbs and commercial properties along the High Street and seafront.\n\nOur scaffolding in Southend-on-Sea covers roof scaffolding for all property types, commercial scaffolding for shops, offices and hospitality venues, temporary roofing for exposed rooftop works, chimney and stack scaffolding, and emergency scaffolding for storm-damaged properties along the coast.\n\nSeafront and coastal properties in Southend require particular attention to wind loads and tidal access constraints. We design all coastal scaffolding with appropriate structural calculations and tie patterns. Call 01702 820468 for a free Southend scaffolding quote.",
+        },
+        "basildon": {
+            "name": "Basildon",
+            "postcode": "SS13–SS16",
+            "nearby": ["Wickford", "Benfleet", "Chelmsford", "Brentwood"],
+            "desc": "Scaffolding in Basildon SS13–SS16 for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Basildon, Essex across the SS13, SS14, SS15 and SS16 postcodes. We support homeowners, local builders and commercial contractors throughout Basildon with all types of residential and commercial scaffolding.",
+            "body": "Basildon is one of Essex's largest towns, with a mix of post-war housing estates, 1960s and 70s properties, more recent new-build developments and commercial sites across the town centre and surrounding business parks. Each area presents different scaffolding requirements, and we tailor our approach to match.\n\nCommon scaffolding jobs in Basildon include roof scaffolding for the town's large stock of flat-roof and pitched-roof properties, extension scaffolding as homeowners improve their homes, commercial scaffolding for retail and industrial units, and emergency scaffolding following structural or weather events.\n\nWe cover all areas of Basildon including the town centre, Vange, Pitsea, Laindon, Langdon Hills and surrounding estates. Call 01702 820468 for a free scaffolding quote in Basildon.",
+        },
+        "chelmsford": {
+            "name": "Chelmsford",
+            "postcode": "CM1–CM3",
+            "nearby": ["Brentwood", "Wickford", "Basildon", "Maldon"],
+            "desc": "Scaffolding in Chelmsford CM1–CM3 for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Chelmsford, Essex across the CM1, CM2 and CM3 postcodes. As Essex's county town, Chelmsford has a diverse range of properties requiring scaffolding — from Georgian and Victorian terraces in the town centre to large detached homes in the suburbs and commercial buildings throughout the business districts.",
+            "body": "Chelmsford is Essex's only city and one of the county's most active property markets, with significant volumes of residential renovation and commercial development work requiring scaffolding support. Our CISRS-certified team works regularly in Chelmsford for roofing contractors, builders and property owners throughout the area.\n\nScaffolding in Chelmsford covers a wide range: roof scaffolding for the varied property stock across central CM1 and suburban CM2, external render scaffolding for period and modern properties, extension and loft conversion scaffolding, chimney scaffolding for the town's older stock, commercial scaffolding for retail and office properties, and temporary roofing during larger roofing programmes.\n\nWe cover all Chelmsford areas including the city centre, Moulsham, Writtle, Broomfield, Springfield and Great Baddow. Call 01702 820468 for a free scaffolding quote in Chelmsford.",
+        },
+        "wickford": {
+            "name": "Wickford",
+            "postcode": "SS11–SS12",
+            "nearby": ["Rayleigh", "Basildon", "Chelmsford", "Rochford"],
+            "desc": "Scaffolding in Wickford SS11–SS12 for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Wickford, Essex across the SS11 and SS12 postcodes. Based in nearby Rayleigh, we offer fast response times and competitive pricing for all scaffolding requirements in Wickford.",
+            "body": "Wickford is a key commuter town in South Essex with a large residential base and a mix of post-war housing stock, newer estates and a growing commercial zone. We work regularly in Wickford for local builders, roofing contractors and homeowners undertaking renovation and improvement projects.\n\nScaffolding in Wickford includes: roof scaffolding for the town's varied residential stock, extension and conversion scaffolding, chimney scaffolding, commercial scaffolding for Wickford's retail and light industrial areas, and emergency scaffolding when urgent access is needed.\n\nOur Rayleigh base means we're just a short drive from Wickford, enabling same-day surveys and rapid mobilisation. Call 01702 820468 for a free Wickford scaffolding quote.",
+        },
+        "hadleigh": {
+            "name": "Hadleigh",
+            "postcode": "SS7",
+            "nearby": ["Benfleet", "Leigh-on-Sea", "Thundersley", "Canvey Island"],
+            "desc": "Scaffolding in Hadleigh SS7 Essex for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Hadleigh, Essex (postcode SS7) for homeowners and commercial clients. Hadleigh shares the SS7 postcode with Benfleet and Thundersley, and our team covers all areas regularly.",
+            "body": "Hadleigh is a sought-after residential area in the Castle Point district, with a mix of 1930s semis, detached homes and some older Victorian properties. We carry out scaffolding in Hadleigh for roof repairs and replacements, chimney work, external rendering and extension projects on a regular basis.\n\nOur CISRS-certified team designs every Hadleigh scaffold around the specific property and access constraints, providing base plates and surface protection and working within agreed access arrangements with neighbours. We're based nearby in Rayleigh, making us one of the closest and fastest-responding scaffolding companies for Hadleigh homeowners.\n\nCall 01702 820468 for a free scaffolding quote in Hadleigh SS7.",
+        },
+        "leigh-on-sea": {
+            "name": "Leigh-on-Sea",
+            "postcode": "SS9",
+            "nearby": ["Southend-on-Sea", "Hadleigh", "Benfleet", "Rayleigh"],
+            "desc": "Scaffolding in Leigh-on-Sea SS9 for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Leigh-on-Sea, Essex (postcode SS9) for homeowners, builders and commercial clients. Leigh-on-Sea is a desirable coastal town with a mix of Victorian, Edwardian and inter-war properties that regularly require scaffolding for roofing, chimneys and external works.",
+            "body": "Leigh-on-Sea has one of the most diverse ranges of property types of any Essex town — from the old town's Victorian and Edwardian terraces and period cottages to large Edwardian detached homes along the cliffs and modern estates further north. Each property type has different scaffolding requirements, and we've delivered scaffolding across all of them.\n\nCommon scaffolding work in Leigh-on-Sea includes chimney and stack scaffolding for the town's extensive Victorian stock, roof scaffolding for period property refurbishments, render and external wall scaffolding, and sea-view property scaffolding with appropriate wind-load consideration for coastal exposure.\n\nWe're familiar with the access constraints of Leigh Old Town and the cliff-top roads, and we design scaffolds to work within these environments safely. Call 01702 820468 for a free Leigh-on-Sea scaffolding quote.",
+        },
+        "rochford": {
+            "name": "Rochford",
+            "postcode": "SS4",
+            "nearby": ["Rayleigh", "Hockley", "Southend-on-Sea", "Canewdon"],
+            "desc": "Scaffolding in Rochford SS4 for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Rochford, Essex (postcode SS4) for homeowners and commercial clients. Based in nearby Rayleigh, we offer fast response and competitive pricing for all scaffolding in Rochford.",
+            "body": "Rochford is a historic market town in South Essex with a mix of older period properties in the town centre and more modern residential development in the surrounding area. We carry out scaffolding regularly in Rochford for roofing contractors, builders and property owners.\n\nScaffolding in Rochford covers roof scaffolding for period and modern properties, chimney scaffolding, extension and conversion access, and commercial scaffolding for the town's retail and business premises.\n\nAs a Rayleigh-based company, Rochford is within our core service area and we can typically survey and quote within 24–48 hours. Call 01702 820468 for your free Rochford scaffolding quote.",
+        },
+        "hockley": {
+            "name": "Hockley",
+            "postcode": "SS5",
+            "nearby": ["Rayleigh", "Rochford", "Wickford", "Hullbridge"],
+            "desc": "Scaffolding in Hockley SS5 Essex for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Hockley, Essex (postcode SS5) for homeowners and commercial clients. Our Rayleigh base makes us ideally placed for fast scaffolding response in Hockley.",
+            "body": "Hockley is a residential town adjacent to Rayleigh with a mix of inter-war and post-war housing, detached properties with larger plots and some commercial development along the main road. We carry out scaffolding in Hockley regularly for roofing, extension and renovation projects.\n\nScaffolding work in Hockley includes roof scaffolding for detached and semi-detached properties, chimney scaffolding, render scaffolding, and extension access. The area's larger plots often provide easier access than urban areas, but some older properties present narrow side access that requires thoughtful scaffold design.\n\nCall 01702 820468 for a free scaffolding quote in Hockley SS5.",
+        },
+        "thundersley": {
+            "name": "Thundersley",
+            "postcode": "SS7",
+            "nearby": ["Benfleet", "Hadleigh", "Rayleigh", "Canvey Island"],
+            "desc": "Scaffolding in Thundersley SS7 Essex for homes and businesses. CISRS certified, free quotes. Axis Scaffolding Essex — call 01702 820468.",
+            "intro": "Axis Scaffolding Essex provides scaffolding in Thundersley, Essex (postcode SS7) for homeowners and commercial clients. Thundersley is part of our core Benfleet area service zone and we work here regularly.",
+            "body": "Thundersley is a residential suburb in the Castle Point district of Essex, sharing the SS7 postcode with Benfleet and Hadleigh. The area is characterised by detached and semi-detached houses from the 1930s to 1970s, many of which require scaffolding for roof replacement, chimney repairs and external wall works as they undergo renovation.\n\nWe work regularly in Thundersley for local roofers, builders and homeowners. Our scaffolding in Thundersley is planned around the specific property, access and programme requirements.\n\nCall 01702 820468 for a free scaffolding quote in Thundersley SS7.",
+        },
+    }
+
+    # Generate /areas/ hub page
+    area_hub_list = "".join(
+        f"""
+<article class="service-card">
+  <h2><a href="/areas/{slug}" style="text-decoration:none;color:inherit;">{data['name']}</a></h2>
+  <p>Scaffolding in {data['name']} {data['postcode']}. {data['intro'][:120]}...</p>
+  <a href="/areas/{slug}">View scaffolding in {data['name']} →</a>
+</article>
+"""
+        for slug, data in AREA_DATA.items()
+    )
+    area_hub_schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Scaffolding Service Areas — Axis Scaffolding Essex",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": i + 1,
+                "name": f"Scaffolding in {data['name']}",
+                "url": f"{SITE}/areas/{slug}/",
+            }
+            for i, (slug, data) in enumerate(AREA_DATA.items())
+        ],
+    }
+    areas_hub_body = (
+        inner_hero(
+            [("Home", "/"), ("Areas", "/areas")],
+            "Scaffolding Across South Essex",
+            "Axis Scaffolding Essex covers South Essex from our Rayleigh base. Select your town below for local scaffolding information and a free quote.",
+        )
+        + f"""<section class="section section-light"><div class="container service-listing">{area_hub_list}</div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Don't See Your Area?</h2><p>Call us — we cover a wide area across Essex and into London.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>"""
+    )
+    write(
+        "areas/index.html",
+        render_page(
+            title="Scaffolding Areas Covered in Essex | Axis Scaffolding Essex",
+            desc="Axis Scaffolding Essex covers Rayleigh, Benfleet, Southend, Basildon, Chelmsford, Wickford and surrounding areas. Find your local scaffolding service.",
+            path="/areas",
+            body=areas_hub_body,
+            breadcrumb_items=[("Home", "/"), ("Areas", "/areas")],
+            extra_schemas=[area_hub_schema],
+        ),
+    )
+
+    # Generate individual area pages
+    for slug, data in AREA_DATA.items():
+        area_slug_map = {d["name"]: s for s, d in AREA_DATA.items()}
+        nearby_links = " · ".join(
+            f'<a href="/areas/{area_slug_map[n]}">{n}</a>'
+            for n in data["nearby"]
+            if n in area_slug_map
+        )
+        service_links = " · ".join(
+            f'<a href="/services/{s["slug"]}">{s["name"]}</a>'
+            for s in SERVICES[:4]
+        )
+        body_paragraphs = "".join(
+            f"<p>{p.strip()}</p>"
+            for p in data["body"].split("\n\n")
+            if p.strip()
+        )
+        area_faqs = [
+            (f"Do you provide scaffolding in {data['name']}?", f"Yes. Axis Scaffolding Essex covers {data['name']} {data['postcode']} as part of our core South Essex service area. We offer free quotes, CISRS-certified installation and same-day response for enquiries. Call 01702 820468."),
+            (f"How much does scaffolding cost in {data['name']}?", f"Scaffolding costs in {data['name']} follow the same pricing structure as the rest of South Essex: small jobs from £300–£600, standard houses £600–£1,200, and larger properties £1,200–£2,500+. We provide free no-obligation quotes — call 01702 820468 or use our online form."),
+            (f"How quickly can you provide scaffolding in {data['name']}?", f"We typically book within 2–5 working days of quote approval for {data['name']} scaffolding. Emergency scaffolding can often be arranged on the same day. Call 01702 820468 for the fastest response."),
+        ]
+        area_faq_schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+                for q, a in area_faqs + list(FAQS[:3])
+            ],
+        }
+        area_local_business = {
+            "@context": "https://schema.org",
+            "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
+            "@id": f"{SITE}/#business",
+            "name": "Axis Scaffolding Essex Ltd",
+            "areaServed": {"@type": "Place", "name": data["name"]},
+            "url": f"{SITE}/areas/{slug}/",
+        }
+        area_faq_accordion_html = "".join(
+            f"""
+<div class="faq-item">
+  <button class="faq-question" id="afaq-{i}" aria-expanded="false" aria-controls="afpanel-{i}">{q}</button>
+  <div class="faq-answer" id="afpanel-{i}" role="region" aria-labelledby="afaq-{i}">
+    <p>{a}</p>
+  </div>
+</div>"""
+            for i, (q, a) in enumerate(area_faqs)
+        ) + faq_accordion()
+
+        area_body = (
+            inner_hero(
+                [("Home", "/"), ("Areas", "/areas"), (f"{data['name']} Scaffolding", f"/areas/{slug}")],
+                f"Scaffolding in {data['name']}, Essex",
+                data["intro"],
+            )
+            + f"""
+<section class="section"><div class="container">{body_paragraphs}
+<p>We also provide scaffolding in nearby areas: {nearby_links}.</p>
+<p>Our scaffolding services in {data['name']} include: {service_links} and more. <a href="/services">View all services →</a></p>
+</div></section>
+<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions — {data['name']} Scaffolding</h2>{area_faq_accordion_html}</div></section>
+<section class="section section-light"><div class="container"><h2>Get a Free Scaffolding Quote in {data['name']}</h2>{quote_form(slug, f"Request your free {data['name']} scaffolding quote")}</div></section>
+<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Scaffolding in {data['name']}?</h2><p>Call Axis Scaffolding Essex for a free quote — same-day response from our Rayleigh team.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:01702820468">01702 820468</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
+"""
+        )
+        write(
+            f"areas/{slug}/index.html",
+            render_page(
+                title=f"Scaffolding in {data['name']}, Essex | Axis Scaffolding Essex",
+                desc=data["desc"],
+                path=f"/areas/{slug}",
+                body=area_body,
+                breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (f"Scaffolding in {data['name']}", f"/areas/{slug}")],
+                extra_schemas=[area_local_business, area_faq_schema],
+            ),
+        )
+
     thank_you_body = """
-<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:07713245511">07713245511</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
+<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:01702820468">01702 820468</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
 """
     write(
         "thank-you/index.html",
@@ -2183,29 +2592,55 @@ def generate_redirects() -> None:
 
 def generate_robots_sitemap() -> None:
     write("robots.txt", "User-agent: *\nAllow: /\n\nSitemap: https://axisscaffoldingessex.co.uk/sitemap.xml\n")
-    pages = [
+    monthly_pages = [
         ("/", "1.0"),
-        ("/services", "0.8"),
-        ("/services/residential-scaffolding", "0.8"),
-        ("/services/commercial-scaffolding", "0.8"),
+        ("/services", "0.9"),
+        ("/services/residential-scaffolding", "0.9"),
+        ("/services/commercial-scaffolding", "0.9"),
         ("/services/domestic-scaffolding", "0.8"),
         ("/services/roof-scaffolding", "0.8"),
         ("/services/temporary-roofing", "0.8"),
-        ("/services/emergency-scaffolding", "0.8"),
-        ("/gallery", "0.7"),
+        ("/services/emergency-scaffolding", "0.9"),
+        ("/services/dismantling-scaffolding", "0.7"),
+        ("/services/loading-bay-scaffolding", "0.7"),
+        ("/services/scaffold-supply-erection", "0.7"),
+        ("/scaffolding-cost", "0.8"),
+        ("/gallery", "0.6"),
         ("/about", "0.7"),
-        ("/contact", "0.7"),
-        ("/quote", "0.7"),
-        ("/privacy-policy", "0.5"),
-        ("/terms-and-conditions", "0.5"),
-        ("/cookie-policy", "0.5"),
-        ("/thank-you", "0.1"),
+        ("/contact", "0.8"),
+        ("/quote", "0.9"),
+        ("/lp/scaffolding-rayleigh", "0.8"),
+        ("/lp/scaffolding-southend", "0.8"),
+        ("/lp/emergency-scaffolding-essex", "0.8"),
+        ("/lp/temporary-roofing-essex", "0.8"),
+        ("/privacy-policy", "0.3"),
+        ("/terms-and-conditions", "0.3"),
+        ("/cookie-policy", "0.3"),
+    ]
+    weekly_pages = [
+        ("/areas", "0.7"),
+        ("/areas/benfleet", "0.8"),
+        ("/areas/canvey-island", "0.8"),
+        ("/areas/rayleigh", "0.8"),
+        ("/areas/southend", "0.8"),
+        ("/areas/basildon", "0.8"),
+        ("/areas/chelmsford", "0.8"),
+        ("/areas/wickford", "0.8"),
+        ("/areas/hadleigh", "0.7"),
+        ("/areas/leigh-on-sea", "0.7"),
+        ("/areas/rochford", "0.7"),
+        ("/areas/hockley", "0.7"),
+        ("/areas/thundersley", "0.7"),
     ]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for path, priority in pages:
-        changefreq = 'yearly' if path == '/thank-you' else 'monthly'
+    for path, priority in monthly_pages:
+        loc = f"{SITE}/" if path == "/" else f"{SITE}{path}/"
         lines.append(
-            f"  <url><loc>{SITE}{path}</loc><lastmod>{TODAY}</lastmod><changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
+            f"  <url><loc>{loc}</loc><lastmod>{TODAY}</lastmod><changefreq>monthly</changefreq><priority>{priority}</priority></url>"
+        )
+    for path, priority in weekly_pages:
+        lines.append(
+            f"  <url><loc>{SITE}{path}/</loc><lastmod>{TODAY}</lastmod><changefreq>weekly</changefreq><priority>{priority}</priority></url>"
         )
     lines.append("</urlset>")
     write("sitemap.xml", "\n".join(lines))
