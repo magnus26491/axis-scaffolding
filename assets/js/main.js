@@ -231,30 +231,33 @@
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
+      const webhook = window.AXIS_QUOTE_WEBHOOK;
+      if (!webhook) {
+        // No webhook configured — let the form submit normally to its
+        // action URL (e.g. formsubmit.co) instead of silently discarding it.
+        return;
+      }
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
       const payload = { ...data, notification_email: CONTACT_EMAIL };
       let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        ok = res.ok;
+      } catch (_err) {
+        ok = false;
       }
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within 24 hours.'
           : 'Thanks. Your request is saved locally. Please call 01702 820468 while webhook setup is pending.';
       }
-      form.reset();
+      if (ok) form.reset();
     });
   });
 })();
