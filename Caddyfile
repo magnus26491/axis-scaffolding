@@ -1,5 +1,9 @@
 :{$PORT:8080}
 
+# Permanent domain migration. Keep the full path/query intact.
+@old-domain host axisscaffolding.co.uk www.axisscaffolding.co.uk
+redir @old-domain https://axisscaffoldingessex.co.uk{uri} permanent
+
 root * /app
 
 # Clean URL routing — serve {path}/index.html for any path that isn't a direct file
