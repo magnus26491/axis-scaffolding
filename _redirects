@@ -1,19 +1,60 @@
+# Domain migration — preserve old Axis URLs and link equity
 https://axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 301!
 https://www.axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 301!
-/about.html /about 301
-/gallery.html /gallery 301
-/contact.html /contact 301
-/privacy.html /privacy-policy 301
-/terms.html /terms-and-conditions 301
-/cookies.html /cookie-policy 301
-/services/residential.html /services/residential-scaffolding 301
-/services/commercial.html /services/commercial-scaffolding 301
-/services/supply-erection.html /services/domestic-scaffolding 301
-/services/dismantling.html /services/emergency-scaffolding 301
-/services/loading-bays.html /services/roof-scaffolding 301
-/services/temporary-roofs.html /services/temporary-roofing 301
-/areas/brentwood /#areas-covered 301
-/areas/loughton /#areas-covered 301
-/areas/clacton /#areas-covered 301
-/areas/bromley /#areas-covered 301
-/areas/london /#areas-covered 301
+
+# Legacy flat HTML URLs — one hop to the canonical trailing-slash route
+/about.html /about/ 301
+/gallery.html /gallery/ 301
+/contact.html /contact/ 301
+/privacy.html /privacy-policy/ 301
+/terms.html /terms-and-conditions/ 301
+/cookies.html /cookie-policy/ 301
+
+# Legacy service URLs — map to the equivalent service, never an unrelated page
+/services/residential.html /services/residential-scaffolding/ 301
+/services/commercial.html /services/commercial-scaffolding/ 301
+/services/supply-erection.html /services/scaffold-supply-erection/ 301
+/services/dismantling.html /services/dismantling-scaffolding/ 301
+/services/loading-bays.html /services/loading-bay-scaffolding/ 301
+/services/temporary-roofs.html /services/temporary-roofing/ 301
+
+# Canonical trailing-slash redirects
+/about /about/ 301
+/gallery /gallery/ 301
+/contact /contact/ 301
+/privacy-policy /privacy-policy/ 301
+/terms-and-conditions /terms-and-conditions/ 301
+/cookie-policy /cookie-policy/ 301
+/services /services/ 301
+/quote /quote/ 301
+/areas /areas/ 301
+
+/services/residential-scaffolding /services/residential-scaffolding/ 301
+/services/commercial-scaffolding /services/commercial-scaffolding/ 301
+/services/domestic-scaffolding /services/domestic-scaffolding/ 301
+/services/roof-scaffolding /services/roof-scaffolding/ 301
+/services/temporary-roofing /services/temporary-roofing/ 301
+/services/emergency-scaffolding /services/emergency-scaffolding/ 301
+/services/dismantling-scaffolding /services/dismantling-scaffolding/ 301
+/services/loading-bay-scaffolding /services/loading-bay-scaffolding/ 301
+/services/scaffold-supply-erection /services/scaffold-supply-erection/ 301
+
+/areas/benfleet /areas/benfleet/ 301
+/areas/canvey-island /areas/canvey-island/ 301
+/areas/rayleigh /areas/rayleigh/ 301
+/areas/southend /areas/southend/ 301
+/areas/basildon /areas/basildon/ 301
+/areas/chelmsford /areas/chelmsford/ 301
+/areas/wickford /areas/wickford/ 301
+/areas/hadleigh /areas/hadleigh/ 301
+/areas/leigh-on-sea /areas/leigh-on-sea/ 301
+/areas/thundersley /areas/thundersley/ 301
+/areas/hockley /areas/hockley/ 301
+/areas/rochford /areas/rochford/ 301
+/areas/brentwood /areas/brentwood/ 301
+/areas/loughton /areas/loughton/ 301
+/areas/london /areas/london/ 301
+
+# Retired location aliases — send visitors to the relevant location index, not a homepage fragment
+/areas/clacton /areas/ 301
+/areas/bromley /areas/ 301
