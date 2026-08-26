@@ -46,41 +46,18 @@ def clean_metadata(html: str) -> str:
 
 
 def fix_area_page(html: str) -> str:
-    # The parent breadcrumb must resolve to a real Areas page, not a homepage fragment.
     html = html.replace('href="/#areas-covered"', 'href="/areas"')
     html = html.replace(f'href="{SITE}/#areas-covered"', f'href="{SITE}/areas"')
     return html
 
 
 def fix_homepage(html: str) -> str:
-    # Turn the area pills into genuine internal links instead of sending every visitor to Contact.
     for name, slug in AREA_LINKS.items():
         html = html.replace(f'href="/contact">{name}</a>', f'href="/areas/{slug}">{name}</a>')
     return html
 
 
-def normalise_legacy_area_page(path: Path, target: str) -> None:
-    target_url = SITE + target
-    html = f'''<!doctype html>
-<html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0;url={target}">
-  <link rel="canonical" href="{target_url}">
-  <meta name="robots" content="noindex,follow">
-  <title>Redirecting to Axis Scaffolding</title>
-</head>
-<body>
-  <p>Redirecting to <a href="{target}">{target}</a></p>
-  <script>window.location.replace({target!r});</script>
-</body>
-</html>
-'''
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(html, encoding="utf-8")
-
-
-def normalise_legacy_service_file(path: Path, target: str) -> None:
+def normalise_legacy_redirect_page(path: Path, target: str) -> None:
     target_url = SITE + target
     html = f'''<!doctype html>
 <html lang="en-GB">
@@ -113,10 +90,10 @@ def write_redirects() -> None:
         "/cookies.html /cookie-policy 301",
     ]
     lines.extend(f"/{src} {target} 301" for src, target in LEGACY_SERVICE_TARGETS.items())
-    lines.extend([
-        "/areas/clacton /areas 301",
-        "/areas/bromley /areas 301",
-    ])
+    lines.extend(
+        f"/areas/{slug}.html {target} 301"
+        for slug, target in LEGACY_AREA_TARGETS.items()
+    )
     (ROOT / "_redirects").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -125,7 +102,6 @@ def update_sitemap() -> None:
     if not path.exists():
         return
     xml = path.read_text(encoding="utf-8")
-    # Keep the generator's deliberate non-trailing-slash canonical strategy consistent.
     xml = re.sub(r"(<loc>" + re.escape(SITE) + r"/[^<]*?)/</loc>", r"\1</loc>", xml)
 
     existing = set(re.findall(r"<loc>(.*?)</loc>", xml))
@@ -149,16 +125,15 @@ def main() -> None:
         html = clean_metadata(html)
         if html_path == ROOT / "index.html":
             html = fix_homepage(html)
-        # Generated area pages are areas/<slug>/index.html.
         if len(html_path.parts) >= 3 and html_path.parts[-3] == "areas" and html_path.name == "index.html":
             html = fix_area_page(html)
         html_path.write_text(html, encoding="utf-8")
 
     for slug, target in LEGACY_AREA_TARGETS.items():
-        normalise_legacy_area_page(ROOT / "areas" / f"{slug}.html", target)
+        normalise_legacy_redirect_page(ROOT / "areas" / f"{slug}.html", target)
 
     for source, target in LEGACY_SERVICE_TARGETS.items():
-        normalise_legacy_service_file(ROOT / source, target)
+        normalise_legacy_redirect_page(ROOT / source, target)
 
     write_redirects()
     update_sitemap()
