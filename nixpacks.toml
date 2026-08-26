@@ -1,5 +1,8 @@
 [phases.setup]
-nixPkgs = ["caddy"]
+nixPkgs = ["caddy", "python3"]
+
+[phases.build]
+cmds = ["python3 scripts/seo_postprocess.py"]
 
 [start]
 cmd = "caddy run --config /app/Caddyfile --adapter caddyfile"
