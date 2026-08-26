@@ -12,4 +12,8 @@ https://www.axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 30
 /services/dismantling.html /services/emergency-scaffolding 301
 /services/loading-bays.html /services/roof-scaffolding 301
 /services/temporary-roofs.html /services/temporary-roofing 301
-/areas/* /#areas-covered 301
+/areas/brentwood /#areas-covered 301
+/areas/loughton /#areas-covered 301
+/areas/clacton /#areas-covered 301
+/areas/bromley /#areas-covered 301
+/areas/london /#areas-covered 301
