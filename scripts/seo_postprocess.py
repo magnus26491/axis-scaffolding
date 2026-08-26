@@ -127,7 +127,6 @@ def update_sitemap() -> None:
     xml = path.read_text(encoding="utf-8")
     # Keep the generator's deliberate non-trailing-slash canonical strategy consistent.
     xml = re.sub(r"(<loc>" + re.escape(SITE) + r"/[^<]*?)/</loc>", r"\1</loc>", xml)
-    xml = xml.replace("<loc>" + SITE + "/</loc>", "<loc>" + SITE + "/</loc>")
 
     existing = set(re.findall(r"<loc>(.*?)</loc>", xml))
     additions = []
@@ -144,14 +143,14 @@ def update_sitemap() -> None:
 
 def main() -> None:
     for html_path in ROOT.rglob("*.html"):
-        # Do not alter generated third-party/vendor files if any are added later.
         if any(part in {".git", "node_modules"} for part in html_path.parts):
             continue
         html = html_path.read_text(encoding="utf-8", errors="ignore")
         html = clean_metadata(html)
         if html_path == ROOT / "index.html":
             html = fix_homepage(html)
-        if html_path.parts[-2:-1] == ("areas",):
+        # Generated area pages are areas/<slug>/index.html.
+        if len(html_path.parts) >= 3 and html_path.parts[-3] == "areas" and html_path.name == "index.html":
             html = fix_area_page(html)
         html_path.write_text(html, encoding="utf-8")
 
