@@ -106,7 +106,7 @@
         '<label style="display:flex;justify-content:space-between;align-items:center;">' +
         '<span>Marketing</span><input type="checkbox" id="axis-pref-marketing"></label>' +
         '</div>' +
-        '<button id="axis-pref-save" style="margin-top:1rem;background:#f97316;color:#000;' +
+        '<button id="axis-pref-save" style="margin-top:1rem;background:linear-gradient(135deg,#e8eaed,#c8cdd4);color:#000;' +
         'border:none;border-radius:9999px;padding:0.5rem 1.5rem;font-weight:700;cursor:pointer;">' +
         'Save Preferences</button>';
       document.body.appendChild(panel);
