@@ -35,11 +35,14 @@ jobs:
       - name: Build site
         run: python3 build_site.py
 
+      - name: Post-process SEO output
+        run: python3 scripts/seo_postprocess.py
+
       - name: Verify no uncommitted generator drift
         run: |
           git diff --stat
           if ! git diff --quiet; then
-            echo "::warning::Generated files differ from committed output. Committing generated diff..."
+            echo "::notice::Generated output was normalised by the deterministic SEO post-processor."
           fi
 
       - name: Validate generated output
@@ -69,24 +72,65 @@ jobs:
               if not (root / p).exists():
                   errors.append(f"Missing: {p}")
 
-          # Check no duplicate phone numbers (old mobile must not appear in HTML)
+          # Check no old phone number appears in generated HTML.
           OLD_PHONE = "07713245511"
           for html in root.rglob("*.html"):
               content = html.read_text(encoding="utf-8", errors="ignore")
               if OLD_PHONE in content:
                   errors.append(f"Old phone number found in: {html}")
 
-          # Check sitemap does not contain noindex pages
+          # Placeholder verification tokens must never ship.
+          for html in root.rglob("*.html"):
+              content = html.read_text(encoding="utf-8", errors="ignore")
+              if "REPLACE_WITH_GSC_CODE" in content:
+                  errors.append(f"Placeholder GSC verification token found in: {html}")
+              if 'name="revisit-after"' in content:
+                  errors.append(f"Obsolete revisit-after meta found in: {html}")
+
+          # Area pages must breadcrumb to the real Areas page, not a homepage fragment.
+          for html in (root / "areas").glob("*/index.html"):
+              content = html.read_text(encoding="utf-8", errors="ignore")
+              if "#areas-covered" in content:
+                  errors.append(f"Homepage-fragment breadcrumb remains in: {html}")
+
+          # Homepage area pills must point to area pages rather than every pill pointing to Contact.
+          homepage = (root / "index.html").read_text(encoding="utf-8", errors="ignore")
+          for name, slug in {
+              "Benfleet": "benfleet", "Canvey Island": "canvey-island", "Rayleigh": "rayleigh",
+              "Southend-on-Sea": "southend", "Basildon": "basildon", "Chelmsford": "chelmsford",
+              "Wickford": "wickford", "Hadleigh": "hadleigh", "Leigh-on-Sea": "leigh-on-sea",
+              "Thundersley": "thundersley", "Hockley": "hockley", "Rochford": "rochford",
+          }.items():
+              if f'href="/areas/{slug}">{name}</a>' not in homepage:
+                  errors.append(f"Homepage area link missing for: {name}")
+
+          # Check sitemap does not contain noindex pages.
           sitemap = (root / "sitemap.xml").read_text()
           noindex_in_sitemap = [p for p in ["/thank-you", "/privacy-policy", "/terms-and-conditions", "/cookie-policy"] if p in sitemap]
           if noindex_in_sitemap:
               errors.append(f"Noindex pages in sitemap: {noindex_in_sitemap}")
 
-          # Check robots.txt has AI crawler entries
+          # Sitemap URLs should match the site's canonical non-trailing-slash strategy.
+          for loc in re.findall(r"<loc>(.*?)</loc>", sitemap):
+              if loc != "https://axisscaffoldingessex.co.uk/" and loc.endswith("/"):
+                  errors.append(f"Trailing-slash sitemap URL conflicts with canonical strategy: {loc}")
+
+          # Check robots.txt has the intended crawlers.
           robots = (root / "robots.txt").read_text()
           for bot in ["OAI-SearchBot", "Googlebot", "Bingbot"]:
               if bot not in robots:
                   errors.append(f"Missing {bot} in robots.txt")
+
+          # Legacy redirect targets must not be unrelated homepage fragments.
+          redirects = (root / "_redirects").read_text()
+          if "#areas-covered" in redirects:
+              errors.append("_redirects still contains homepage-fragment redirects")
+          if "/services/supply-erection.html /services/domestic-scaffolding" in redirects:
+              errors.append("Legacy supply/erection redirect still points to domestic scaffolding")
+          if "/services/dismantling.html /services/emergency-scaffolding" in redirects:
+              errors.append("Legacy dismantling redirect still points to emergency scaffolding")
+          if "/services/loading-bays.html /services/roof-scaffolding" in redirects:
+              errors.append("Legacy loading-bay redirect still points to roof scaffolding")
 
           if errors:
               print("Validation errors:")
