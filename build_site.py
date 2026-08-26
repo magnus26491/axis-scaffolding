@@ -166,6 +166,8 @@ def ensure_dirs() -> None:
         "privacy-policy",
         "terms-and-conditions",
         "cookie-policy",
+        "guides",
+        "contractors",
     ]:
         (ROOT / rel).mkdir(parents=True, exist_ok=True)
 
@@ -551,7 +553,21 @@ def generate_media_assets() -> None:
     hero_src = ROOT / "assets/images/job1.jpg"
     if hero_src.exists():
         with Image.open(hero_src) as im:
-            im.convert("RGB").save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
+            rgb = im.convert("RGB")
+            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
+            orig_w, orig_h = rgb.size
+            for w in (480, 768, 1024, 1440):
+                if orig_w >= w:
+                    h = round(orig_h * w / orig_w)
+                    rgb.resize((w, h), Image.LANCZOS).save(
+                        ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=85
+                    )
+
+    for idx in range(8, 15):
+        src = ROOT / f"assets/images/gallery-project-{idx}.jpg"
+        if src.exists():
+            with Image.open(src) as im:
+                im.convert("RGB").save(ROOT / f"images/gallery-project-{idx}.webp", format="WEBP", quality=85)
 
     og = Image.new("RGB", (1200, 630), "#0d0d0d")
     draw = ImageDraw.Draw(og)
@@ -1419,23 +1435,37 @@ def generate_js() -> None:
     write("assets/js/main.js", js)
 
 
-def project_cards() -> str:
-    rows = [
-        (1, "Residential Scaffolding", "Benfleet"),
-        (2, "Commercial Scaffolding", "Canvey Island"),
-        (3, "Shopfront Access Scaffold", "Rayleigh"),
-        (4, "Temporary Roofing Scaffold", "Southend-on-Sea"),
-        (5, "Roof Scaffolding", "Basildon"),
-        (6, "Domestic Scaffolding", "Chelmsford"),
-    ]
+PROJECT_ROWS = [
+    ("project-1.webp",         "Residential Scaffolding",         "Benfleet",       "Full perimeter scaffold for roof replacement on a detached house."),
+    ("project-2.webp",         "Commercial Scaffolding",          "Canvey Island",  "Multi-elevation access scaffold for a commercial refurbishment."),
+    ("project-3.webp",         "Shopfront Access Scaffold",       "Rayleigh",       "Single-elevation scaffold for shopfront rendering and signage work."),
+    ("project-4.webp",         "Temporary Roofing Scaffold",      "Southend-on-Sea","Scaffold with temporary roof cover to protect during roof replacement."),
+    ("project-5.webp",         "Roof Scaffolding",                "Basildon",       "Roof-level scaffold for chimney repointing and ridge tile replacement."),
+    ("project-6.webp",         "Domestic Scaffolding",            "Chelmsford",     "Rear-elevation scaffold for extension construction access."),
+    ("project-7.webp",         "Residential Scaffolding",         "Wickford",       "Full scaffold erected for a complete re-roofing project."),
+]
+
+GALLERY_ROWS = PROJECT_ROWS + [
+    ("gallery-project-8.webp",  "Roof Scaffolding",               "Hadleigh",       "Scaffold for roof and roofline replacement on a semi-detached property."),
+    ("gallery-project-9.webp",  "Domestic Scaffolding",           "Leigh-on-Sea",   "Single-elevation domestic scaffold for fascia and soffit replacement."),
+    ("gallery-project-10.webp", "Residential Scaffolding",        "Thundersley",    "Full perimeter scaffold for a complete exterior renovation project."),
+    ("gallery-project-11.webp", "Commercial Scaffolding",         "Rayleigh",       "Commercial scaffold erected for building envelope maintenance works."),
+    ("gallery-project-12.webp", "Render Scaffold",                "Benfleet",       "Scaffold providing full access for external render replacement."),
+    ("gallery-project-13.webp", "Extension Scaffold",             "Chelmsford",     "Side and rear scaffold to support a two-storey extension build."),
+    ("gallery-project-14.webp", "Roof Scaffolding",               "Rochford",       "Roof scaffold for full tile replacement and chimney repointing."),
+]
+
+
+def project_cards(full_gallery: bool = False) -> str:
+    rows = GALLERY_ROWS if full_gallery else PROJECT_ROWS[:6]
     return "".join(
         f"""
 <figure class="project-item">
-  <img src="/images/project-{idx}.webp" alt="{label} installation in {location}, Essex" width="640" height="800" loading="lazy" decoding="async">
-  <figcaption><span>{label}</span><small>{location}</small></figcaption>
+  <img src="/images/{img}" alt="{label} — {location}, Essex" width="640" height="800" loading="lazy" decoding="async">
+  <figcaption><span>{label}</span><small>{location} — {desc}</small></figcaption>
 </figure>
 """
-        for idx, label, location in rows
+        for img, label, location, desc in rows
     )
 
 
@@ -1526,7 +1556,12 @@ def testimonials() -> str:
 def homepage() -> str:
     return f"""
 <section class="hero" id="top">
-  <img class="hero-media" src="/images/hero-bg.webp" alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
+  <img class="hero-media"
+       src="/images/hero-bg.webp"
+       srcset="/images/hero-bg-480w.webp 480w, /images/hero-bg-768w.webp 768w, /images/hero-bg-1024w.webp 1024w, /images/hero-bg-1440w.webp 1440w, /images/hero-bg.webp 1920w"
+       sizes="100vw"
+       alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd"
+       width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
@@ -2297,7 +2332,7 @@ def generate_pages() -> None:
             "Scaffolding Projects Gallery",
             "View real scaffolding Essex projects completed from our Benfleet base. Explore domestic, commercial and roof access works, then get a free quote today.",
         )
-        + f"""<section class="section section-dark"><div class="container"><h2>Our Recent Projects</h2><div class="projects-grid">{project_cards()}</div></div></section>"""
+        + f"""<section class="section section-dark"><div class="container"><h2>Our Recent Projects</h2><div class="projects-grid">{project_cards(full_gallery=True)}</div></div></section>"""
     )
     write(
         "gallery/index.html",
@@ -2407,6 +2442,263 @@ def generate_pages() -> None:
             ),
         )
 
+
+    # ── Guide pages ──────────────────────────────────────────────────────────
+    cost_guide_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost in Essex", "/guides/scaffolding-cost-essex")],
+            "How Much Does Scaffolding Cost in Essex?",
+            "A straightforward guide to scaffolding prices in Essex — what affects the cost, typical price ranges for common jobs, and how to get an accurate quote from Axis Scaffolding Ltd.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container direct-answer">
+    <h2>The Short Answer</h2>
+    <p>Residential scaffolding in Essex typically costs <strong>£350–£600</strong> for smaller single-elevation domestic jobs and <strong>£800–£2,500+</strong> for full roof scaffolding on larger properties. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
+    <div class="hero-cta-row" style="margin-top:1.5rem;">
+      <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <h2>What Affects the Cost of Scaffolding?</h2>
+    <div class="decision-grid">
+      <div class="decision-card">
+        <h3>Size and Height</h3>
+        <p>More scaffold tubes, boards and fittings means more cost. A single-storey rear elevation is much cheaper than a full three-storey perimeter scaffold.</p>
+      </div>
+      <div class="decision-card">
+        <h3>Number of Elevations</h3>
+        <p>A single front-of-house scaffold is cheaper than wrapping all four sides of a property. Chimney scaffold typically involves only a small working platform.</p>
+      </div>
+      <div class="decision-card">
+        <h3>Duration on Hire</h3>
+        <p>Scaffolding is usually priced for a set hire period (often two to four weeks for domestic jobs). Extended hire increases cost — plan your trades to reduce standing time.</p>
+      </div>
+      <div class="decision-card">
+        <h3>Site Access</h3>
+        <p>Difficult access — narrow gates, slopes, restricted roads — takes longer to erect and may require specialist equipment or licences, affecting price.</p>
+      </div>
+      <div class="decision-card">
+        <h3>Highway Licence</h3>
+        <p>If scaffold extends over a public pavement or road, a Section 169 licence is required from Essex Highways. Licence fees vary by council and add to the overall cost.</p>
+      </div>
+      <div class="decision-card">
+        <h3>Temporary Roofing</h3>
+        <p>If your project needs weatherproof cover during works (e.g. roof replacement in autumn or winter), a temporary scaffold roof adds to the overall package cost.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <h2>Typical Scaffolding Prices — Essex Guide</h2>
+    <p style="color:var(--text-muted); margin-bottom:1.5rem;">These are indicative ranges only. Your quote may differ depending on the factors above.</p>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>Chimney Scaffold</h3><p><strong>£350–£600</strong><br>Single-stack access platform, typically 1–2 week hire.</p></div>
+      <div class="decision-card"><h3>Single Elevation Scaffold</h3><p><strong>£400–£900</strong><br>One face of a house for rendering, fascias or guttering.</p></div>
+      <div class="decision-card"><h3>Full Roof Scaffold</h3><p><strong>£800–£1,800</strong><br>Full perimeter scaffold for roof replacement on a standard semi or detached.</p></div>
+      <div class="decision-card"><h3>Extension Scaffold</h3><p><strong>£500–£1,200</strong><br>Side or rear scaffold for extension builds, typically 4–8 weeks hire.</p></div>
+      <div class="decision-card"><h3>Commercial Scaffold</h3><p><strong>Individually quoted</strong><br>Multi-storey, loading bays, complex access and commercial refurbishments.</p></div>
+      <div class="decision-card"><h3>Temporary Roofing</h3><p><strong>Additional cost</strong><br>Added to a scaffold package — price depends on span and duration.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <h2>How to Get an Accurate Quote</h2>
+    <div class="process-steps">
+      <div class="process-step"><div class="process-num">1</div><div><h3>Describe Your Project</h3><p>Tell us the job type, property size and approximate height. Photos of the property and access help us prepare a more accurate figure faster.</p></div></div>
+      <div class="process-step"><div class="process-num">2</div><div><h3>Site Visit If Needed</h3><p>For complex jobs we will arrange a brief site visit before quoting. For most standard residential jobs, we can quote from photos and a description.</p></div></div>
+      <div class="process-step"><div class="process-num">3</div><div><h3>Receive Your Quote</h3><p>We provide clear, itemised quotations. No hidden charges. If a highway licence is required we will include it and advise on the process.</p></div></div>
+    </div>
+    <div class="hero-cta-row" style="margin-top:2rem;">
+      <a class="btn btn-primary" href="/quote">Request a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "guides/scaffolding-cost-essex/index.html",
+        render_page(
+            title="How Much Does Scaffolding Cost in Essex? | Axis Scaffolding",
+            desc="Scaffolding cost guide for Essex homeowners and contractors. Typical price ranges for domestic, roof, chimney and commercial scaffolding — with a free quote from Axis Scaffolding.",
+            path="/guides/scaffolding-cost-essex",
+            body=cost_guide_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
+        ),
+    )
+
+    need_scaffold_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+            "Do I Need Scaffolding for My Project?",
+            "A practical guide to help you work out whether your building or repair project requires scaffold access — and what the alternatives are.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container direct-answer">
+    <h2>The Short Answer</h2>
+    <p>You almost certainly need scaffolding if trades need to work at height for more than a brief task, if they need both hands free to work safely, or if the job requires materials to be positioned at roof level. A ladder may be sufficient for a single inspection or brief one-handed task. If in doubt, a CISRS-qualified scaffolder can advise — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> for a no-obligation discussion.</p>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <h2>Jobs That Typically Require Scaffolding</h2>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>Roof Replacement</h3><p>Any full or partial roof replacement requires a scaffold to allow roofers to work safely and to land materials at roof level. No reputable roofer will re-roof from a ladder.</p></div>
+      <div class="decision-card"><h3>Chimney Repointing or Rebuild</h3><p>Chimney work at or above roof level requires a stable working platform. A chimney scaffold is a small but essential structure for this type of job.</p></div>
+      <div class="decision-card"><h3>External Rendering</h3><p>Rendering requires a renderer to work across the full face of a wall at height with both hands. A scaffold provides the working platform and access staging needed.</p></div>
+      <div class="decision-card"><h3>Fascia, Soffit and Guttering</h3><p>Replacing guttering or roofline materials around the full perimeter of a property requires access at eaves height — typically a scaffold or tower, depending on height.</p></div>
+      <div class="decision-card"><h3>Extensions</h3><p>As an extension rises past ground floor, scaffold access is required for bricklayers and other trades working on upper walls and the roof structure.</p></div>
+      <div class="decision-card"><h3>Window and Cladding Work</h3><p>Upper-floor window replacement, cladding installation or external insulation work all typically require scaffold access for safe two-handed working.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <h2>When a Ladder May Be Sufficient</h2>
+    <p>For a licensed tradesperson carrying out a brief task — cleaning a single gutter section, inspecting a roof, replacing a single tile — a ladder used with the correct technique may be appropriate under a risk assessment. This is the roofer's or contractor's decision, not the homeowner's. Where work involves sustained activity, both hands being needed, or working near a roof edge, scaffold is the appropriate solution.</p>
+    <h2>Working at Height Regulations</h2>
+    <p>The Work at Height Regulations 2005 require that all work at height is properly planned, appropriately supervised and carried out by competent people using appropriate equipment. This applies to all trades working on your property, not just scaffolders. If a tradesperson is proposing to carry out significant work at height without a scaffold or other collective protective measure, it is worth asking how they are meeting this requirement.</p>
+    <div class="hero-cta-row" style="margin-top:1.5rem;">
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "guides/do-i-need-scaffolding/index.html",
+        render_page(
+            title="Do I Need Scaffolding for My Project? | Axis Scaffolding Essex",
+            desc="Find out whether your building or repair project needs scaffolding. Practical guidance on when scaffold is required and when a ladder may be sufficient.",
+            path="/guides/do-i-need-scaffolding",
+            body=need_scaffold_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+        ),
+    )
+
+    licence_guide_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides"), ("Highway Licence for Scaffolding", "/guides/highway-licence-scaffolding")],
+            "Does Scaffolding on a Pavement Need a Licence?",
+            "A plain-English guide to Section 169 highway licences for scaffolding over pavements and roads in Essex — when you need one, how to get one, and what it costs.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container direct-answer">
+    <h2>Yes — a Licence Is Required</h2>
+    <p>If scaffolding overhangs or occupies any part of a public highway — including the pavement in front of your property — a licence under <strong>Section 169 of the Highways Act 1980</strong> is required before erection begins. Working without a licence can result in enforcement action by the local authority and invalidate your insurance. Axis Scaffolding can advise on the licence process and liaise with Essex Highways on your behalf.</p>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <h2>What Is a Section 169 Licence?</h2>
+    <p>A Section 169 licence (also called a "scaffolding licence" or "highway licence") is a formal permission granted by the highway authority — in most of Essex this is Essex County Council Highways — to occupy or overhang the public highway with a scaffold structure. It specifies conditions including the scaffold footprint, lighting and signing requirements, and the permitted duration.</p>
+    <h2>When Do You Need One?</h2>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>Pavement Overhang</h3><p>If any part of the scaffold — including ties, standards or boards — extends over the public footpath, a licence is required even if the scaffold base is on private land.</p></div>
+      <div class="decision-card"><h3>Scaffold on the Highway</h3><p>If scaffold base plates or any structure is positioned on the public footpath or road surface, a licence is required.</p></div>
+      <div class="decision-card"><h3>Protective Fans or Gantries</h3><p>Covered walkways or protective fans over a pavement also require a licence regardless of whether they touch the ground.</p></div>
+      <div class="decision-card decision-card-urgent"><h3>Not Required If Fully On Private Land</h3><p>If the scaffold is entirely within the property boundary, away from the highway, no Section 169 licence is needed — though planning restrictions may still apply.</p></div>
+    </div>
+    <h2>How Long Does It Take?</h2>
+    <p>Essex Highways typically requires a minimum of 5–10 working days' notice. Some districts and urban areas may require longer. We recommend raising the licence requirement as early as possible in the project planning process. Axis Scaffolding will identify the requirement at the quotation stage and advise accordingly.</p>
+    <h2>What Does It Cost?</h2>
+    <p>Licence fees are set by the highway authority and vary. As a guide, Essex Highways charges a fee based on the area of highway occupied and the duration. These fees are passed through at cost. We will include the estimated licence cost in your quotation so there are no surprises.</p>
+    <div class="hero-cta-row" style="margin-top:2rem;">
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "guides/highway-licence-scaffolding/index.html",
+        render_page(
+            title="Scaffolding Highway Licence Essex | Section 169 Guide",
+            desc="Do you need a licence to erect scaffolding on a pavement in Essex? Plain-English guide to Section 169 highway licences — when required, how to apply, and typical costs.",
+            path="/guides/highway-licence-scaffolding",
+            body=licence_guide_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Highway Licence", "/guides/highway-licence-scaffolding")],
+        ),
+    )
+
+    # ── Contractors / commercial page ─────────────────────────────────────
+    contractors_body = (
+        inner_hero(
+            [("Home", "/"), ("Contractors", "/contractors")],
+            "Scaffolding for Builders &amp; Contractors in Essex",
+            "Axis Scaffolding Ltd works directly with builders, developers and principal contractors across South Essex. RAMS available. CISRS qualified. Trade enquiries welcome.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container direct-answer">
+    <h2>A Reliable Scaffolding Partner for Essex Contractors</h2>
+    <p>We work with builders, roofing contractors, developers and property managers across South Essex. Our CISRS-qualified team provides planned scaffold packages with clear communication, RAMS documentation when required, and a commitment to erection and strike timescales that keep your programme on track. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> to discuss a trade account or one-off project.</p>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <h2>What We Offer Contractors</h2>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>RAMS on Request</h3><p>Risk Assessments and Method Statements available for commercial sites and principal contractors who require them before works begin.</p></div>
+      <div class="decision-card"><h3>Planned Erection and Strike</h3><p>We work to agreed dates. If your programme changes, call us early — we will do our best to accommodate. We understand that site programmes flex.</p></div>
+      <div class="decision-card"><h3>CISRS Qualified Team</h3><p>All operatives hold valid CISRS cards. You can verify qualifications on request. Full insurance documentation provided on request.</p></div>
+      <div class="decision-card"><h3>Trade Enquiries Welcome</h3><p>We work with roofers, builders, developers and property managers on a repeat and one-off basis. Call to discuss your project or set up a trade account.</p></div>
+      <div class="decision-card"><h3>Highway Licence Advice</h3><p>We identify licence requirements at the quotation stage and liaise with Essex Highways on your behalf where required.</p></div>
+      <div class="decision-card"><h3>Emergency Response</h3><p>Storm-damaged roofs and urgent structural access don't wait. Call us directly for priority attendance on emergency jobs.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <h2>Services Available to Contractors</h2>
+    <div class="services-grid">
+      {"".join(f'<article class="service-card"><h3>{s["name"]}</h3><p>{s["summary"]}</p><a href="/services/{s["slug"]}">Read more</a></article>' for s in SERVICES)}
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container cta-banner-inner">
+    <div>
+      <h2>Trade Enquiries Welcome</h2>
+      <p>Call us to discuss your project or request a trade quotation &middot; CISRS qualified &middot; RAMS available</p>
+    </div>
+    <div class="hero-cta-row">
+      <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-outline" href="/quote">Send an Enquiry</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "contractors/index.html",
+        render_page(
+            title="Scaffolding for Builders &amp; Contractors | Axis Scaffolding Essex",
+            desc="Axis Scaffolding works with builders, roofers and developers across South Essex. CISRS qualified, RAMS available, trade enquiries welcome. Call 01702 820468.",
+            path="/contractors",
+            body=contractors_body,
+            breadcrumb_items=[("Home", "/"), ("Contractors", "/contractors")],
+        ),
+    )
 
     for area_name, area_data in AREA_DATA.items():
         write(
@@ -2595,6 +2887,10 @@ def generate_robots_sitemap() -> None:
         ("/about", "0.7", "monthly"),
         ("/contact", "0.8", "monthly"),
         ("/quote", "0.8", "monthly"),
+        ("/contractors", "0.8", "monthly"),
+        ("/guides/scaffolding-cost-essex", "0.7", "monthly"),
+        ("/guides/do-i-need-scaffolding", "0.7", "monthly"),
+        ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path, priority, changefreq in pages:
