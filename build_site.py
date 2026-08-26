@@ -8,19 +8,20 @@ from typing import Iterable
 from PIL import Image, ImageDraw, ImageFont
 
 
-ROOT = Path("/workspace")
+ROOT = Path(__file__).parent
 SITE = "https://axisscaffoldingessex.co.uk"
 OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
-FORM_ACTION = 'mailto:axis-scaffolding@outlook.com'
+FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
     "address": "Arterial Road, Rayleigh, Essex, SS6 7XT",
-    "phone": "07713245511",
+    "phone": "01702 820468",
+    "phone_e164": "+441702820468",
     "email": CONTACT_EMAIL,
     "company_no": "15050136",
 }
@@ -28,23 +29,35 @@ NAP = {
 FAQS = [
     (
         "How much does scaffolding cost in Essex?",
-        "Scaffolding costs in Essex depend on property size, scaffold type and project duration. We provide clear quotations from our Benfleet team so you can approve your project confidently.",
+        "Residential scaffolding in Essex typically starts from around £300–£500 for smaller access jobs, rising to £1,500 or more for full roof scaffolds on larger properties. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
     ),
     (
-        "How quickly can scaffolding be erected in Benfleet?",
-        "Most Benfleet and South Essex installations can be scheduled quickly once your quote is approved. We plan safe access and provide a realistic start date based on project urgency and scope.",
+        "How quickly can scaffolding be erected?",
+        "Most standard South Essex domestic and commercial jobs are scheduled within 2–5 working days once a quote is approved. Emergency scaffolding for urgent structural or storm-damage situations is prioritised — call 01702 820468 directly for urgent access requirements.",
     ),
     (
         "Are you CISRS certified scaffolders?",
-        "Yes. Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company focused on safe, compliant installations for homes and businesses across Essex.",
+        "Yes. Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company. CISRS (Construction Industry Scaffolders Record Scheme) is the industry standard qualification for scaffolders in the UK, demonstrating that our operatives are trained and assessed to national standards.",
+    ),
+    (
+        "Do you need a licence to erect scaffolding on a pavement or road?",
+        "Yes. Scaffolding that overhangs or occupies a public highway — including pavements — requires a licence under Section 169 of the Highways Act 1980. Axis Scaffolding can advise on the licence process and coordinate with the local authority on your behalf. Licence fees and timescales vary by area.",
     ),
     (
         "Do you cover residential and commercial scaffolding in Essex?",
-        "Absolutely. We provide residential, domestic and commercial scaffolding, including roof scaffolding, temporary roofing and emergency access support throughout Essex.",
+        "Yes. We provide domestic and residential scaffolding for homeowners, roof scaffolding for roofers and contractors, and commercial scaffolding for builders, developers and property managers. We also provide temporary roofing and emergency access across South Essex.",
+    ),
+    (
+        "What is the difference between residential and domestic scaffolding?",
+        "At Axis Scaffolding, residential scaffolding typically refers to larger home projects — extensions, full roof replacements, multi-storey properties — while domestic scaffolding covers shorter-term access for occupied homes undertaking repairs, painting or chimney work. Both are handled by the same CISRS-qualified team. If you're unsure which applies, just describe your job and we'll advise.",
+    ),
+    (
+        "Will scaffolding damage my driveway or garden?",
+        "We take care to protect driveways, gardens and render when erecting scaffold. Base plates and boards are used to spread load and minimise ground contact. If you have a particular concern about your driveway surface or a specific access constraint, mention it when you request your quote so we can plan accordingly.",
     ),
     (
         "What areas do you cover in Essex?",
-        "We are based in Benfleet and regularly cover Canvey Island, Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford.",
+        "We are based in Rayleigh and regularly provide scaffolding in Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.",
     ),
 ]
 
@@ -53,43 +66,73 @@ SERVICES = [
         "slug": "residential-scaffolding",
         "name": "Residential Scaffolding",
         "title": "Residential Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Need residential scaffolding Essex support in Benfleet? Axis Scaffolding delivers safe home access across scaffolding Essex. Get a free quote today.",
-        "summary": "Safe and tidy scaffold systems for extensions, roofing, rendering and exterior home improvements.",
+        "desc": "Residential scaffolding in Essex for extensions, roof replacements and exterior works. CISRS-qualified team based in Rayleigh. Free quotes — call 01702 820468.",
+        "summary": "Safe, tidy scaffold systems for extensions, full roof replacements, rendering and exterior home improvements across South Essex.",
+        "who_for": "Homeowners undertaking extensions, roof replacements, chimney repairs, rendering and other major exterior works.",
     },
     {
         "slug": "commercial-scaffolding",
         "name": "Commercial Scaffolding",
         "title": "Commercial Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Commercial scaffolding Essex support from Rayleigh specialists at Axis Scaffolding for developers across scaffolding Essex. Get a free quote today.",
-        "summary": "Reliable scaffold packages for offices, retail units, schools and commercial developments.",
+        "desc": "Commercial scaffolding in Essex for builders, developers and contractors. RAMS available. CISRS-qualified team in Rayleigh. Call 01702 820468 for a fast quote.",
+        "summary": "Planned scaffold packages for builders, contractors, offices, retail units, schools and commercial developments across Essex.",
+        "who_for": "Builders, developers, principal contractors, property managers and commercial premises requiring planned scaffold access.",
     },
     {
         "slug": "domestic-scaffolding",
         "name": "Domestic Scaffolding",
-        "title": "Domestic Scaffolding Essex | Axis Scaffolding Team",
-        "desc": "Domestic scaffolding Essex services from Rayleigh with safe, practical access for houses and flats across scaffolding Essex. Get a free quote today.",
-        "summary": "Flexible domestic scaffold installations tailored for occupied properties and local builders.",
+        "title": "Domestic Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Domestic scaffolding in Essex for occupied homes, repairs and short-term access. CISRS-qualified team in Rayleigh, South Essex. Free quotes — call 01702 820468.",
+        "summary": "Short-term scaffold access for occupied homes needing repairs, painting, chimney work or maintenance across South Essex.",
+        "who_for": "Homeowners requiring shorter-term scaffold access for repairs, maintenance, painting or chimney work on occupied properties.",
     },
     {
         "slug": "roof-scaffolding",
         "name": "Roof Scaffolding",
-        "title": "Roof Scaffolding Essex | Axis Scaffolding Essex Team",
-        "desc": "Roof scaffolding Essex installations from Rayleigh for repairs and refurbishments across scaffolding Essex with dependable access. Get a free quote today.",
-        "summary": "Specialist roof access scaffold systems for chimney, guttering and full roofline projects.",
+        "title": "Roof Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Roof scaffolding in Essex for roofers, chimney repairs and roofline works. CISRS-qualified. Based in Rayleigh. Free quote — call 01702 820468.",
+        "summary": "Specialist roof-level scaffold systems for chimney repairs, guttering, fascias and full roof replacements across South Essex.",
+        "who_for": "Homeowners and roofing contractors needing safe, compliant roof access for repairs, replacement, chimneys or guttering.",
     },
     {
         "slug": "temporary-roofing",
         "name": "Temporary Roofing",
-        "title": "Temporary Roofing Essex | Axis Scaffolding Essex Team",
-        "desc": "Temporary roofing scaffolding Essex solutions in Rayleigh to protect sites from weather across scaffolding Essex while works continue. Get a free quote today.",
-        "summary": "Weather-protected temporary roofing structures that keep projects moving in all seasons.",
+        "title": "Temporary Roofing Essex | Axis Scaffolding Ltd",
+        "desc": "Temporary roofing in Essex to protect live projects from weather. Scaffold-supported structures for ongoing roof works. Rayleigh team — call 01702 820468.",
+        "summary": "Weather-protected temporary roof structures that keep projects moving year-round, protecting exposed structures during active roof works.",
+        "who_for": "Builders, roofers and homeowners needing weather protection over an exposed structure during roof replacement or significant repair work.",
     },
     {
         "slug": "emergency-scaffolding",
         "name": "Emergency Scaffolding",
         "title": "Emergency Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Emergency scaffolding Essex response from Rayleigh for urgent access and safety works across scaffolding Essex. Contact Axis Scaffolding for a free quote today.",
-        "summary": "Rapid-response scaffold support for urgent structural, roof or safety access requirements.",
+        "desc": "Emergency scaffolding in Essex for storm damage, urgent access and safety works. Axis Scaffolding prioritises urgent enquiries — call 01702 820468 now.",
+        "summary": "Rapid-response scaffold support for urgent structural issues, storm damage and emergency safety access across South Essex.",
+        "who_for": "Anyone facing urgent structural access needs — storm-damaged roofs, emergency repairs, temporary protection after an incident.",
+    },
+    {
+        "slug": "dismantling-scaffolding",
+        "name": "Scaffold Dismantling",
+        "title": "Scaffold Dismantling Essex | Axis Scaffolding Ltd",
+        "desc": "Professional scaffold dismantling in Essex. Safe, efficient removal and tidy handover once your project is complete. Rayleigh team — call 01702 820468.",
+        "summary": "Safe, efficient scaffold removal and tidy site handover once works are complete — completing the full scaffold lifecycle.",
+        "who_for": "Anyone who needs an existing scaffold removed safely, including scaffolds erected by other companies.",
+    },
+    {
+        "slug": "loading-bay-scaffolding",
+        "name": "Loading Bay Scaffolding",
+        "title": "Loading Bay Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Loading bay scaffolding in Essex for commercial sites and contractors. Structured material access solutions. Rayleigh team — call 01702 820468.",
+        "summary": "Scaffold-integrated loading bays for safe materials delivery and handling on commercial and residential construction sites.",
+        "who_for": "Builders and contractors on sites requiring safe access for materials delivery, loading and unloading at height.",
+    },
+    {
+        "slug": "scaffold-supply-erection",
+        "name": "Scaffold Supply & Erection",
+        "title": "Scaffold Supply and Erection Essex | Axis Scaffolding Ltd",
+        "desc": "Scaffold supply and erection in Essex. Materials and installation from a single CISRS-qualified team in Rayleigh. Free quote — call 01702 820468.",
+        "summary": "Complete scaffold supply and erection from a single contractor — materials, qualified labour and site coordination in one package.",
+        "who_for": "Contractors and homeowners who need a complete, managed scaffold solution from a single point of contact.",
     },
 ]
 
@@ -137,6 +180,7 @@ def local_business_schema() -> dict:
     return {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
+        "@id": f"{SITE}/#business",
         "name": "Axis Scaffolding Ltd",
         "legalName": "AXIS SCAFFOLDING LTD",
         "url": SITE,
@@ -152,16 +196,23 @@ def local_business_schema() -> dict:
         },
         "geo": {"@type": "GeoCoordinates", "latitude": 51.5868, "longitude": 0.6044},
         "areaServed": [
-            "Benfleet",
-            "Canvey Island",
-            "Rayleigh",
-            "Southend-on-Sea",
-            "Chelmsford",
-            "Basildon",
-            "Essex",
+            {"@type": "City", "name": "Rayleigh"},
+            {"@type": "City", "name": "Benfleet"},
+            {"@type": "City", "name": "Canvey Island"},
+            {"@type": "City", "name": "Southend-on-Sea"},
+            {"@type": "City", "name": "Basildon"},
+            {"@type": "City", "name": "Chelmsford"},
+            {"@type": "AdministrativeArea", "name": "Essex"},
         ],
         "priceRange": "££",
-        "openingHours": "Mo-Fr 07:00-18:00",
+        "openingHoursSpecification": [
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "opens": "07:00",
+                "closes": "18:00",
+            }
+        ],
         "sameAs": [
             "https://www.facebook.com/Axisscaffoldingltd/",
             "https://www.instagram.com/axis_scaffoldingessex/",
@@ -259,7 +310,7 @@ def breadcrumb_nav(items: list[tuple[str, str]]) -> str:
 
 
 def nav() -> str:
-    return """
+    return f"""
 <header class="site-header" id="site-header">
   <div class="container nav-wrap">
     <a class="logo-wrap" href="/" aria-label="Axis Scaffolding Ltd homepage">
@@ -267,15 +318,17 @@ def nav() -> str:
         <img src="/images/logo.webp" alt="Axis Scaffolding Ltd logo" width="64" height="64" loading="lazy" decoding="async">
       </span>
     </a>
+    <a class="nav-phone-mobile" href="tel:{NAP['phone_e164']}" aria-label="Call Axis Scaffolding">{NAP['phone']}</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle mobile menu" aria-controls="site-menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/services">Services</a>
-      <a href="/gallery">Gallery</a>
+      <a href="/gallery">Projects</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
+      <a class="nav-phone-desktop" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="cta-pill" href="/quote">Get a Free Quote</a>
     </nav>
   </div>
@@ -312,10 +365,11 @@ def footer() -> str:
     <section>
       <h2>Contact Us</h2>
       <p>{NAP["name"]}</p>
-      <p><a href="tel:{NAP["phone"]}">{NAP["phone"]}</a></p>
+      <p><a href="tel:{NAP["phone_e164"]}">{NAP["phone"]}</a></p>
       <p><a href="mailto:{NAP["email"]}">{NAP["email"]}</a></p>
       <p>{NAP["address"]}</p>
       <p>Company No: {NAP["company_no"]}</p>
+      <p style="margin-top:0.5rem; font-size:0.85rem;">Mon–Fri 07:00–18:00</p>
     </section>
   </div>
   <div class="container footer-bottom">
@@ -412,25 +466,35 @@ def quote_form(prefix: str, title: str) -> str:
     return f"""
 <section class="quote-form-card">
   <h3>{title}</h3>
-  <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST" enctype="text/plain">
+  <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST">
+    <input type="hidden" name="_subject" value="New Scaffolding Quote Request — Axis Scaffolding Ltd">
     <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
     <input type="hidden" name="_next" value="{FORM_NEXT}">
-    <p><label for="{prefix}-name">Full Name *</label><input id="{prefix}-name" name="fullName" required></p>
-    <p><label for="{prefix}-phone">Phone Number *</label><input id="{prefix}-phone" name="phone" type="tel" required></p>
-    <p><label for="{prefix}-email">Email Address *</label><input id="{prefix}-email" name="email" type="email" required></p>
-    <p><label for="{prefix}-postcode">Postcode *</label><input id="{prefix}-postcode" name="postcode" required></p>
+    <input type="hidden" name="_captcha" value="false">
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+    <p><label for="{prefix}-name">Full Name *</label><input id="{prefix}-name" name="fullName" autocomplete="name" required></p>
+    <p><label for="{prefix}-phone">Phone Number *</label><input id="{prefix}-phone" name="phone" type="tel" autocomplete="tel" required></p>
+    <p><label for="{prefix}-email">Email Address *</label><input id="{prefix}-email" name="email" type="email" autocomplete="email" required></p>
+    <p><label for="{prefix}-postcode">Postcode *</label><input id="{prefix}-postcode" name="postcode" autocomplete="postal-code" required></p>
     <p><label for="{prefix}-type">Type of Scaffolding *</label>
       <select id="{prefix}-type" name="scaffoldingType" required>
-        <option value="">Please select</option><option>Residential</option><option>Commercial</option><option>Roof</option><option>Emergency</option><option>Temporary Roofing</option><option>Other</option>
+        <option value="">Please select</option>
+        <option>Residential — home extension, roof, rendering</option>
+        <option>Commercial — site, office, retail, development</option>
+        <option>Roof scaffolding — roofer access</option>
+        <option>Temporary roofing</option>
+        <option>Emergency</option>
+        <option>Not sure — describe below</option>
       </select>
     </p>
-    <p><label for="{prefix}-brief">Brief Description of Work</label><textarea id="{prefix}-brief" name="briefDescription"></textarea></p>
+    <p><label for="{prefix}-brief">Brief Description of Work *</label><textarea id="{prefix}-brief" name="briefDescription" required placeholder="e.g. Full roof replacement on a 3-bed semi in Rayleigh. Need scaffold for 2 weeks."></textarea></p>
     <p><label for="{prefix}-source">How did you hear about us?</label>
       <select id="{prefix}-source" name="source">
-        <option value="">Please select</option><option>Google</option><option>Facebook</option><option>Instagram</option><option>Word of Mouth</option><option>Verified Review</option><option>Other</option>
+        <option value="">Please select</option><option>Google Search</option><option>Google Maps</option><option>Facebook</option><option>Instagram</option><option>Word of Mouth</option><option>Bark.com</option><option>Other</option>
       </select>
     </p>
-    <button type="submit" class="btn btn-primary btn-full">Request My Free Quote</button>
+    <button type="submit" class="btn btn-primary btn-full">Get My Free Quote</button>
+    <p class="form-note" style="font-size:0.82rem; color:#6b7280; margin-top:0.5rem;">We aim to respond within one working day. For urgent enquiries call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</p>
     <p class="form-message" aria-live="polite"></p>
   </form>
 </section>
@@ -1089,12 +1153,113 @@ textarea:focus-visible {
   padding: 2rem;
 }
 
+/* Nav phone link */
+.nav-phone-desktop { font-weight: 600; color: var(--accent) !important; font-size: 0.95rem; }
+.nav-phone-mobile { display: none; font-weight: 700; color: var(--accent); font-size: 0.85rem; text-decoration: none; }
+
+/* Hero trust badges */
+.hero-trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.hero-trust-badges span {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+}
+
+/* Decision cards */
+.decision-section { padding-bottom: 3rem; }
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.decision-card {
+  background: #fff;
+  border: 2px solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.75rem 1.25rem 1.5rem;
+  text-decoration: none;
+  color: var(--text-dark);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.decision-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(249,115,22,0.15);
+  transform: translateY(-3px);
+}
+.decision-card-urgent { border-color: #fca5a5; background: #fff7f7; }
+.decision-card-urgent:hover { border-color: #ef4444; box-shadow: 0 4px 20px rgba(239,68,68,0.15); }
+.decision-icon { width: 44px; height: 44px; color: var(--accent); margin-bottom: 0.25rem; }
+.decision-icon svg { width: 100%; height: 100%; }
+.decision-card h3 { font-size: 1.1rem; margin: 0; color: var(--text-dark); }
+.decision-card p { font-size: 0.9rem; color: #4b5563; margin: 0; }
+.decision-link { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-top: auto; padding-top: 0.5rem; }
+.section-intro { color: #4b5563; margin-bottom: 1.5rem; }
+
+/* Process steps */
+.process-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  counter-reset: none;
+}
+.process-step {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+.process-num {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.process-step h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
+.process-step p { color: #4b5563; font-size: 0.95rem; margin: 0; }
+
+/* Evidence USP list */
+.usp-evidence { list-style: none; padding: 0; }
+.usp-evidence li { margin-bottom: 1rem; }
+.usp-evidence strong { display: block; font-weight: 700; margin-bottom: 0.15rem; }
+.usp-evidence span { font-size: 0.92rem; color: #4b5563; }
+
+/* Pricing factors */
+.pricing-factors { color: #374151; }
+.pricing-factors li { margin-bottom: 0.35rem; }
+.direct-answer { font-size: 1.05rem; font-weight: 600; color: var(--text-dark); background: #fff7ed; border-left: 4px solid var(--accent); padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1.25rem; }
+
 @media (max-width: 1024px) {
   .services-grid, .service-listing, .projects-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .split-grid, .two-col { grid-template-columns: 1fr; }
+  .decision-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
   .menu-toggle { display: inline-flex; }
+  .nav-phone-mobile { display: inline-flex; align-items: center; }
+  .nav-phone-desktop { display: none; }
   .site-nav {
     position: fixed;
     inset: 0 0 0 35%;
@@ -1107,11 +1272,12 @@ textarea:focus-visible {
     transition: transform 0.3s ease;
   }
   .site-nav.open { transform: translateX(0); }
-  .nav-wrap { grid-template-columns: auto auto; justify-content: space-between; }
+  .nav-wrap { grid-template-columns: auto 1fr auto; align-items: center; justify-content: space-between; }
   .footer-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .social-card { width: 100%; min-width: unset; }
+  .decision-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 375px) {
   .container { width: calc(100% - 1rem); }
@@ -1122,6 +1288,10 @@ textarea:focus-visible {
 }
 @media (min-width: 1440px) {
   .container { width: min(1280px, calc(100% - 3rem)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+  #mouse-glow { display: none !important; }
 }
 """
     write("assets/css/style.css", css)
@@ -1280,10 +1450,10 @@ def generate_js() -> None:
       }
       if (message) {
         message.textContent = ok
-          ? 'Thanks. Your quote request has been received. We will respond within 24 hours.'
-          : 'Thanks. Your request is saved locally. Please call 07713245511 while webhook setup is pending.';
+          ? 'Thanks. Your quote request has been received. We will respond within one working day.'
+          : 'There was a problem submitting your request. Please call 01702 820468 to reach us directly.';
       }
-      form.reset();
+      if (ok) form.reset();
     });
   });
 })();
@@ -1444,89 +1614,150 @@ def testimonials() -> str:
 def homepage() -> str:
     return f"""
 <section class="hero" id="top">
-  <img class="hero-media" src="/images/hero-bg.webp" alt="Scaffolding site installation in Benfleet, Essex" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
+  <img class="hero-media" src="/images/hero-bg.webp" alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
   <div class="container hero-content">
-    <h1>Scaffolding in Essex – Fast, Safe &amp; Reliable | Axis Scaffolding Ltd</h1>
-    <p>Essex's trusted scaffolding specialists — residential, commercial and emergency cover.</p>
+    <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
+    <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
     <div class="hero-cta-row">
-      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
-      <a class="btn btn-outline" href="/gallery">View Our Work</a>
+      <a class="btn btn-primary btn-hero-call" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+      <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
     </div>
-    <p class="hero-phone"><a href="tel:{NAP['phone']}">Call {NAP['phone']} for fast scaffolding support</a></p>
+    <div class="hero-trust-badges" aria-label="Trust credentials">
+      <span>CISRS Qualified</span>
+      <span>Fully Insured</span>
+      <span>10+ Years' Experience</span>
+      <span>Free Quotes</span>
+    </div>
   </div>
 </section>
 
-<section class="trust-bar" aria-label="Company trust bar">
-  <div class="container trust-items">
-    <p><span aria-hidden="true">🛠</span>10+ Years Experience</p>
-    <p><span aria-hidden="true">✅</span>Fully CISRS Certified</p>
-    <p><span aria-hidden="true">📋</span>Free Quotes</p>
-    <p><span aria-hidden="true">📍</span>Based in Rayleigh</p>
-  </div>
-</section>
-
-<section class="section section-light">
+<section class="section section-light decision-section" aria-labelledby="decision-heading">
   <div class="container">
-    <h2>Our Scaffolding Services</h2>
+    <h2 id="decision-heading">What type of scaffolding do you need?</h2>
+    <p class="section-intro">Not sure? <a href="/contact">Tell us about your project</a> and we'll point you in the right direction.</p>
+    <div class="decision-grid">
+      <a href="/services/residential-scaffolding" class="decision-card">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
+        <h3>Homeowner</h3>
+        <p>Roofing &middot; rendering &middot; extensions &middot; chimneys</p>
+        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+      </a>
+      <a href="/services/commercial-scaffolding" class="decision-card">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
+        <h3>Builder / Roofer</h3>
+        <p>Access scaffold &middot; bespoke setups &middot; fast turnaround</p>
+        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+      </a>
+      <a href="/services/commercial-scaffolding" class="decision-card">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3>Commercial</h3>
+        <p>Sites &middot; offices &middot; retail &middot; schools &middot; developments</p>
+        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+      </a>
+      <a href="/services/emergency-scaffolding" class="decision-card decision-card-urgent">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Emergency</h3>
+        <p>Storm damage &middot; urgent access &middot; temporary protection</p>
+        <span class="decision-link" aria-hidden="true">Call us now &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="process-heading">
+  <div class="container">
+    <h2 id="process-heading">How It Works</h2>
+    <p class="section-intro">From your first call to final dismantling — here is what to expect when you work with Axis Scaffolding.</p>
+    <ol class="process-steps">
+      <li class="process-step"><span class="process-num" aria-hidden="true">1</span><div><h3>Tell us about your project</h3><p>Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or complete the short quote form. Tell us what work you are having done, your address and when you need access.</p></div></li>
+      <li class="process-step"><span class="process-num" aria-hidden="true">2</span><div><h3>We assess the requirements</h3><p>We establish property and site access, the right scaffold type, any access constraints and your timeline. We advise on highway licence requirements if relevant.</p></div></li>
+      <li class="process-step"><span class="process-num" aria-hidden="true">3</span><div><h3>You receive a clear quote</h3><p>We aim to respond to all quote requests the same working day. Your quote is clear and no-obligation — no hidden extras.</p></div></li>
+      <li class="process-step"><span class="process-num" aria-hidden="true">4</span><div><h3>We erect safely and on time</h3><p>Our CISRS-qualified team installs the agreed scaffold, working around your roofer, builder or site schedule.</p></div></li>
+      <li class="process-step"><span class="process-num" aria-hidden="true">5</span><div><h3>We dismantle and leave you tidy</h3><p>Once your work is finished, we return promptly to dismantle and remove all scaffold. Tidy handover — no materials left on site.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section section-light" aria-labelledby="services-heading">
+  <div class="container">
+    <h2 id="services-heading">Our Scaffolding Services</h2>
     <div class="services-grid">{service_cards()}</div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" aria-labelledby="why-axis-heading">
   <div class="container split-grid">
     <div>
-      <img src="/images/project-7.webp" alt="Domestic scaffolding structure beside a home in Benfleet, Essex" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
+      <img src="/images/project-7.webp" alt="Domestic scaffolding structure erected beside a home in Benfleet, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
     </div>
     <div>
-      <h2>Why Choose Axis Scaffolding Essex?</h2>
-      <ul class="usp-list">
-        <li>Fully qualified, CISRS-certified scaffolders</li>
-        <li>Prompt installation and responsive site coordination</li>
-        <li>Residential and commercial experience across Essex</li>
-        <li>Detailed risk-aware planning for safer works</li>
+      <h2 id="why-axis-heading">Why Builders &amp; Homeowners Choose Axis</h2>
+      <ul class="usp-list usp-evidence">
+        <li><strong>CISRS Qualified</strong><span>Our scaffolders hold current CISRS qualifications — the UK industry standard for trained scaffold professionals. Your installation is carried out to a recognised national standard.</span></li>
+        <li><strong>Fully Insured</strong><span>Public liability insurance in place. Added protection for your property and project.</span></li>
+        <li><strong>10+ Years' Experience</strong><span>Founder-led local operation with over a decade of scaffolding experience across residential and commercial work in South Essex.</span></li>
+        <li><strong>Same-Day Quote Response</strong><span>We aim to respond to all quote requests within the same working day. Emergency enquiries are prioritised — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</span></li>
+        <li><strong>RAMS Available</strong><span>Risk assessments and method statements available for commercial sites and principal contractors requiring documentation.</span></li>
       </ul>
-      <p class="about-blurb">Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136.</p>
-      <a class="btn btn-primary" href="/quote">Get a Quote</a>
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
     </div>
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark" aria-labelledby="projects-heading">
   <div class="container">
-    <h2>Our Recent Projects</h2>
+    <h2 id="projects-heading">Recent Projects</h2>
     <div class="projects-grid">{project_cards()}</div>
-    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View Full Gallery →</a></p>
+    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light" aria-labelledby="reviews-heading">
   <div class="container">
-    <h2>What Our Customers Say</h2>
+    <h2 id="reviews-heading">What Our Customers Say</h2>
     <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
       <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
     </div>
+    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://maps.google.com/?q=Axis+Scaffolding+Rayleigh+Essex" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
   </div>
 </section>
 
-<section class="section" id="areas-covered">
+<section class="section" id="areas-covered" aria-labelledby="areas-heading">
   <div class="container">
-    <h2>Areas We Cover in Essex</h2>
+    <h2 id="areas-heading">Areas We Cover in Essex</h2>
+    <p>Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding in Rayleigh, Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.</p>
     <ul class="area-pills">{area_pills()}</ul>
-    <p>Based in Rayleigh, we provide scaffolding services across South Essex and surrounding areas. Contact us to confirm coverage for your project.</p>
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light" aria-labelledby="pricing-heading">
   <div class="container">
-    <h2>Get a Free Scaffolding Quote</h2>
+    <h2 id="pricing-heading">How Much Does Scaffolding Cost in Essex?</h2>
+    <p class="direct-answer">Residential scaffolding in Essex typically starts from around &pound;300&ndash;&pound;500 for smaller jobs, rising to &pound;1,500 or more for full roof scaffolds on larger properties.</p>
+    <h3>What affects the price?</h3>
+    <ul class="pricing-factors">
+      <li>Scaffold height and the number of elevations required</li>
+      <li>Footprint and overall scaffold size</li>
+      <li>Site access — narrow driveways, close neighbours, restricted entry</li>
+      <li>Whether a pavement or highway licence is required</li>
+      <li>Duration of hire</li>
+      <li>Temporary roofing requirement</li>
+    </ul>
+    <p>We provide free, no-obligation quotations. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or complete the quote form below.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="quote-heading">
+  <div class="container">
+    <h2 id="quote-heading">Get a Free Scaffolding Quote</h2>
     {quote_form("home", "Tell us about your project")}
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light" aria-labelledby="faq-heading">
   <div class="container faq-wrap">
-    <h2>Frequently Asked Questions</h2>
+    <h2 id="faq-heading">Frequently Asked Questions</h2>
     {faq_accordion()}
   </div>
 </section>
@@ -1535,10 +1766,10 @@ def homepage() -> str:
   <div class="container cta-banner-inner">
     <div>
       <h2>Need Scaffolding in Essex?</h2>
-      <p>Call us today for a free, no-obligation quote.</p>
+      <p>Free quote &middot; Fast response &middot; CISRS qualified</p>
     </div>
     <div class="hero-cta-row">
-      <a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a>
+      <a class="btn btn-light" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="btn btn-dark" href="/quote">Request a Quote</a>
     </div>
   </div>
@@ -1698,7 +1929,7 @@ def generate_pages() -> None:
             "Need scaffolding Essex support from Rayleigh? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:07713245511">07713245511</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#f97316;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#f97316;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
 """
     )
     write(
@@ -1769,7 +2000,7 @@ def generate_pages() -> None:
 
 
     thank_you_body = """
-<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:07713245511">07713245511</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
+<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:+441702820468">01702 820468</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
 """
     write(
         "thank-you/index.html",
@@ -1890,28 +2121,44 @@ def generate_redirects() -> None:
 
 
 def generate_robots_sitemap() -> None:
-    write("robots.txt", "User-agent: *\nAllow: /\n\nSitemap: https://axisscaffoldingessex.co.uk/sitemap.xml\n")
+    robots = (
+        "# Axis Scaffolding Ltd — robots.txt\n"
+        "# https://axisscaffoldingessex.co.uk\n\n"
+        "User-agent: Googlebot\n"
+        "Allow: /\n\n"
+        "User-agent: Bingbot\n"
+        "Allow: /\n\n"
+        "User-agent: OAI-SearchBot\n"
+        "Allow: /\n\n"
+        "User-agent: OAI-AdsBot\n"
+        "Allow: /\n\n"
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /admin/\n"
+        "Disallow: /private/\n\n"
+        f"Sitemap: {SITE}/sitemap.xml\n"
+    )
+    write("robots.txt", robots)
+    # Only include canonical, indexable pages in sitemap — exclude noindex pages
     pages = [
-        ("/", "1.0"),
-        ("/services", "0.8"),
-        ("/services/residential-scaffolding", "0.8"),
-        ("/services/commercial-scaffolding", "0.8"),
-        ("/services/domestic-scaffolding", "0.8"),
-        ("/services/roof-scaffolding", "0.8"),
-        ("/services/temporary-roofing", "0.8"),
-        ("/services/emergency-scaffolding", "0.8"),
-        ("/gallery", "0.7"),
-        ("/about", "0.7"),
-        ("/contact", "0.7"),
-        ("/quote", "0.7"),
-        ("/privacy-policy", "0.5"),
-        ("/terms-and-conditions", "0.5"),
-        ("/cookie-policy", "0.5"),
-        ("/thank-you", "0.1"),
+        ("/", "1.0", "weekly"),
+        ("/services", "0.8", "monthly"),
+        ("/services/residential-scaffolding", "0.8", "monthly"),
+        ("/services/commercial-scaffolding", "0.8", "monthly"),
+        ("/services/domestic-scaffolding", "0.8", "monthly"),
+        ("/services/roof-scaffolding", "0.8", "monthly"),
+        ("/services/temporary-roofing", "0.8", "monthly"),
+        ("/services/emergency-scaffolding", "0.8", "monthly"),
+        ("/services/dismantling-scaffolding", "0.7", "monthly"),
+        ("/services/loading-bay-scaffolding", "0.7", "monthly"),
+        ("/services/scaffold-supply-erection", "0.7", "monthly"),
+        ("/gallery", "0.7", "monthly"),
+        ("/about", "0.7", "monthly"),
+        ("/contact", "0.8", "monthly"),
+        ("/quote", "0.8", "monthly"),
     ]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for path, priority in pages:
-        changefreq = 'yearly' if path == '/thank-you' else 'monthly'
+    for path, priority, changefreq in pages:
         lines.append(
             f"  <url><loc>{SITE}{path}</loc><lastmod>{TODAY}</lastmod><changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
         )
@@ -1921,7 +2168,10 @@ def generate_robots_sitemap() -> None:
 
 def main() -> None:
     ensure_dirs()
-    generate_media_assets()
+    try:
+        generate_media_assets()
+    except Exception as exc:
+        print(f"Warning: media asset generation skipped — {exc}")
     generate_css()
     generate_js()
     generate_pages()

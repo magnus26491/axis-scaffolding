@@ -1,5 +1,21 @@
+# Axis Scaffolding Ltd — robots.txt
+# https://axisscaffoldingessex.co.uk
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: OAI-AdsBot
+Allow: /
+
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /private/
+
 Sitemap: https://axisscaffoldingessex.co.uk/sitemap.xml
