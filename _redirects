@@ -18,10 +18,7 @@ https://www.axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 30
 /services/loading-bays.html /services/loading-bay-scaffolding 301
 /services/temporary-roofs.html /services/temporary-roofing 301
 
-# Legacy location aliases — map to the real page where one exists
-/areas/brentwood /areas/brentwood 301
-/areas/loughton /areas/loughton 301
-/areas/london /areas/london 301
+# Retired location aliases — send visitors to the location index, not a homepage fragment
 /areas/clacton /areas 301
 /areas/bromley /areas 301
 
