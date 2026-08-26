@@ -129,37 +129,62 @@
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
+      const webhook = window.AXIS_QUOTE_WEBHOOK;
+
+      // No webhook is configured: allow the form's native FormSubmit action to run.
+      // The previous code prevented the native POST and then displayed a false success
+      // message, which could silently discard every quote enquiry.
+      if (!webhook) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'generate_lead', {
+            event_category: 'Lead',
+            event_label: form.dataset.formName || 'quote_form',
+          });
+        }
+        return;
+      }
+
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
       const payload = { ...data, notification_email: CONTACT_EMAIL };
-      let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+      let ok = false;
+
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        ok = res.ok;
+      } catch (_err) {
+        ok = false;
       }
+
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within one working day.'
           : 'There was a problem submitting your request. Please call 01702 820468 to reach us directly.';
       }
-      if (ok) form.reset();
+
+      if (ok) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'generate_lead', {
+            event_category: 'Lead',
+            event_label: form.dataset.formName || 'quote_form',
+          });
+        }
+        form.reset();
+        window.setTimeout(() => {
+          window.location.assign('/thank-you');
+        }, 250);
+      }
     });
   });
 })();
 
 // ── WHITE MOUSE GLOW ──────────────────────
 (function() {
-  // Only run on non-touch desktop devices
   if (window.matchMedia('(hover: none)').matches) return;
   if (window.matchMedia('(max-width: 768px)').matches) return;
 
@@ -170,9 +195,7 @@
   var mouseY = window.innerHeight / 2;
   var currentX = mouseX;
   var currentY = mouseY;
-  var rafId;
 
-  // Smooth lerp follow (makes it feel soft and organic)
   function lerp(start, end, factor) {
     return start + (end - start) * factor;
   }
@@ -182,7 +205,7 @@
     currentY = lerp(currentY, mouseY, 0.12);
     glow.style.left = currentX + 'px';
     glow.style.top  = currentY + 'px';
-    rafId = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
   }
 
   document.addEventListener('mousemove', function(e) {
@@ -190,10 +213,8 @@
     mouseY = e.clientY;
   }, { passive: true });
 
-  // Start animation loop
   animate();
 
-  // Fade out when mouse leaves window
   document.addEventListener('mouseleave', function() {
     glow.style.opacity = '0';
   });
