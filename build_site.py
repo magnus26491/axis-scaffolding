@@ -215,6 +215,28 @@ SERVICE_GROUPS = [
     },
 ]
 
+# The three genuine, differentiated guide pages — a real pre-purchase
+# customer journey (need? -> cost? -> licence?), not an arbitrary set.
+# Drives the /guides hub and each guide's "Related Guides" cross-links;
+# each guide's own write() call still owns its full body content.
+GUIDES = [
+    {
+        "slug": "do-i-need-scaffolding",
+        "title": "Do I Need Scaffolding for My Project?",
+        "summary": "Practical guidance on when scaffold access is required and when a ladder may be sufficient.",
+    },
+    {
+        "slug": "scaffolding-cost-essex",
+        "title": "How Much Does Scaffolding Cost in Essex?",
+        "summary": "Typical price ranges for domestic, roof, chimney and commercial scaffolding across Essex.",
+    },
+    {
+        "slug": "highway-licence-scaffolding",
+        "title": "Does Scaffolding on a Pavement Need a Licence?",
+        "summary": "A plain-English guide to Section 169 highway licences — when required, how to apply, typical costs.",
+    },
+]
+
 # Curated, per-service selection from the general FAQs (see FAQS below)
 # — a service page should answer questions relevant to that service,
 # not the entire FAQ database. Every question referenced here already
@@ -440,7 +462,10 @@ def nav() -> str:
 
 def footer() -> str:
     svc = "".join(f'<li><a href="/services/{s["slug"]}">{s["name"]}</a></li>' for s in SERVICES)
-    area = "".join(f"<li>{a}</li>" for a in AREAS[:8])
+    # Real links to every area page, not a truncated, unlinked name list —
+    # the footer appears on every page, so this was previously providing
+    # zero navigational value to any of the 12 real area pages.
+    area = "".join(f'<li><a href="/areas/{data["slug"]}">{name}</a></li>' for name, data in AREA_DATA.items())
     return f"""
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -481,6 +506,7 @@ def footer() -> str:
     <p>© 2026. The content on this website is owned by us and our licensors. Do not copy any content (including images) without our consent.</p>
     <div class="footer-legal-links">
       <button id="axis-footer-cookie-btn" style="background:none; border:none; color:#6b7280; font-size:0.8rem; cursor:pointer; text-decoration:underline; padding:0;">Cookie Settings</button>
+      <a href="/cookie-policy">Cookie Policy</a>
       <a href="/privacy-policy">Privacy Policy</a>
       <a href="/terms-and-conditions">Terms &amp; Conditions</a>
     </div>
@@ -2787,6 +2813,29 @@ def area_pills() -> str:
     )
 
 
+def related_guides_section(current_slug: str) -> str:
+    others = [g for g in GUIDES if g["slug"] != current_slug]
+    cards = "".join(
+        f"""
+<article class="service-card">
+  <h3>{g['title']}</h3>
+  <p>{g['summary']}</p>
+  <a href="/guides/{g['slug']}">Read Guide &rarr;</a>
+</article>
+"""
+        for g in others
+    )
+    return f"""
+<section class="section">
+  <div class="container">
+    <h2>Related Guides</h2>
+    <div class="services-grid">{cards}</div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/guides">All Guides &rarr;</a></p>
+  </div>
+</section>
+"""
+
+
 def testimonials() -> str:
     entries = [
         (
@@ -3025,6 +3074,7 @@ def homepage() -> str:
   <div class="container faq-wrap">
     <h2 id="faq-heading">Frequently Asked Questions</h2>
     {faq_accordion()}
+    <p class="centered" style="margin-top:1.5rem;">Need more detail? Read our <a href="/guides">full guides</a> — do you need scaffolding, what it costs, and highway licences explained.</p>
   </div>
 </section>
 
@@ -3647,7 +3697,7 @@ def generate_pages() -> None:
         )
         + f"""
 <section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
-<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
+<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}<p class="centered" style="margin-top:1.5rem;">Not sure what you need? Read our <a href="/guides">scaffolding guides</a> for plain-English answers.</p></div></section>
 <section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
@@ -3826,7 +3876,7 @@ def generate_pages() -> None:
     # ── Guide pages ──────────────────────────────────────────────────────────
     cost_guide_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", ""), ("Scaffolding Cost in Essex", "/guides/scaffolding-cost-essex")],
+            [("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost in Essex", "/guides/scaffolding-cost-essex")],
             "How Much Does Scaffolding Cost in Essex?",
             "A straightforward guide to scaffolding prices in Essex — what affects the cost, typical price ranges for common jobs, and how to get an accurate quote from Axis Scaffolding Ltd.",
         )
@@ -3904,6 +3954,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + related_guides_section("scaffolding-cost-essex")
     )
     write(
         "guides/scaffolding-cost-essex/index.html",
@@ -3912,13 +3963,13 @@ def generate_pages() -> None:
             desc="Scaffolding cost guide for Essex homeowners and contractors. Typical price ranges for domestic, roof, chimney and commercial scaffolding — with a free quote from Axis Scaffolding.",
             path="/guides/scaffolding-cost-essex",
             body=cost_guide_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
         ),
     )
 
     need_scaffold_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", ""), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+            [("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
             "Do I Need Scaffolding for My Project?",
             "A practical guide to help you work out whether your building or repair project requires scaffold access — and what the alternatives are.",
         )
@@ -3957,6 +4008,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + related_guides_section("do-i-need-scaffolding")
     )
     write(
         "guides/do-i-need-scaffolding/index.html",
@@ -3965,13 +4017,13 @@ def generate_pages() -> None:
             desc="Find out whether your building or repair project needs scaffolding. Practical guidance on when scaffold is required and when a ladder may be sufficient.",
             path="/guides/do-i-need-scaffolding",
             body=need_scaffold_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
         ),
     )
 
     licence_guide_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", ""), ("Highway Licence for Scaffolding", "/guides/highway-licence-scaffolding")],
+            [("Home", "/"), ("Guides", "/guides"), ("Highway Licence for Scaffolding", "/guides/highway-licence-scaffolding")],
             "Does Scaffolding on a Pavement Need a Licence?",
             "A plain-English guide to Section 169 highway licences for scaffolding over pavements and roads in Essex — when you need one, how to get one, and what it costs.",
         )
@@ -4005,6 +4057,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + related_guides_section("highway-licence-scaffolding")
     )
     write(
         "guides/highway-licence-scaffolding/index.html",
@@ -4013,7 +4066,59 @@ def generate_pages() -> None:
             desc="Do you need a licence to erect scaffolding on a pavement in Essex? Plain-English guide to Section 169 highway licences — when required, how to apply, and typical costs.",
             path="/guides/highway-licence-scaffolding",
             body=licence_guide_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Highway Licence", "/guides/highway-licence-scaffolding")],
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Highway Licence", "/guides/highway-licence-scaffolding")],
+        ),
+    )
+
+    # ── Guides hub ───────────────────────────────────────────────────────────
+    # Three genuine, differentiated guides (need? / cost? / licence?) with
+    # no prior hub or cross-linking — this closes that gap rather than
+    # leaving them as sitemap-only orphans.
+    guides_cards = "".join(
+        f"""
+<article class="service-card">
+  <h3>{g['title']}</h3>
+  <p>{g['summary']}</p>
+  <a href="/guides/{g['slug']}">Read Guide &rarr;</a>
+</article>
+"""
+        for g in GUIDES
+    )
+    guides_index_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides")],
+            "Scaffolding Guides",
+            "Plain-English answers to the questions people ask before booking scaffolding in Essex — whether you need it, what it costs, and whether a licence is required.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container">
+    <div class="services-grid">{guides_cards}</div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container cta-banner-inner">
+    <div>
+      <h2>Still not sure what you need?</h2>
+      <p>Call us or request a free, no-obligation quote — we'll talk you through it.</p>
+    </div>
+    <div class="hero-cta-row">
+      <a class="btn btn-light" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-dark" href="/quote">Request a Quote</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "guides/index.html",
+        render_page(
+            title="Scaffolding Guides | Axis Scaffolding Essex",
+            desc="Plain-English guides to scaffolding in Essex: do you need it, what it costs, and whether a highway licence is required. From Axis Scaffolding Ltd, Rayleigh.",
+            path="/guides",
+            body=guides_index_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides")],
         ),
     )
 
@@ -4081,6 +4186,59 @@ def generate_pages() -> None:
             path="/contractors",
             body=contractors_body,
             breadcrumb_items=[("Home", "/"), ("Contractors", "/contractors")],
+        ),
+    )
+
+    # ── Areas hub ────────────────────────────────────────────────────────────
+    # Was a hand-authored, frozen-in-time static file using an outdated nav/
+    # footer/cookie-bar template (no "For Builders"/"Projects" nav items, a
+    # dead "mobile-cta-bar" component, an inline-styled cookie bar) and
+    # listing only 6 of the 12 real area pages. Migrated into the generator
+    # so it always reflects AREA_DATA and the current site chrome — the same
+    # single-source-of-truth principle the rest of the site already follows.
+    areas_index_body = (
+        inner_hero(
+            [("Home", "/"), ("Areas", "/areas")],
+            "Areas We Cover",
+            "Axis Scaffolding Ltd is based in Rayleigh and provides residential, domestic and commercial scaffolding across South Essex. Find your area below for local details, real projects and a free quote.",
+        )
+        + f"""
+<section class="section section-light">
+  <div class="container">
+    <ul class="area-pills">{area_pills()}</ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Not Sure Which Service You Need?</h2>
+    <p class="section-intro">See the full range of scaffolding services we provide across these areas.</p>
+    <p class="centered"><a class="btn btn-outline-orange" href="/services">View All Services &rarr;</a></p>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container cta-banner-inner">
+    <div>
+      <h2>Need Scaffolding in Your Area?</h2>
+      <p>CISRS qualified &middot; Fully insured &middot; Free quotes &middot; South Essex</p>
+    </div>
+    <div class="hero-cta-row">
+      <a class="btn btn-light" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-dark" href="/quote">Request a Quote</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+    write(
+        "areas/index.html",
+        render_page(
+            title="Areas We Cover | Axis Scaffolding Essex",
+            desc="Axis Scaffolding Ltd provides scaffolding across Benfleet, Canvey Island, Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford.",
+            path="/areas",
+            body=areas_index_body,
+            breadcrumb_items=[("Home", "/"), ("Areas", "/areas")],
         ),
     )
 
@@ -4214,6 +4372,7 @@ def generate_robots_sitemap() -> None:
         ("/quote", "0.8", "monthly"),
         ("/contractors", "0.8", "monthly"),
         ("/areas", "0.7", "monthly"),
+        ("/guides", "0.7", "monthly"),
         ("/guides/scaffolding-cost-essex", "0.7", "monthly"),
         ("/guides/do-i-need-scaffolding", "0.7", "monthly"),
         ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
