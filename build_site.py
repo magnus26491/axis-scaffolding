@@ -9,13 +9,18 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).parent
-SITE = "https://axisscaffoldingessex.co.uk"
+SITE = "https://www.axisscaffoldingessex.co.uk"
+# Bare (non-www) new-domain hostname. GitHub Pages (see CNAME) redirects this
+# to SITE automatically at the edge — no application code needed for that
+# hop. Kept only for the duplicate-host audit / CI checks below; never used
+# to build an outgoing URL.
+BARE_SITE = "https://axisscaffoldingessex.co.uk"
 OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
-FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
+FORM_NEXT = 'https://www.axisscaffoldingessex.co.uk/thank-you'
 # No verified GA4 property exists for this site yet. Leave unset (None) until a real
 # measurement ID is provided — do not hard-code a placeholder or invented ID here.
 # When set (e.g. "G-XXXXXXX"), analytics load only after the visitor grants consent.
@@ -446,7 +451,7 @@ def moved_site_banner() -> str:
     return """
 <div id="domain-move-banner" class="domain-move-banner" hidden>
   We've moved! Visit us at
-  <a href="https://axisscaffoldingessex.co.uk" rel="canonical">axisscaffoldingessex.co.uk</a>
+  <a href="https://www.axisscaffoldingessex.co.uk" rel="canonical">www.axisscaffoldingessex.co.uk</a>
 </div>
 """
 
@@ -1284,7 +1289,7 @@ def generate_js() -> None:
   };
   const currentHost = window.location.hostname.toLowerCase();
   if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
-    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const nextUrl = `https://www.axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
     const moveBanner = document.getElementById('domain-move-banner');
     const canonicalTag = document.querySelector('link[rel="canonical"]');
     if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
@@ -2901,7 +2906,7 @@ def generate_pages() -> None:
   <title>Thank You | Axis Scaffolding Essex – Scaffolding in Rayleigh, Essex</title>
   <meta name="description" content="Thank you for contacting Axis Scaffolding in Rayleigh. We will respond quickly regarding your scaffolding Essex enquiry.">
   <meta name="robots" content="noindex, nofollow">
-  <link rel="canonical" href="https://axisscaffoldingessex.co.uk/thank-you">
+  <link rel="canonical" href="https://www.axisscaffoldingessex.co.uk/thank-you">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
@@ -2911,7 +2916,8 @@ def generate_pages() -> None:
   """ + moved_site_banner() + """
   <main id="main-content">""" + thank_you_body + """</main>
   """ + footer() + """
-  """ + cookie_ui() + """
+  """ + cookie_ui() + f"""
+  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -3033,7 +3039,7 @@ def generate_redirects() -> None:
 def generate_robots_sitemap() -> None:
     robots = (
         "# Axis Scaffolding Ltd — robots.txt\n"
-        "# https://axisscaffoldingessex.co.uk\n\n"
+        "# https://www.axisscaffoldingessex.co.uk\n\n"
         "User-agent: Googlebot\n"
         "Allow: /\n\n"
         "User-agent: Bingbot\n"

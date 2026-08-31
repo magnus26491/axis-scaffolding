@@ -2,7 +2,7 @@
 
 # Permanent domain migration. Keep the full path/query intact.
 @old-domain host axisscaffolding.co.uk www.axisscaffolding.co.uk
-redir @old-domain https://axisscaffoldingessex.co.uk{uri} permanent
+redir @old-domain https://www.axisscaffoldingessex.co.uk{uri} permanent
 
 root * /app
 
