@@ -4176,69 +4176,6 @@ def generate_pages() -> None:
     )
 
 
-def generate_redirects() -> None:
-    redirect_html = (
-        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
-        "<meta http-equiv=\"refresh\" content=\"0;url={target}\"><link rel=\"canonical\" href=\"{canonical}\">"
-        "<title>Redirecting...</title></head><body><div id=\"mouse-glow\" aria-hidden=\"true\"></div><p>Redirecting to <a href=\"{target}\">{target}</a></p>"
-        "<script>window.location.replace('{target}');</script></body></html>"
-    )
-    redirects = {
-        "about.html": "/about",
-        "gallery.html": "/gallery",
-        "contact.html": "/contact",
-        "privacy.html": "/privacy-policy",
-        "terms.html": "/terms-and-conditions",
-        "cookies.html": "/cookie-policy",
-        "services/residential.html": "/services/residential-scaffolding",
-        "services/commercial.html": "/services/commercial-scaffolding",
-        "services/supply-erection.html": "/services/scaffold-supply-erection",
-        "services/dismantling.html": "/services/dismantling-scaffolding",
-        "services/loading-bays.html": "/services/loading-bay-scaffolding",
-        "services/temporary-roofs.html": "/services/temporary-roofing",
-    }
-    for src, target in redirects.items():
-        write(src, redirect_html.format(target=target, canonical=SITE + target))
-    legacy_area_targets = {
-        "brentwood": "/areas/brentwood",
-        "loughton": "/areas/loughton",
-        "london": "/areas/london",
-        "clacton": "/areas",
-        "bromley": "/areas",
-        # Stale flat area pages superseded by the canonical /areas/{slug} pages below.
-        "basildon": "/areas/basildon",
-        "canvey-island": "/areas/canvey-island",
-        "chelmsford": "/areas/chelmsford",
-        "rayleigh": "/areas/rayleigh",
-        "southend": "/areas/southend",
-    }
-    for area_file, target in legacy_area_targets.items():
-        write(f"areas/{area_file}.html", redirect_html.format(target=target, canonical=f"{SITE}{target}"))
-
-    write(
-        "_redirects",
-        "\n".join(
-            [
-                f"{OLD_SITE}/* {SITE}/:splat 301!",
-                f"https://www.axisscaffolding.co.uk/* {SITE}/:splat 301!",
-                "/about.html /about 301",
-                "/gallery.html /gallery 301",
-                "/contact.html /contact 301",
-                "/privacy.html /privacy-policy 301",
-                "/terms.html /terms-and-conditions 301",
-                "/cookies.html /cookie-policy 301",
-                "/services/residential.html /services/residential-scaffolding 301",
-                "/services/commercial.html /services/commercial-scaffolding 301",
-                "/services/supply-erection.html /services/scaffold-supply-erection 301",
-                "/services/dismantling.html /services/dismantling-scaffolding 301",
-                "/services/loading-bays.html /services/loading-bay-scaffolding 301",
-                "/services/temporary-roofs.html /services/temporary-roofing 301",
-            ]
-            + [f"/areas/{slug}.html {target} 301" for slug, target in legacy_area_targets.items()]
-        ),
-    )
-
-
 def generate_robots_sitemap() -> None:
     robots = (
         "# Axis Scaffolding Ltd — robots.txt\n"
@@ -4299,7 +4236,6 @@ def main() -> None:
     generate_css()
     generate_js()
     generate_pages()
-    generate_redirects()
     generate_robots_sitemap()
     print("Site regeneration completed.")
 

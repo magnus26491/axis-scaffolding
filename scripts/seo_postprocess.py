@@ -21,12 +21,20 @@ AREA_LINKS = {
     "Rochford": "rochford",
 }
 
+OLD_SITE = "https://axisscaffolding.co.uk"
+
 LEGACY_AREA_TARGETS = {
     "brentwood": "/areas/brentwood",
     "loughton": "/areas/loughton",
     "london": "/areas/london",
     "clacton": "/areas",
     "bromley": "/areas",
+    # Stale flat area pages superseded by the canonical /areas/{slug} pages.
+    "basildon": "/areas/basildon",
+    "canvey-island": "/areas/canvey-island",
+    "chelmsford": "/areas/chelmsford",
+    "rayleigh": "/areas/rayleigh",
+    "southend": "/areas/southend",
 }
 
 LEGACY_SERVICE_TARGETS = {
@@ -36,6 +44,22 @@ LEGACY_SERVICE_TARGETS = {
     "services/dismantling.html": "/services/dismantling-scaffolding",
     "services/loading-bays.html": "/services/loading-bay-scaffolding",
     "services/temporary-roofs.html": "/services/temporary-roofing",
+}
+
+# This is the single source of truth for every legacy redirect stub — the
+# generated .html files, the _redirects file, and (via normalise_legacy_
+# redirect_page's noindex,follow meta) the indexation signal for all of
+# them. build_site.py used to also write these with an inferior template
+# (no noindex meta) that this script's normalise_legacy_redirect_page()
+# only partially overwrote, silently leaving some stubs without the
+# noindex directive. build_site.py no longer writes them at all.
+LEGACY_TOP_TARGETS = {
+    "about.html": "/about",
+    "gallery.html": "/gallery",
+    "contact.html": "/contact",
+    "privacy.html": "/privacy-policy",
+    "terms.html": "/terms-and-conditions",
+    "cookies.html": "/cookie-policy",
 }
 
 
@@ -80,15 +104,10 @@ def normalise_legacy_redirect_page(path: Path, target: str) -> None:
 
 def write_redirects() -> None:
     lines = [
-        f"https://axisscaffolding.co.uk/* {SITE}/:splat 301!",
+        f"{OLD_SITE}/* {SITE}/:splat 301!",
         f"https://www.axisscaffolding.co.uk/* {SITE}/:splat 301!",
-        "/about.html /about 301",
-        "/gallery.html /gallery 301",
-        "/contact.html /contact 301",
-        "/privacy.html /privacy-policy 301",
-        "/terms.html /terms-and-conditions 301",
-        "/cookies.html /cookie-policy 301",
     ]
+    lines.extend(f"/{src} {target} 301" for src, target in LEGACY_TOP_TARGETS.items())
     lines.extend(f"/{src} {target} 301" for src, target in LEGACY_SERVICE_TARGETS.items())
     lines.extend(
         f"/areas/{slug}.html {target} 301"
@@ -133,6 +152,9 @@ def main() -> None:
         normalise_legacy_redirect_page(ROOT / "areas" / f"{slug}.html", target)
 
     for source, target in LEGACY_SERVICE_TARGETS.items():
+        normalise_legacy_redirect_page(ROOT / source, target)
+
+    for source, target in LEGACY_TOP_TARGETS.items():
         normalise_legacy_redirect_page(ROOT / source, target)
 
     write_redirects()
