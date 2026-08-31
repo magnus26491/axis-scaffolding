@@ -69,41 +69,178 @@
   <div class="container">
     <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">&gt;</span> <span>Quote</span></nav>
     <h1>Get a Free Scaffolding Quote</h1>
-    <p>Request scaffolding Essex pricing from our Benfleet team for domestic, commercial and emergency access projects. Get a free quote today.</p>
+    <p>Tell us about your project in a few short steps — domestic, commercial or emergency access. Prefer to talk? Call 01702 820468 instead.</p>
   </div>
 </section>
 <section class="section section-light"><div class="container">
-<section class="quote-form-card">
-  <h3>Request Your Free Quote</h3>
-  <form class="axis-quote-form" data-form-name="quote" action="https://formsubmit.co/axis-scaffolding@outlook.com" method="POST">
+<section class="quote-wizard-card">
+  <div class="quote-progress" hidden role="list" aria-label="Quote form progress">
+    <ol><li class="quote-progress-step is-active" data-step-indicator="1">
+      <span class="quote-progress-num">1</span><span class="quote-progress-label">Project</span>
+    </li><li class="quote-progress-step" data-step-indicator="2">
+      <span class="quote-progress-num">2</span><span class="quote-progress-label">Location</span>
+    </li><li class="quote-progress-step" data-step-indicator="3">
+      <span class="quote-progress-num">3</span><span class="quote-progress-label">Timing</span>
+    </li><li class="quote-progress-step" data-step-indicator="4">
+      <span class="quote-progress-num">4</span><span class="quote-progress-label">Details</span>
+    </li><li class="quote-progress-step" data-step-indicator="5">
+      <span class="quote-progress-num">5</span><span class="quote-progress-label">Photos</span>
+    </li><li class="quote-progress-step" data-step-indicator="6">
+      <span class="quote-progress-num">6</span><span class="quote-progress-label">Contact</span>
+    </li></ol>
+  </div>
+
+  <form class="axis-quote-form quote-wizard-form" data-form-name="quote-wizard"
+        action="https://formsubmit.co/axis-scaffolding@outlook.com" method="POST" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="_subject" value="New Scaffolding Quote Request — Axis Scaffolding Ltd">
     <input type="hidden" name="_replyto" value="axis-scaffolding@outlook.com">
     <input type="hidden" name="_next" value="https://www.axisscaffoldingessex.co.uk/thank-you">
     <input type="hidden" name="_captcha" value="false">
     <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-    <p><label for="quote-name">Full Name *</label><input id="quote-name" name="fullName" autocomplete="name" required></p>
-    <p><label for="quote-phone">Phone Number *</label><input id="quote-phone" name="phone" type="tel" autocomplete="tel" required></p>
-    <p><label for="quote-email">Email Address *</label><input id="quote-email" name="email" type="email" autocomplete="email" required></p>
-    <p><label for="quote-postcode">Postcode *</label><input id="quote-postcode" name="postcode" autocomplete="postal-code" required></p>
-    <p><label for="quote-type">Type of Scaffolding *</label>
-      <select id="quote-type" name="scaffoldingType" required>
-        <option value="">Please select</option>
-        <option>Residential — home extension, roof, rendering</option>
-        <option>Commercial — site, office, retail, development</option>
-        <option>Roof scaffolding — roofer access</option>
-        <option>Temporary roofing</option>
-        <option>Emergency</option>
-        <option>Not sure — describe below</option>
-      </select>
-    </p>
-    <p><label for="quote-brief">Brief Description of Work *</label><textarea id="quote-brief" name="briefDescription" required placeholder="e.g. Full roof replacement on a 3-bed semi in Rayleigh. Need scaffold for 2 weeks."></textarea></p>
-    <p><label for="quote-source">How did you hear about us?</label>
-      <select id="quote-source" name="source">
-        <option value="">Please select</option><option>Google Search</option><option>Google Maps</option><option>Facebook</option><option>Instagram</option><option>Word of Mouth</option><option>Bark.com</option><option>Other</option>
-      </select>
-    </p>
-    <button type="submit" class="btn btn-primary btn-full">Get My Free Quote</button>
-    <p class="form-note" style="font-size:0.82rem; color:#6b7280; margin-top:0.5rem;">We aim to respond within one working day. For urgent enquiries call <a href="tel:+441702820468">01702 820468</a>.</p>
+    <input type="hidden" name="utm_source" class="quote-attr-field" data-attr="utm_source">
+    <input type="hidden" name="utm_medium" class="quote-attr-field" data-attr="utm_medium">
+    <input type="hidden" name="utm_campaign" class="quote-attr-field" data-attr="utm_campaign">
+    <input type="hidden" name="utm_content" class="quote-attr-field" data-attr="utm_content">
+    <input type="hidden" name="utm_term" class="quote-attr-field" data-attr="utm_term">
+    
+    <input type="hidden" name="referrer" class="quote-attr-field" data-attr="referrer">
+    <input type="hidden" name="landingPage" class="quote-attr-field" data-attr="landingPage">
+
+    <fieldset class="quote-step" data-step="1">
+      <legend>What are you working on?</legend>
+      <div class="quote-choice-grid" role="radiogroup" aria-label="Project type">
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Roof replacement" data-audience="homeowner" required>
+          <span>Roof replacement</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Roof repairs" data-audience="homeowner" required>
+          <span>Roof repairs</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Chimney work" data-audience="homeowner" required>
+          <span>Chimney work</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Extension" data-audience="homeowner" required>
+          <span>Extension</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Rendering / external works" data-audience="homeowner" required>
+          <span>Rendering / external works</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Guttering / fascia / soffit" data-audience="homeowner" required>
+          <span>Guttering / fascia / soffit</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Commercial project" data-audience="commercial" required>
+          <span>Commercial project</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Temporary roofing" data-audience="homeowner" required>
+          <span>Temporary roofing</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Emergency access" data-audience="emergency" required>
+          <span>Emergency access</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Not sure" data-audience="homeowner" required>
+          <span>Not sure</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="Other" data-audience="homeowner" required>
+          <span>Other</span>
+        </label>
+      </div>
+      <p class="quote-emergency-banner" data-emergency-banner hidden>
+        For urgent access issues, calling is fastest.
+        <a class="btn btn-primary" href="tel:+441702820468">Call 01702 820468</a>
+      </p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="2">
+      <legend>Where is the project?</legend>
+      <p><label for="qw-postcode">Postcode *</label><input id="qw-postcode" name="postcode" autocomplete="postal-code" required></p>
+      <p><label for="qw-address">Town / address <span class="quote-optional">(optional)</span></label><input id="qw-address" name="addressLine" autocomplete="address-line1"></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="3">
+      <legend>When do you need access?</legend>
+      <div class="quote-choice-grid" role="radiogroup" aria-label="Timing">
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="ASAP" required>
+          <span>ASAP</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="1–2 weeks" required>
+          <span>1–2 weeks</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="2–4 weeks" required>
+          <span>2–4 weeks</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="Planning ahead" required>
+          <span>Planning ahead</span>
+        </label>
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="Not sure" required>
+          <span>Not sure</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="4">
+      <legend>Tell us about the job</legend>
+      <div data-audience-fields="homeowner">
+        <p><label for="qw-property-type">Property type</label>
+          <select id="qw-property-type" name="propertyType">
+            <option value="">Please select</option>
+            <option>Detached</option><option>Semi-detached</option><option>Terraced</option>
+            <option>Bungalow</option><option>Flat</option><option>Other</option>
+          </select>
+        </p>
+        <p><label for="qw-storeys">Approximate storeys</label>
+          <select id="qw-storeys" name="storeys">
+            <option value="">Please select</option><option>1</option><option>2</option><option>3+</option>
+          </select>
+        </p>
+      </div>
+      <div data-audience-fields="commercial" hidden>
+        <p><label for="qw-site-type">Site / project type</label><input id="qw-site-type" name="siteType" placeholder="e.g. retail unit, office refurbishment, new build"></p>
+        <p><label for="qw-duration">Expected duration</label>
+          <select id="qw-duration" name="expectedDuration">
+            <option value="">Please select</option>
+            <option>Under 1 week</option><option>1–4 weeks</option><option>1–3 months</option><option>3+ months</option><option>Not sure</option>
+          </select>
+        </p>
+      </div>
+      <p><label for="qw-desc">Description *</label><textarea id="qw-desc" name="briefDescription" required placeholder="Tell us what work is being done and anything about access we should know."></textarea></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="5">
+      <legend>Photos <span class="quote-optional">(optional)</span></legend>
+      <p class="quote-help-text">Photos of the property, roof and access can help us understand the job before we contact you.</p>
+      <input type="file" id="qw-photos" name="photos" multiple accept="image/*">
+      <ul class="quote-photo-list" aria-live="polite"></ul>
+      <p class="quote-photo-status" aria-live="polite"></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="6">
+      <legend>Your details</legend>
+      <p><label for="qw-name">Full Name *</label><input id="qw-name" name="fullName" autocomplete="name" required></p>
+      <p><label for="qw-phone">Phone Number *</label><input id="qw-phone" name="phone" type="tel" autocomplete="tel" required></p>
+      <p><label for="qw-email">Email Address *</label><input id="qw-email" name="email" type="email" autocomplete="email" required></p>
+    </fieldset>
+
+    <div class="quote-wizard-nav">
+      <button type="button" class="btn btn-outline quote-back" hidden>Back</button>
+      <button type="button" class="btn btn-primary quote-next" hidden>Continue</button>
+      <button type="submit" class="btn btn-primary quote-submit">Get My Free Quote</button>
+    </div>
+    <p class="form-note">We aim to respond within one working day. For urgent enquiries call <a href="tel:+441702820468">01702 820468</a>.</p>
     <p class="form-message" aria-live="polite"></p>
   </form>
 </section>

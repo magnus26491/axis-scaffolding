@@ -291,6 +291,222 @@
   });
   // ── END ANALYTICS ──
 
+  // ── ATTRIBUTION (captured on every page, read by the quote wizard) ──
+  (function captureAttribution() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      const stored = JSON.parse(localStorage.getItem('axis_attribution') || '{}');
+      let changed = false;
+      utmKeys.forEach((key) => {
+        const value = params.get(key);
+        if (value) { stored[key] = value; changed = true; }
+      });
+      if (!sessionStorage.getItem('axis_landing_page')) {
+        sessionStorage.setItem('axis_landing_page', window.location.pathname);
+        sessionStorage.setItem('axis_referrer', document.referrer || '');
+      }
+      if (changed) localStorage.setItem('axis_attribution', JSON.stringify(stored));
+    } catch (_err) { /* storage unavailable — attribution is best-effort, never blocking */ }
+  })();
+
+  // ── QUOTE WIZARD ──
+  (function quoteWizard() {
+    const form = document.querySelector('.quote-wizard-form');
+    if (!form) return;
+
+    // Populate hidden attribution fields from what's been captured
+    // sitewide (see captureAttribution above), not just this page.
+    try {
+      const attribution = JSON.parse(localStorage.getItem('axis_attribution') || '{}');
+      form.querySelectorAll('.quote-attr-field[data-attr]').forEach((field) => {
+        const key = field.dataset.attr;
+        if (key === 'referrer') field.value = sessionStorage.getItem('axis_referrer') || '';
+        else if (key === 'landingPage') field.value = sessionStorage.getItem('axis_landing_page') || window.location.pathname;
+        else if (attribution[key]) field.value = attribution[key];
+      });
+    } catch (_err) { /* best-effort only */ }
+
+    const steps = Array.from(form.querySelectorAll('.quote-step'));
+    const progress = document.querySelector('.quote-progress');
+    const progressSteps = progress ? Array.from(progress.querySelectorAll('.quote-progress-step')) : [];
+    const backBtn = form.querySelector('.quote-back');
+    const nextBtn = form.querySelector('.quote-next');
+    const submitBtn = form.querySelector('.quote-submit');
+    const emergencyBanner = form.querySelector('[data-emergency-banner]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    const stepEventNames = ['quote_project_type', 'quote_location', 'quote_timing', 'quote_details', 'quote_photo_upload'];
+
+    function updateAudience() {
+      const checked = form.querySelector('input[name="projectType"]:checked');
+      const audience = checked ? checked.dataset.audience : '';
+      form.querySelectorAll('[data-audience-fields]').forEach((block) => {
+        block.hidden = block.dataset.audienceFields !== audience;
+      });
+      if (emergencyBanner) emergencyBanner.hidden = audience !== 'emergency';
+    }
+
+    function showStep(index) {
+      steps.forEach((step, i) => { step.hidden = i !== index; });
+      if (progress) {
+        progress.hidden = false;
+        progressSteps.forEach((el, i) => {
+          el.classList.toggle('is-active', i === index);
+          el.classList.toggle('is-done', i < index);
+          if (i === index) el.setAttribute('aria-current', 'step');
+          else el.removeAttribute('aria-current');
+        });
+      }
+      backBtn.hidden = index === 0;
+      const isLast = index === steps.length - 1;
+      nextBtn.hidden = isLast;
+      submitBtn.hidden = !isLast;
+      current = index;
+      (steps[index].querySelector('input, select, textarea') || steps[index]).focus({ preventScroll: true });
+      steps[index].scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+    function stepIsValid(index) {
+      const fields = steps[index].querySelectorAll('input, select, textarea');
+      let valid = true;
+      fields.forEach((field) => {
+        if (field.closest('[hidden]')) return; // conditional fields not currently shown
+        if (!field.checkValidity()) { valid = false; field.reportValidity(); }
+      });
+      return valid;
+    }
+
+    // Progressive enhancement: JS now takes over from "all fields visible,
+    // real submit button showing" (the no-JS state) into stepped mode.
+    nextBtn.hidden = false;
+    showStep(0);
+
+    // Belt-and-suspenders for the checked-state highlight: CSS :has() does
+    // this alone in current browsers, but toggling a class works everywhere.
+    form.querySelectorAll('.quote-choice-grid input[type="radio"]').forEach((radio) => {
+      radio.addEventListener('focus', () => radio.closest('.quote-choice').classList.add('is-focused'));
+      radio.addEventListener('blur', () => radio.closest('.quote-choice').classList.remove('is-focused'));
+      radio.addEventListener('change', () => {
+        // Re-evaluate every choice in this group, not just the one that
+        // fired — the previously-checked sibling's radio doesn't emit its
+        // own 'change' event when it becomes unchecked.
+        radio.closest('.quote-choice-grid').querySelectorAll('.quote-choice').forEach((label) => {
+          const input = label.querySelector('input');
+          label.classList.toggle('is-checked', !!input && input.checked);
+        });
+        // Emergency banner reacts immediately on selection — the whole
+        // point is to surface "call us" before the visitor clicks
+        // Continue, not after.
+        if (radio.name === 'projectType') updateAudience();
+      });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!stepIsValid(current)) return;
+      const eventName = stepEventNames[current];
+      if (eventName) trackEvent(eventName, { event_category: 'Lead', event_label: form.dataset.formName });
+      if (current < steps.length - 1) showStep(current + 1);
+    });
+    backBtn.addEventListener('click', () => {
+      if (current > 0) showStep(current - 1);
+    });
+    form.addEventListener('keydown', (event) => {
+      // Enter on a non-final step advances instead of submitting early
+      // (textarea keeps its normal newline behaviour).
+      if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA' && !nextBtn.hidden) {
+        event.preventDefault();
+        nextBtn.click();
+      }
+    });
+
+    // ── Photos: validate, compress client-side, list, allow removal ──
+    const photoInput = form.querySelector('#qw-photos');
+    const photoList = form.querySelector('.quote-photo-list');
+    const photoStatus = form.querySelector('.quote-photo-status');
+    const MAX_PHOTOS = 5;
+    const MAX_SOURCE_MB = 15;
+    let acceptedFiles = [];
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        try {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const maxEdge = 1600;
+            const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { resolve(file); return; }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+              if (!blob) { resolve(file); return; }
+              resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.72);
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+          img.src = url;
+        } catch (_err) {
+          resolve(file); // compression is best-effort — never block the upload over it
+        }
+      });
+    }
+
+    function renderPhotoList() {
+      photoList.innerHTML = '';
+      acceptedFiles.forEach((file, i) => {
+        const li = document.createElement('li');
+        const sizeKb = Math.round(file.size / 1024);
+        li.innerHTML = '<span>' + file.name + ' (' + sizeKb + 'KB)</span>';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.setAttribute('aria-label', 'Remove ' + file.name);
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => {
+          acceptedFiles.splice(i, 1);
+          syncPhotoInput();
+          renderPhotoList();
+        });
+        li.appendChild(removeBtn);
+        photoList.appendChild(li);
+      });
+    }
+
+    function syncPhotoInput() {
+      try {
+        const dt = new DataTransfer();
+        acceptedFiles.forEach((file) => dt.items.add(file));
+        photoInput.files = dt.files;
+      } catch (_err) { /* DataTransfer unsupported — files still submit as originally selected */ }
+    }
+
+    if (photoInput) {
+      photoInput.addEventListener('change', async () => {
+        const incoming = Array.from(photoInput.files || []);
+        if (!incoming.length) return;
+        photoStatus.textContent = 'Processing photos…';
+        let rejected = 0;
+        for (const file of incoming) {
+          if (acceptedFiles.length >= MAX_PHOTOS) { rejected++; continue; }
+          if (!file.type.startsWith('image/')) { rejected++; continue; }
+          if (file.size > MAX_SOURCE_MB * 1024 * 1024) { rejected++; continue; }
+          const compressed = await compressImage(file);
+          acceptedFiles.push(compressed);
+        }
+        syncPhotoInput();
+        renderPhotoList();
+        const parts = [acceptedFiles.length + ' photo' + (acceptedFiles.length === 1 ? '' : 's') + ' added.'];
+        if (rejected) parts.push(rejected + ' skipped (over ' + MAX_PHOTOS + ' photos, too large, or not an image).');
+        photoStatus.textContent = parts.join(' ');
+        trackEvent('quote_photo_upload', { event_category: 'Lead', event_label: form.dataset.formName, value: acceptedFiles.length });
+      });
+    }
+  })();
+
   const CONSENT_KEY = 'axis_cookie_consent';
   var bar = document.getElementById('axis-cookie-bar');
   function showBar() {

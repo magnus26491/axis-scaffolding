@@ -501,6 +501,151 @@ def quote_form(prefix: str, title: str) -> str:
 """
 
 
+# (value, visible label, audience). audience drives which conditional fields
+# show in step 4 ("Tell us about the job") and whether the emergency banner
+# appears. Every option here is a genuine existing Axis service/use case —
+# nothing invented.
+QUOTE_PROJECT_TYPES = [
+    ("roof-replacement", "Roof replacement", "homeowner"),
+    ("roof-repairs", "Roof repairs", "homeowner"),
+    ("chimney-work", "Chimney work", "homeowner"),
+    ("extension", "Extension", "homeowner"),
+    ("rendering", "Rendering / external works", "homeowner"),
+    ("guttering", "Guttering / fascia / soffit", "homeowner"),
+    ("commercial", "Commercial project", "commercial"),
+    ("temporary-roofing", "Temporary roofing", "homeowner"),
+    ("emergency", "Emergency access", "emergency"),
+    ("not-sure", "Not sure", "homeowner"),
+    ("other", "Other", "homeowner"),
+]
+
+QUOTE_TIMING_OPTIONS = ["ASAP", "1–2 weeks", "2–4 weeks", "Planning ahead", "Not sure"]
+
+UTM_FIELDS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]
+
+
+def quote_wizard() -> str:
+    project_type_choices = "".join(
+        f"""
+        <label class="quote-choice">
+          <input type="radio" name="projectType" value="{label}" data-audience="{audience}" required>
+          <span>{label}</span>
+        </label>"""
+        for _key, label, audience in QUOTE_PROJECT_TYPES
+    )
+    timing_choices = "".join(
+        f"""
+        <label class="quote-choice">
+          <input type="radio" name="timing" value="{opt}" required>
+          <span>{opt}</span>
+        </label>"""
+        for opt in QUOTE_TIMING_OPTIONS
+    )
+    attribution_fields = "".join(
+        f'<input type="hidden" name="{f}" class="quote-attr-field" data-attr="{f}">\n    '
+        for f in UTM_FIELDS
+    )
+    steps = ["Project", "Location", "Timing", "Details", "Photos", "Contact"]
+    progress_items = "".join(
+        f"""<li class="quote-progress-step{' is-active' if i == 0 else ''}" data-step-indicator="{i + 1}">
+      <span class="quote-progress-num">{i + 1}</span><span class="quote-progress-label">{label}</span>
+    </li>"""
+        for i, label in enumerate(steps)
+    )
+    return f"""
+<section class="quote-wizard-card">
+  <div class="quote-progress" hidden role="list" aria-label="Quote form progress">
+    <ol>{progress_items}</ol>
+  </div>
+
+  <form class="axis-quote-form quote-wizard-form" data-form-name="quote-wizard"
+        action="{FORM_ACTION}" method="POST" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="_subject" value="New Scaffolding Quote Request — Axis Scaffolding Ltd">
+    <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
+    <input type="hidden" name="_next" value="{FORM_NEXT}">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+    {attribution_fields}
+    <input type="hidden" name="referrer" class="quote-attr-field" data-attr="referrer">
+    <input type="hidden" name="landingPage" class="quote-attr-field" data-attr="landingPage">
+
+    <fieldset class="quote-step" data-step="1">
+      <legend>What are you working on?</legend>
+      <div class="quote-choice-grid" role="radiogroup" aria-label="Project type">{project_type_choices}
+      </div>
+      <p class="quote-emergency-banner" data-emergency-banner hidden>
+        For urgent access issues, calling is fastest.
+        <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+      </p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="2">
+      <legend>Where is the project?</legend>
+      <p><label for="qw-postcode">Postcode *</label><input id="qw-postcode" name="postcode" autocomplete="postal-code" required></p>
+      <p><label for="qw-address">Town / address <span class="quote-optional">(optional)</span></label><input id="qw-address" name="addressLine" autocomplete="address-line1"></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="3">
+      <legend>When do you need access?</legend>
+      <div class="quote-choice-grid" role="radiogroup" aria-label="Timing">{timing_choices}
+      </div>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="4">
+      <legend>Tell us about the job</legend>
+      <div data-audience-fields="homeowner">
+        <p><label for="qw-property-type">Property type</label>
+          <select id="qw-property-type" name="propertyType">
+            <option value="">Please select</option>
+            <option>Detached</option><option>Semi-detached</option><option>Terraced</option>
+            <option>Bungalow</option><option>Flat</option><option>Other</option>
+          </select>
+        </p>
+        <p><label for="qw-storeys">Approximate storeys</label>
+          <select id="qw-storeys" name="storeys">
+            <option value="">Please select</option><option>1</option><option>2</option><option>3+</option>
+          </select>
+        </p>
+      </div>
+      <div data-audience-fields="commercial" hidden>
+        <p><label for="qw-site-type">Site / project type</label><input id="qw-site-type" name="siteType" placeholder="e.g. retail unit, office refurbishment, new build"></p>
+        <p><label for="qw-duration">Expected duration</label>
+          <select id="qw-duration" name="expectedDuration">
+            <option value="">Please select</option>
+            <option>Under 1 week</option><option>1–4 weeks</option><option>1–3 months</option><option>3+ months</option><option>Not sure</option>
+          </select>
+        </p>
+      </div>
+      <p><label for="qw-desc">Description *</label><textarea id="qw-desc" name="briefDescription" required placeholder="Tell us what work is being done and anything about access we should know."></textarea></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="5">
+      <legend>Photos <span class="quote-optional">(optional)</span></legend>
+      <p class="quote-help-text">Photos of the property, roof and access can help us understand the job before we contact you.</p>
+      <input type="file" id="qw-photos" name="photos" multiple accept="image/*">
+      <ul class="quote-photo-list" aria-live="polite"></ul>
+      <p class="quote-photo-status" aria-live="polite"></p>
+    </fieldset>
+
+    <fieldset class="quote-step" data-step="6">
+      <legend>Your details</legend>
+      <p><label for="qw-name">Full Name *</label><input id="qw-name" name="fullName" autocomplete="name" required></p>
+      <p><label for="qw-phone">Phone Number *</label><input id="qw-phone" name="phone" type="tel" autocomplete="tel" required></p>
+      <p><label for="qw-email">Email Address *</label><input id="qw-email" name="email" type="email" autocomplete="email" required></p>
+    </fieldset>
+
+    <div class="quote-wizard-nav">
+      <button type="button" class="btn btn-outline quote-back" hidden>Back</button>
+      <button type="button" class="btn btn-primary quote-next" hidden>Continue</button>
+      <button type="submit" class="btn btn-primary quote-submit">Get My Free Quote</button>
+    </div>
+    <p class="form-note">We aim to respond within one working day. For urgent enquiries call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</p>
+    <p class="form-message" aria-live="polite"></p>
+  </form>
+</section>
+"""
+
+
 def render_page(
     *,
     title: str,
@@ -803,6 +948,11 @@ textarea:focus-visible {
   justify-content:center; border:2px solid transparent;
   cursor:pointer; transition: all 0.2s ease;
 }
+/* A class-selector display rule beats the UA stylesheet's [hidden]
+   selector on specificity, so any element styled with display here
+   would otherwise stay visibly rendered even with the hidden attribute
+   set — exactly the bug this line exists to prevent. */
+.btn[hidden] { display:none !important; }
 .btn-primary,
 .cta-pill {
   position:relative; overflow:hidden;
@@ -970,9 +1120,11 @@ textarea:focus-visible {
   box-shadow: 0 4px 8px rgba(0,0,0,0.45), 0 16px 36px rgba(0,0,0,0.4) !important;
 }
 
-/* Reserved glass — the quote form only. */
+/* Reserved glass — the quote form and quote wizard only (the genuine
+   floating/input panels on the site). */
 .glass-card,
-.quote-form-card {
+.quote-form-card,
+.quote-wizard-card {
   position: relative; overflow: hidden;
   background: rgba(255,255,255,0.045) !important;
   border: 1px solid var(--border-strong) !important;
@@ -984,7 +1136,8 @@ textarea:focus-visible {
     0 10px 40px rgba(0,0,0,0.5),
     inset 0 1px 0 rgba(255,255,255,0.10) !important;
 }
-.quote-form-card:hover { transform: none !important; }
+.quote-form-card:hover,
+.quote-wizard-card:hover { transform: none !important; }
 
 /* ── SERVICES GRID ──
    Both .services-grid and .service-listing always render the same 9
@@ -1247,6 +1400,98 @@ body.lightbox-open { overflow:hidden; }
 .quote-form-card select option { background:#0a0a0a; color:#ffffff; }
 .quote-form-card textarea { min-height:120px; }
 .form-message { min-height:1.2rem; font-weight:600; color:#34d399; }
+
+/* ── QUOTE WIZARD ──
+   A premium multi-step project-intake tool, built as ONE real <form>
+   (same FormSubmit action, same .axis-quote-form submit/consent/analytics
+   handling already used everywhere else on the site) with a client-side
+   JS layer on top that shows one fieldset at a time. Without JS every
+   fieldset is visible and the real submit button is already showing —
+   it degrades to one long working form, not a broken one. */
+.quote-wizard-card { padding:1.75rem; }
+.quote-wizard-card form p { margin-bottom:0.9rem; }
+.quote-wizard-card label { display:block; margin-bottom:0.35rem; font-weight:600; color:#ffffff !important; }
+.quote-wizard-card .quote-optional { font-weight:400; color:#9ca3af; }
+.quote-wizard-card input[type="text"],
+.quote-wizard-card input[type="tel"],
+.quote-wizard-card input[type="email"],
+.quote-wizard-card input:not([type]),
+.quote-wizard-card select,
+.quote-wizard-card textarea {
+  width:100%; background:rgba(255,255,255,0.06) !important;
+  border:1px solid rgba(255,255,255,0.14) !important;
+  border-radius:10px !important; color:#ffffff !important;
+  padding:0.7rem 0.9rem !important; font:inherit !important;
+  transition:border-color 0.2s ease !important;
+}
+.quote-wizard-card input:focus,
+.quote-wizard-card select:focus,
+.quote-wizard-card textarea:focus {
+  border-color:rgba(255,255,255,0.45) !important; outline:none !important;
+  background:rgba(255,255,255,0.09) !important;
+}
+.quote-wizard-card select option { background:#0a0a0a; color:#ffffff; }
+.quote-wizard-card textarea { min-height:110px; }
+.quote-wizard-card fieldset { border:none; padding:0; margin:0 0 1.5rem; }
+.quote-wizard-card legend { font-family:'Poppins',sans-serif; font-size:1.2rem; font-weight:600; color:#fff; padding:0; margin:0 0 1rem; }
+.quote-wizard-card input[type="file"] { color:var(--text-secondary); }
+.quote-help-text { color:var(--text-muted); font-size:0.9rem; margin:0 0 0.75rem; }
+
+.quote-progress ol { list-style:none; display:flex; flex-wrap:wrap; gap:0.5rem 0; padding:0; margin:0 0 1.75rem; }
+.quote-progress-step {
+  display:flex; align-items:center; gap:0.4rem; flex:1; min-width:0;
+  color:var(--text-muted); font-size:0.78rem; font-weight:600;
+}
+.quote-progress-num {
+  flex-shrink:0; width:1.6rem; height:1.6rem; border-radius:50%;
+  border:1px solid var(--border-strong); display:flex; align-items:center; justify-content:center;
+  font-size:0.8rem;
+}
+.quote-progress-step.is-active { color:#fff; }
+.quote-progress-step.is-active .quote-progress-num { background:var(--silver); color:#000; border-color:var(--silver); }
+.quote-progress-step.is-done .quote-progress-num { background:rgba(200,205,212,0.25); border-color:var(--silver); }
+.quote-progress-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:560px) {
+  .quote-progress-label { display:none; }
+}
+
+.quote-choice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.6rem; }
+.quote-choice {
+  position:relative; display:flex; align-items:center;
+  border:1px solid var(--border-strong); border-radius:10px;
+  padding:0.75rem 1rem; cursor:pointer; color:var(--text-secondary);
+  font-weight:600; font-size:0.92rem; transition:border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.quote-choice input { position:absolute; opacity:0; width:1px; height:1px; }
+.quote-choice:hover { border-color:var(--silver); color:#fff; }
+.quote-choice:has(input:checked),
+.quote-choice.is-checked { background:var(--silver); border-color:var(--silver); color:#000; }
+.quote-choice:has(input:focus-visible),
+.quote-choice.is-focused { outline:3px solid var(--silver); outline-offset:2px; }
+.quote-choice input:focus-visible { outline:none; } /* outline lives on the label above instead */
+
+.quote-emergency-banner {
+  margin-top:1.25rem; padding:1rem 1.25rem; border-radius:10px;
+  background:rgba(220,60,60,0.1); border:1px solid rgba(220,90,90,0.4);
+  color:#fff; display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem;
+}
+.quote-emergency-banner[hidden] { display:none !important; }
+.quote-emergency-banner .btn { flex-shrink:0; }
+
+.quote-photo-list { list-style:none; padding:0; margin:0.75rem 0 0; display:flex; flex-wrap:wrap; gap:0.6rem; }
+.quote-photo-list li {
+  display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.06);
+  border:1px solid var(--border-strong); border-radius:8px; padding:0.4rem 0.6rem; font-size:0.82rem; color:var(--text-secondary);
+}
+.quote-photo-list button {
+  background:none; border:none; color:#f87171; cursor:pointer; font-weight:700; font-size:1rem; line-height:1; padding:0;
+}
+.quote-photo-status { font-size:0.82rem; color:var(--text-muted); margin:0.5rem 0 0; min-height:1.1rem; }
+
+.quote-wizard-nav { display:flex; justify-content:space-between; gap:0.75rem; margin-top:0.5rem; }
+.quote-wizard-nav .quote-next,
+.quote-wizard-nav .quote-submit { margin-left:auto; }
+.quote-wizard-card .form-note { font-size:0.82rem; color:#6b7280; margin-top:0.75rem; }
 
 /* ── CTA BANNER ── */
 .cta-banner {
@@ -1858,6 +2103,222 @@ def generate_js() -> None:
     }, { once: false, capture: true });
   });
   // ── END ANALYTICS ──
+
+  // ── ATTRIBUTION (captured on every page, read by the quote wizard) ──
+  (function captureAttribution() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      const stored = JSON.parse(localStorage.getItem('axis_attribution') || '{}');
+      let changed = false;
+      utmKeys.forEach((key) => {
+        const value = params.get(key);
+        if (value) { stored[key] = value; changed = true; }
+      });
+      if (!sessionStorage.getItem('axis_landing_page')) {
+        sessionStorage.setItem('axis_landing_page', window.location.pathname);
+        sessionStorage.setItem('axis_referrer', document.referrer || '');
+      }
+      if (changed) localStorage.setItem('axis_attribution', JSON.stringify(stored));
+    } catch (_err) { /* storage unavailable — attribution is best-effort, never blocking */ }
+  })();
+
+  // ── QUOTE WIZARD ──
+  (function quoteWizard() {
+    const form = document.querySelector('.quote-wizard-form');
+    if (!form) return;
+
+    // Populate hidden attribution fields from what's been captured
+    // sitewide (see captureAttribution above), not just this page.
+    try {
+      const attribution = JSON.parse(localStorage.getItem('axis_attribution') || '{}');
+      form.querySelectorAll('.quote-attr-field[data-attr]').forEach((field) => {
+        const key = field.dataset.attr;
+        if (key === 'referrer') field.value = sessionStorage.getItem('axis_referrer') || '';
+        else if (key === 'landingPage') field.value = sessionStorage.getItem('axis_landing_page') || window.location.pathname;
+        else if (attribution[key]) field.value = attribution[key];
+      });
+    } catch (_err) { /* best-effort only */ }
+
+    const steps = Array.from(form.querySelectorAll('.quote-step'));
+    const progress = document.querySelector('.quote-progress');
+    const progressSteps = progress ? Array.from(progress.querySelectorAll('.quote-progress-step')) : [];
+    const backBtn = form.querySelector('.quote-back');
+    const nextBtn = form.querySelector('.quote-next');
+    const submitBtn = form.querySelector('.quote-submit');
+    const emergencyBanner = form.querySelector('[data-emergency-banner]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    const stepEventNames = ['quote_project_type', 'quote_location', 'quote_timing', 'quote_details', 'quote_photo_upload'];
+
+    function updateAudience() {
+      const checked = form.querySelector('input[name="projectType"]:checked');
+      const audience = checked ? checked.dataset.audience : '';
+      form.querySelectorAll('[data-audience-fields]').forEach((block) => {
+        block.hidden = block.dataset.audienceFields !== audience;
+      });
+      if (emergencyBanner) emergencyBanner.hidden = audience !== 'emergency';
+    }
+
+    function showStep(index) {
+      steps.forEach((step, i) => { step.hidden = i !== index; });
+      if (progress) {
+        progress.hidden = false;
+        progressSteps.forEach((el, i) => {
+          el.classList.toggle('is-active', i === index);
+          el.classList.toggle('is-done', i < index);
+          if (i === index) el.setAttribute('aria-current', 'step');
+          else el.removeAttribute('aria-current');
+        });
+      }
+      backBtn.hidden = index === 0;
+      const isLast = index === steps.length - 1;
+      nextBtn.hidden = isLast;
+      submitBtn.hidden = !isLast;
+      current = index;
+      (steps[index].querySelector('input, select, textarea') || steps[index]).focus({ preventScroll: true });
+      steps[index].scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+    function stepIsValid(index) {
+      const fields = steps[index].querySelectorAll('input, select, textarea');
+      let valid = true;
+      fields.forEach((field) => {
+        if (field.closest('[hidden]')) return; // conditional fields not currently shown
+        if (!field.checkValidity()) { valid = false; field.reportValidity(); }
+      });
+      return valid;
+    }
+
+    // Progressive enhancement: JS now takes over from "all fields visible,
+    // real submit button showing" (the no-JS state) into stepped mode.
+    nextBtn.hidden = false;
+    showStep(0);
+
+    // Belt-and-suspenders for the checked-state highlight: CSS :has() does
+    // this alone in current browsers, but toggling a class works everywhere.
+    form.querySelectorAll('.quote-choice-grid input[type="radio"]').forEach((radio) => {
+      radio.addEventListener('focus', () => radio.closest('.quote-choice').classList.add('is-focused'));
+      radio.addEventListener('blur', () => radio.closest('.quote-choice').classList.remove('is-focused'));
+      radio.addEventListener('change', () => {
+        // Re-evaluate every choice in this group, not just the one that
+        // fired — the previously-checked sibling's radio doesn't emit its
+        // own 'change' event when it becomes unchecked.
+        radio.closest('.quote-choice-grid').querySelectorAll('.quote-choice').forEach((label) => {
+          const input = label.querySelector('input');
+          label.classList.toggle('is-checked', !!input && input.checked);
+        });
+        // Emergency banner reacts immediately on selection — the whole
+        // point is to surface "call us" before the visitor clicks
+        // Continue, not after.
+        if (radio.name === 'projectType') updateAudience();
+      });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!stepIsValid(current)) return;
+      const eventName = stepEventNames[current];
+      if (eventName) trackEvent(eventName, { event_category: 'Lead', event_label: form.dataset.formName });
+      if (current < steps.length - 1) showStep(current + 1);
+    });
+    backBtn.addEventListener('click', () => {
+      if (current > 0) showStep(current - 1);
+    });
+    form.addEventListener('keydown', (event) => {
+      // Enter on a non-final step advances instead of submitting early
+      // (textarea keeps its normal newline behaviour).
+      if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA' && !nextBtn.hidden) {
+        event.preventDefault();
+        nextBtn.click();
+      }
+    });
+
+    // ── Photos: validate, compress client-side, list, allow removal ──
+    const photoInput = form.querySelector('#qw-photos');
+    const photoList = form.querySelector('.quote-photo-list');
+    const photoStatus = form.querySelector('.quote-photo-status');
+    const MAX_PHOTOS = 5;
+    const MAX_SOURCE_MB = 15;
+    let acceptedFiles = [];
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        try {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const maxEdge = 1600;
+            const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { resolve(file); return; }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+              if (!blob) { resolve(file); return; }
+              resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.72);
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+          img.src = url;
+        } catch (_err) {
+          resolve(file); // compression is best-effort — never block the upload over it
+        }
+      });
+    }
+
+    function renderPhotoList() {
+      photoList.innerHTML = '';
+      acceptedFiles.forEach((file, i) => {
+        const li = document.createElement('li');
+        const sizeKb = Math.round(file.size / 1024);
+        li.innerHTML = '<span>' + file.name + ' (' + sizeKb + 'KB)</span>';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.setAttribute('aria-label', 'Remove ' + file.name);
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => {
+          acceptedFiles.splice(i, 1);
+          syncPhotoInput();
+          renderPhotoList();
+        });
+        li.appendChild(removeBtn);
+        photoList.appendChild(li);
+      });
+    }
+
+    function syncPhotoInput() {
+      try {
+        const dt = new DataTransfer();
+        acceptedFiles.forEach((file) => dt.items.add(file));
+        photoInput.files = dt.files;
+      } catch (_err) { /* DataTransfer unsupported — files still submit as originally selected */ }
+    }
+
+    if (photoInput) {
+      photoInput.addEventListener('change', async () => {
+        const incoming = Array.from(photoInput.files || []);
+        if (!incoming.length) return;
+        photoStatus.textContent = 'Processing photos…';
+        let rejected = 0;
+        for (const file of incoming) {
+          if (acceptedFiles.length >= MAX_PHOTOS) { rejected++; continue; }
+          if (!file.type.startsWith('image/')) { rejected++; continue; }
+          if (file.size > MAX_SOURCE_MB * 1024 * 1024) { rejected++; continue; }
+          const compressed = await compressImage(file);
+          acceptedFiles.push(compressed);
+        }
+        syncPhotoInput();
+        renderPhotoList();
+        const parts = [acceptedFiles.length + ' photo' + (acceptedFiles.length === 1 ? '' : 's') + ' added.'];
+        if (rejected) parts.push(rejected + ' skipped (over ' + MAX_PHOTOS + ' photos, too large, or not an image).');
+        photoStatus.textContent = parts.join(' ');
+        trackEvent('quote_photo_upload', { event_category: 'Lead', event_label: form.dataset.formName, value: acceptedFiles.length });
+      });
+    }
+  })();
 
   const CONSENT_KEY = 'axis_cookie_consent';
   var bar = document.getElementById('axis-cookie-bar');
@@ -3088,9 +3549,9 @@ def generate_pages() -> None:
         inner_hero(
             [("Home", "/"), ("Quote", "/quote")],
             "Get a Free Scaffolding Quote",
-            "Request scaffolding Essex pricing from our Benfleet team for domestic, commercial and emergency access projects. Get a free quote today.",
+            "Tell us about your project in a few short steps — domestic, commercial or emergency access. Prefer to talk? Call " + NAP["phone"] + " instead.",
         )
-        + f"""<section class="section section-light"><div class="container">{quote_form("quote", "Request Your Free Quote")}</div></section>"""
+        + f"""<section class="section section-light"><div class="container">{quote_wizard()}</div></section>"""
     )
     write(
         "quote/index.html",
