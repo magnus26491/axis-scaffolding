@@ -1,26 +1,19 @@
-# Domain migration — preserve old Axis URLs and link equity
-https://axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 301!
-https://www.axisscaffolding.co.uk/* https://axisscaffoldingessex.co.uk/:splat 301!
-
-# Legacy flat HTML URLs — one hop to the canonical clean URL
+https://axisscaffolding.co.uk/* https://www.axisscaffoldingessex.co.uk/:splat 301!
+https://www.axisscaffolding.co.uk/* https://www.axisscaffoldingessex.co.uk/:splat 301!
 /about.html /about 301
 /gallery.html /gallery 301
 /contact.html /contact 301
 /privacy.html /privacy-policy 301
 /terms.html /terms-and-conditions 301
 /cookies.html /cookie-policy 301
-
-# Legacy service URLs — map to the equivalent service, never an unrelated page
 /services/residential.html /services/residential-scaffolding 301
 /services/commercial.html /services/commercial-scaffolding 301
 /services/supply-erection.html /services/scaffold-supply-erection 301
 /services/dismantling.html /services/dismantling-scaffolding 301
 /services/loading-bays.html /services/loading-bay-scaffolding 301
 /services/temporary-roofs.html /services/temporary-roofing 301
-
-# Retired location aliases — send visitors to the location index, not a homepage fragment
-/areas/clacton /areas 301
-/areas/bromley /areas 301
-
-# Canonical clean URLs are intentionally non-trailing-slash to match page canonicals and sitemap.
-# Do not add slash-normalisation redirects here; the Caddy deployment serves clean directory URLs directly.
+/areas/brentwood.html /areas/brentwood 301
+/areas/loughton.html /areas/loughton 301
+/areas/london.html /areas/london 301
+/areas/clacton.html /areas 301
+/areas/bromley.html /areas 301

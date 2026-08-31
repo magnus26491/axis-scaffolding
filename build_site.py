@@ -9,13 +9,22 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).parent
-SITE = "https://axisscaffoldingessex.co.uk"
+SITE = "https://www.axisscaffoldingessex.co.uk"
+# Bare (non-www) new-domain hostname. GitHub Pages (see CNAME) redirects this
+# to SITE automatically at the edge — no application code needed for that
+# hop. Kept only for the duplicate-host audit / CI checks below; never used
+# to build an outgoing URL.
+BARE_SITE = "https://axisscaffoldingessex.co.uk"
 OLD_SITE = "https://axisscaffolding.co.uk"
 OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
-FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
+FORM_NEXT = 'https://www.axisscaffoldingessex.co.uk/thank-you'
+# No verified GA4 property exists for this site yet. Leave unset (None) until a real
+# measurement ID is provided — do not hard-code a placeholder or invented ID here.
+# When set (e.g. "G-XXXXXXX"), analytics load only after the visitor grants consent.
+GA4_MEASUREMENT_ID: str | None = None
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
@@ -275,8 +284,6 @@ def head_tags(
   <title>{title}</title>
   <meta name="description" content="{desc}">
   <meta name="author" content="Axis Scaffolding Ltd">
-  <meta name="revisit-after" content="30 days">
-  <meta name="google-site-verification" content="REPLACE_WITH_GSC_CODE">
   <link rel="canonical" href="{canonical}">
   <link rel="alternate" hreflang="en-gb" href="{canonical}">
   <meta property="og:title" content="{title}">
@@ -327,6 +334,7 @@ def nav() -> str:
     <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/services">Services</a>
+      <a href="/contractors">For Builders</a>
       <a href="/gallery">Projects</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
@@ -443,7 +451,7 @@ def moved_site_banner() -> str:
     return """
 <div id="domain-move-banner" class="domain-move-banner" hidden>
   We've moved! Visit us at
-  <a href="https://axisscaffoldingessex.co.uk" rel="canonical">axisscaffoldingessex.co.uk</a>
+  <a href="https://www.axisscaffoldingessex.co.uk" rel="canonical">www.axisscaffoldingessex.co.uk</a>
 </div>
 """
 
@@ -524,8 +532,7 @@ def render_page(
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
-  <script type="text/plain" data-consent-category="analytics">window.axisAnalyticsAllowed = true;</script>
-  <script type="text/plain" data-consent-category="marketing">window.axisMarketingAllowed = true;</script>
+  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -554,8 +561,18 @@ def generate_media_assets() -> None:
     if hero_src.exists():
         with Image.open(hero_src) as im:
             rgb = im.convert("RGB")
-            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
             orig_w, orig_h = rgb.size
+            # Cap the largest variant at 1920w — the widest size any srcset entry
+            # below claims. Previously hero-bg.webp was saved at the source image's
+            # full native resolution (several thousand px, ~3.8MB) but declared as
+            # "1920w" in the srcset, so a matching browser downloaded the full
+            # multi-megabyte original believing it was ~1920px wide.
+            HERO_MAX_W = 1920
+            if orig_w > HERO_MAX_W:
+                base_h = round(orig_h * HERO_MAX_W / orig_w)
+                rgb = rgb.resize((HERO_MAX_W, base_h), Image.LANCZOS)
+                orig_w, orig_h = rgb.size
+            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
             for w in (480, 768, 1024, 1440):
                 if orig_w >= w:
                     h = round(orig_h * w / orig_w)
@@ -611,6 +628,21 @@ def generate_css() -> None:
   --text-muted:       #9ca3af;
   --border-subtle:    rgba(255, 255, 255, 0.08);
   --border-glass:     rgba(255, 255, 255, 0.14);
+
+  /* V2 semantic tokens — additive aliases over the palette above.
+     Existing component CSS keeps using the names above unchanged;
+     new V2 components (hex system, parallax hero) use these. */
+  --bg:            var(--bg-base);
+  --surface:       var(--bg-depth);
+  --surface-2:     #151515;
+  --surface-3:     #1c1c1c;
+  --text:          var(--text-primary);
+  --text-secondary: var(--text-body);
+  --silver:        var(--accent);
+  --silver-dark:   var(--accent-dark);
+  --silver-light:  var(--accent-light);
+  --border:        var(--border-subtle);
+  --border-strong: var(--border-glass);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -806,6 +838,25 @@ textarea:focus-visible {
   border:1px solid rgba(255,255,255,0.22);
   color:#fff; font-size:0.82rem; font-weight:600;
   padding:0.3rem 0.8rem; border-radius:9999px;
+}
+
+/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
+   Axis's structural signature: a large, sparse hex mesh (steel-frame
+   scale, not a dense tech-grid) sitting between the photo overlay and
+   the hero content. Motion is transform-only (driven by JS setting CSS
+   custom properties), so it never triggers layout/paint of anything
+   else. Desktop pointer devices only — see generate_js(); everywhere
+   else the layers are simply static. */
+.hero-hex {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background-image:url('/assets/images/hex-grid.svg');
+  background-repeat:repeat; background-size:208px 360px;
+  opacity:0.12;
+  transform:translateY(var(--hex-parallax-y, 0px));
+}
+.hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
+@media (prefers-reduced-motion:reduce) {
+  .hero-media, .hero-hex { transform:none !important; }
 }
 
 /* ── SECTIONS ── */
@@ -1090,7 +1141,7 @@ textarea:focus-visible {
 /* ── DECISION CARDS ── */
 .decision-section { padding-bottom:3rem; }
 .decision-grid {
-  display:grid; grid-template-columns:repeat(4,1fr);
+  display:grid; grid-template-columns:repeat(5,1fr);
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
@@ -1186,7 +1237,7 @@ textarea:focus-visible {
 @media (max-width:1024px) {
   .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(2,1fr); }
+  .decision-grid { grid-template-columns:repeat(3,1fr); }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
@@ -1238,7 +1289,7 @@ def generate_js() -> None:
   };
   const currentHost = window.location.hostname.toLowerCase();
   if (currentHost === 'axisscaffolding.co.uk' || currentHost === 'www.axisscaffolding.co.uk') {
-    const nextUrl = `https://axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const nextUrl = `https://www.axisscaffoldingessex.co.uk${window.location.pathname}${window.location.search}${window.location.hash}`;
     const moveBanner = document.getElementById('domain-move-banner');
     const canonicalTag = document.querySelector('link[rel="canonical"]');
     if (canonicalTag) canonicalTag.setAttribute('href', nextUrl);
@@ -1249,6 +1300,62 @@ def generate_js() -> None:
   }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
+
+  // ── HERO PARALLAX ──
+  // Cinematic and restrained by design: over a 500px scroll the hero photo
+  // lags the page by ~100px and the hex layer by ~50px (0.2 / 0.1 of the
+  // scroll delta). Transform-only, rAF-batched, desktop-pointer-only.
+  (function heroParallax() {
+    const hero = document.querySelector('.hero');
+    const heroMedia = hero && hero.querySelector('.hero-media');
+    const heroHex = hero && hero.querySelector('.hero-hex');
+    if (!hero || !heroMedia || !heroHex) return;
+
+    const HERO_RATIO = 0.2;
+    const HEX_RATIO = 0.1;
+    const canAnimate = () =>
+      window.matchMedia('(min-width: 769px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let active = false;
+    let ticking = false;
+
+    function reset() {
+      heroMedia.style.removeProperty('--hero-parallax-y');
+      heroHex.style.removeProperty('--hex-parallax-y');
+    }
+
+    function update() {
+      ticking = false;
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const scrolled = Math.max(0, -rect.top);
+      heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
+      heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    function sync() {
+      const should = canAnimate();
+      if (should === active) return;
+      active = should;
+      if (active) {
+        update();
+      } else {
+        reset();
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+  })();
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
@@ -1288,6 +1395,48 @@ def generate_js() -> None:
   }
   start();
 
+  // ── ANALYTICS (consent-gated, no-op until a real GA4 ID is configured) ──
+  const CATEGORIES_KEY = 'axis_cookie_categories';
+  function loadGA4() {
+    if (!window.AXIS_GA4_ID || window.__axisGA4Loaded) return;
+    window.__axisGA4Loaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AXIS_GA4_ID;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', window.AXIS_GA4_ID, { anonymize_ip: true });
+  }
+  function trackEvent(name, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  function applyConsentCategories(categories) {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    if (categories.analytics) loadGA4();
+  }
+  (function restoreConsent() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
+      if (stored && stored.analytics) loadGA4();
+    } catch (_err) { /* ignore malformed stored consent */ }
+  })();
+  document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('phone_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
+    });
+  });
+  document.querySelectorAll('.axis-quote-form').forEach((form) => {
+    let started = false;
+    form.addEventListener('input', () => {
+      if (started) return;
+      started = true;
+      trackEvent('quote_start', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+    }, { once: false, capture: true });
+  });
+  // ── END ANALYTICS ──
+
   const CONSENT_KEY = 'axis_cookie_consent';
   var bar = document.getElementById('axis-cookie-bar');
   function showBar() {
@@ -1307,12 +1456,14 @@ def generate_js() -> None:
   if (acceptBtn) {
     acceptBtn.addEventListener('click', function() {
       setConsent('accepted');
+      applyConsentCategories({ analytics: true, marketing: true });
     });
   }
   var rejectBtn = document.getElementById('axis-cookie-reject');
   if (rejectBtn) {
     rejectBtn.addEventListener('click', function() {
       setConsent('rejected');
+      applyConsentCategories({ analytics: false, marketing: false });
     });
   }
   var manageBtn = document.getElementById('axis-cookie-manage');
@@ -1342,8 +1493,14 @@ def generate_js() -> None:
       var save = document.getElementById('axis-pref-save');
       if (save) {
         save.addEventListener('click', function() {
+          var analyticsChecked = document.getElementById('axis-pref-analytics');
+          var marketingChecked = document.getElementById('axis-pref-marketing');
           panel.remove();
           setConsent('custom');
+          applyConsentCategories({
+            analytics: !!(analyticsChecked && analyticsChecked.checked),
+            marketing: !!(marketingChecked && marketingChecked.checked),
+          });
         });
       }
     });
@@ -1352,43 +1509,61 @@ def generate_js() -> None:
   if (footerBtn) {
     footerBtn.addEventListener('click', function() {
       localStorage.removeItem(CONSENT_KEY);
+      localStorage.removeItem(CATEGORIES_KEY);
       showBar();
     });
   }
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
+      const webhook = window.AXIS_QUOTE_WEBHOOK;
+
+      // No webhook is configured: allow the form's native FormSubmit action to run.
+      // The previous code prevented the native POST and then displayed a false success
+      // message, which could silently discard every quote enquiry.
+      if (!webhook) {
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+        return;
+      }
+
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
       const payload = { ...data, notification_email: CONTACT_EMAIL };
-      let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+      let ok = false;
+
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        ok = res.ok;
+      } catch (_err) {
+        ok = false;
       }
+
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within one working day.'
           : 'There was a problem submitting your request. Please call 01702 820468 to reach us directly.';
       }
-      if (ok) form.reset();
+
+      if (ok) {
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+        form.reset();
+        window.setTimeout(() => {
+          window.location.assign('/thank-you');
+        }, 250);
+      } else {
+        trackEvent('quote_error', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+      }
     });
   });
 })();
 
 // ── WHITE MOUSE GLOW ──────────────────────
 (function() {
-  // Only run on non-touch desktop devices
   if (window.matchMedia('(hover: none)').matches) return;
   if (window.matchMedia('(max-width: 768px)').matches) return;
 
@@ -1399,9 +1574,7 @@ def generate_js() -> None:
   var mouseY = window.innerHeight / 2;
   var currentX = mouseX;
   var currentY = mouseY;
-  var rafId;
 
-  // Smooth lerp follow (makes it feel soft and organic)
   function lerp(start, end, factor) {
     return start + (end - start) * factor;
   }
@@ -1411,7 +1584,7 @@ def generate_js() -> None:
     currentY = lerp(currentY, mouseY, 0.12);
     glow.style.left = currentX + 'px';
     glow.style.top  = currentY + 'px';
-    rafId = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
   }
 
   document.addEventListener('mousemove', function(e) {
@@ -1419,10 +1592,8 @@ def generate_js() -> None:
     mouseY = e.clientY;
   }, { passive: true });
 
-  // Start animation loop
   animate();
 
-  // Fade out when mouse leaves window
   document.addEventListener('mouseleave', function() {
     glow.style.opacity = '0';
   });
@@ -1497,7 +1668,10 @@ def service_list_cards() -> str:
 
 
 def area_pills() -> str:
-    return "".join(f'<li><a class="area-pill-link" href="/contact">{area}</a></li>' for area in AREAS)
+    return "".join(
+        f'<li><a class="area-pill-link" href="/areas/{data["slug"]}">{name}</a></li>'
+        for name, data in AREA_DATA.items()
+    )
 
 
 def testimonials() -> str:
@@ -1563,6 +1737,7 @@ def homepage() -> str:
        alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd"
        width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
+  <div class="hero-hex" aria-hidden="true"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
     <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
@@ -1581,8 +1756,8 @@ def homepage() -> str:
 
 <section class="section section-light decision-section" aria-labelledby="decision-heading">
   <div class="container">
-    <h2 id="decision-heading">What type of scaffolding do you need?</h2>
-    <p class="section-intro">Not sure? <a href="/contact">Tell us about your project</a> and we'll point you in the right direction.</p>
+    <h2 id="decision-heading">What are you working on?</h2>
+    <p class="section-intro">Pick the option closest to your project and we'll point you to the right place.</p>
     <div class="decision-grid">
       <a href="/services/residential-scaffolding" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
@@ -1590,23 +1765,29 @@ def homepage() -> str:
         <p>Roofing &middot; rendering &middot; extensions &middot; chimneys</p>
         <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
       </a>
-      <a href="/services/commercial-scaffolding" class="decision-card">
+      <a href="/contractors" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
         <h3>Builder / Roofer</h3>
-        <p>Access scaffold &middot; bespoke setups &middot; fast turnaround</p>
-        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+        <p>Access scaffold &middot; trade support &middot; fast turnaround</p>
+        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
       </a>
-      <a href="/services/commercial-scaffolding" class="decision-card">
+      <a href="/contractors" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg></div>
         <h3>Commercial</h3>
         <p>Sites &middot; offices &middot; retail &middot; schools &middot; developments</p>
-        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
       </a>
       <a href="/services/emergency-scaffolding" class="decision-card decision-card-urgent">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <h3>Emergency</h3>
         <p>Storm damage &middot; urgent access &middot; temporary protection</p>
         <span class="decision-link" aria-hidden="true">Call us now &rarr;</span>
+      </a>
+      <a href="/contact" class="decision-card">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Not Sure</h3>
+        <p>Tell us what you're doing and we'll point you in the right direction.</p>
+        <span class="decision-link" aria-hidden="true">Get in touch &rarr;</span>
       </a>
     </div>
   </div>
@@ -2221,7 +2402,7 @@ def area_page_body(area_name: str, data: dict) -> str:
     )
     return (
         inner_hero(
-            [("Home", "/"), ("Areas", "/#areas-covered"), (area_name, f"/areas/{data['slug']}")],
+            [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
             f"Scaffolding in {area_name}, Essex",
             data["intro"],
         )
@@ -2708,7 +2889,7 @@ def generate_pages() -> None:
                 desc=area_data["desc"],
                 path=f"/areas/{area_data['slug']}",
                 body=area_page_body(area_name, area_data),
-                breadcrumb_items=[("Home", "/"), ("Areas", "/#areas-covered"), (area_name, f"/areas/{area_data['slug']}")],
+                breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
             ),
         )
 
@@ -2725,7 +2906,7 @@ def generate_pages() -> None:
   <title>Thank You | Axis Scaffolding Essex – Scaffolding in Rayleigh, Essex</title>
   <meta name="description" content="Thank you for contacting Axis Scaffolding in Rayleigh. We will respond quickly regarding your scaffolding Essex enquiry.">
   <meta name="robots" content="noindex, nofollow">
-  <link rel="canonical" href="https://axisscaffoldingessex.co.uk/thank-you">
+  <link rel="canonical" href="https://www.axisscaffoldingessex.co.uk/thank-you">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
@@ -2735,7 +2916,8 @@ def generate_pages() -> None:
   """ + moved_site_banner() + """
   <main id="main-content">""" + thank_you_body + """</main>
   """ + footer() + """
-  """ + cookie_ui() + """
+  """ + cookie_ui() + f"""
+  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -2807,21 +2989,28 @@ def generate_redirects() -> None:
         "cookies.html": "/cookie-policy",
         "services/residential.html": "/services/residential-scaffolding",
         "services/commercial.html": "/services/commercial-scaffolding",
-        "services/supply-erection.html": "/services/domestic-scaffolding",
-        "services/dismantling.html": "/services/emergency-scaffolding",
-        "services/loading-bays.html": "/services/roof-scaffolding",
+        "services/supply-erection.html": "/services/scaffold-supply-erection",
+        "services/dismantling.html": "/services/dismantling-scaffolding",
+        "services/loading-bays.html": "/services/loading-bay-scaffolding",
         "services/temporary-roofs.html": "/services/temporary-roofing",
     }
     for src, target in redirects.items():
         write(src, redirect_html.format(target=target, canonical=SITE + target))
-    for area_file in [
-        "brentwood",
-        "loughton",
-        "clacton",
-        "bromley",
-        "london",
-    ]:
-        write(f"areas/{area_file}.html", redirect_html.format(target="/#areas-covered", canonical=f"{SITE}/#areas-covered"))
+    legacy_area_targets = {
+        "brentwood": "/areas/brentwood",
+        "loughton": "/areas/loughton",
+        "london": "/areas/london",
+        "clacton": "/areas",
+        "bromley": "/areas",
+        # Stale flat area pages superseded by the canonical /areas/{slug} pages below.
+        "basildon": "/areas/basildon",
+        "canvey-island": "/areas/canvey-island",
+        "chelmsford": "/areas/chelmsford",
+        "rayleigh": "/areas/rayleigh",
+        "southend": "/areas/southend",
+    }
+    for area_file, target in legacy_area_targets.items():
+        write(f"areas/{area_file}.html", redirect_html.format(target=target, canonical=f"{SITE}{target}"))
 
     write(
         "_redirects",
@@ -2837,16 +3026,12 @@ def generate_redirects() -> None:
                 "/cookies.html /cookie-policy 301",
                 "/services/residential.html /services/residential-scaffolding 301",
                 "/services/commercial.html /services/commercial-scaffolding 301",
-                "/services/supply-erection.html /services/domestic-scaffolding 301",
-                "/services/dismantling.html /services/emergency-scaffolding 301",
-                "/services/loading-bays.html /services/roof-scaffolding 301",
+                "/services/supply-erection.html /services/scaffold-supply-erection 301",
+                "/services/dismantling.html /services/dismantling-scaffolding 301",
+                "/services/loading-bays.html /services/loading-bay-scaffolding 301",
                 "/services/temporary-roofs.html /services/temporary-roofing 301",
-                "/areas/brentwood /#areas-covered 301",
-                "/areas/loughton /#areas-covered 301",
-                "/areas/clacton /#areas-covered 301",
-                "/areas/bromley /#areas-covered 301",
-                "/areas/london /#areas-covered 301",
             ]
+            + [f"/areas/{slug}.html {target} 301" for slug, target in legacy_area_targets.items()]
         ),
     )
 
@@ -2854,7 +3039,7 @@ def generate_redirects() -> None:
 def generate_robots_sitemap() -> None:
     robots = (
         "# Axis Scaffolding Ltd — robots.txt\n"
-        "# https://axisscaffoldingessex.co.uk\n\n"
+        "# https://www.axisscaffoldingessex.co.uk\n\n"
         "User-agent: Googlebot\n"
         "Allow: /\n\n"
         "User-agent: Bingbot\n"

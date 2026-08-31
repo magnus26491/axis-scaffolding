@@ -112,14 +112,38 @@ jobs:
 
           # Sitemap URLs should match the site's canonical non-trailing-slash strategy.
           for loc in re.findall(r"<loc>(.*?)</loc>", sitemap):
-              if loc != "https://axisscaffoldingessex.co.uk/" and loc.endswith("/"):
+              if loc != "https://www.axisscaffoldingessex.co.uk/" and loc.endswith("/"):
                   errors.append(f"Trailing-slash sitemap URL conflicts with canonical strategy: {loc}")
+
+          # Preferred canonical hostname is WWW. The bare (non-www) hostname is a valid
+          # *redirect source* (GitHub Pages, via CNAME, 301s it to the www host) but must
+          # never appear as an outgoing URL — canonical, sitemap, schema, OG, hreflang,
+          # or internal absolute link. A bare-host URL used as a destination is a
+          # canonical/redirect/sitemap signal conflict per Google's own guidance on
+          # keeping those signals consistent.
+          BARE_HOST_PATTERN = re.compile(r"(?<!www\.)axisscaffoldingessex\.co\.uk")
+          for html in root.rglob("*.html"):
+              content = html.read_text(encoding="utf-8", errors="ignore")
+              if BARE_HOST_PATTERN.search(content):
+                  errors.append(f"Bare (non-www) hostname used as an outgoing URL in: {html}")
+          if BARE_HOST_PATTERN.search(sitemap):
+              errors.append("Bare (non-www) hostname found in sitemap.xml")
 
           # Check robots.txt has the intended crawlers.
           robots = (root / "robots.txt").read_text()
           for bot in ["OAI-SearchBot", "Googlebot", "Bingbot"]:
               if bot not in robots:
                   errors.append(f"Missing {bot} in robots.txt")
+          if BARE_HOST_PATTERN.search(robots):
+              errors.append("Bare (non-www) hostname found in robots.txt")
+          if "Sitemap: https://www.axisscaffoldingessex.co.uk/sitemap.xml" not in robots:
+              errors.append("robots.txt Sitemap directive does not point at the www canonical host")
+
+          # CNAME must declare the www host as GitHub Pages' canonical hostname —
+          # this is what makes GitHub Pages 301 the bare host to www at the edge.
+          cname = (root / "CNAME").read_text().strip()
+          if cname != "www.axisscaffoldingessex.co.uk":
+              errors.append(f"CNAME does not declare the www canonical host (found: {cname!r})")
 
           # Legacy redirect targets must not be unrelated homepage fragments.
           redirects = (root / "_redirects").read_text()

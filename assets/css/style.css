@@ -18,6 +18,21 @@
   --text-muted:       #9ca3af;
   --border-subtle:    rgba(255, 255, 255, 0.08);
   --border-glass:     rgba(255, 255, 255, 0.14);
+
+  /* V2 semantic tokens — additive aliases over the palette above.
+     Existing component CSS keeps using the names above unchanged;
+     new V2 components (hex system, parallax hero) use these. */
+  --bg:            var(--bg-base);
+  --surface:       var(--bg-depth);
+  --surface-2:     #151515;
+  --surface-3:     #1c1c1c;
+  --text:          var(--text-primary);
+  --text-secondary: var(--text-body);
+  --silver:        var(--accent);
+  --silver-dark:   var(--accent-dark);
+  --silver-light:  var(--accent-light);
+  --border:        var(--border-subtle);
+  --border-strong: var(--border-glass);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -213,6 +228,25 @@ textarea:focus-visible {
   border:1px solid rgba(255,255,255,0.22);
   color:#fff; font-size:0.82rem; font-weight:600;
   padding:0.3rem 0.8rem; border-radius:9999px;
+}
+
+/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
+   Axis's structural signature: a large, sparse hex mesh (steel-frame
+   scale, not a dense tech-grid) sitting between the photo overlay and
+   the hero content. Motion is transform-only (driven by JS setting CSS
+   custom properties), so it never triggers layout/paint of anything
+   else. Desktop pointer devices only — see generate_js(); everywhere
+   else the layers are simply static. */
+.hero-hex {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background-image:url('/assets/images/hex-grid.svg');
+  background-repeat:repeat; background-size:208px 360px;
+  opacity:0.12;
+  transform:translateY(var(--hex-parallax-y, 0px));
+}
+.hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
+@media (prefers-reduced-motion:reduce) {
+  .hero-media, .hero-hex { transform:none !important; }
 }
 
 /* ── SECTIONS ── */
@@ -497,7 +531,7 @@ textarea:focus-visible {
 /* ── DECISION CARDS ── */
 .decision-section { padding-bottom:3rem; }
 .decision-grid {
-  display:grid; grid-template-columns:repeat(4,1fr);
+  display:grid; grid-template-columns:repeat(5,1fr);
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
@@ -593,7 +627,7 @@ textarea:focus-visible {
 @media (max-width:1024px) {
   .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(2,1fr); }
+  .decision-grid { grid-template-columns:repeat(3,1fr); }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
