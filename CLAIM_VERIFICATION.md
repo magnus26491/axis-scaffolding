@@ -10,7 +10,30 @@ repository content (not assumed, not re-derived from memory of earlier
 sessions). "Pages using claim" lists every file where the claim's key terms
 appear, found via `grep -rl` across all generated and hand-authored HTML.
 
-## How to read "Verified?"
+## Summary — the three-way control system
+
+This is the reference classification for all future SEO/AEO/GEO/commercial
+content work. "Established" below corresponds to **VERIFIED**.
+
+**VERIFIED** — safe to use, extend, and feature prominently:
+CISRS qualified team · fully insured (general claim, no figure) · 10+ years'
+experience · founder-led / Ashley (name, photo, the one existing testimonial
+that names him) · same-day quote/response (phrased as an aim) · RAMS
+available on request · company name/legal name/address/phone/email/company
+number · based in Rayleigh, serving South Essex and surrounding areas.
+
+**OWNER VERIFICATION REQUIRED** — do not delete, do not propagate, do not
+feature until confirmed: £5m public liability insurance figure · TG20:21
+compliance (as a certification claim, not a design methodology) · CDM
+regulations experience · Section 169 Highways Act citation · RAMS "provided
+as standard" (vs. "available on request").
+
+**DO NOT USE** — confirmed fabricated, already removed, must not be
+recreated or referenced as a source: the three dated London project case
+studies (Barking/Dagenham/Romford, invented Mar–May 2026 dates and
+operational detail, zero corroborating evidence anywhere in the repository).
+
+## How to read "Verified?" (detailed table below)
 
 - **Established** — appears consistently across multiple independently-built
   pages/templates (i.e. it's load-bearing enough that it's presumably a real

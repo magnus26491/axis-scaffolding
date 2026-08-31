@@ -2721,7 +2721,27 @@ def homepage() -> str:
       <span>CISRS Qualified</span>
       <span>Fully Insured</span>
       <span>10+ Years' Experience</span>
-      <span>Free Quotes</span>
+      <span>Based in Rayleigh</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="why-axis-heading">
+  <div class="container split-grid">
+    <div>
+      <img src="/images/project-7.webp" alt="Domestic scaffolding structure erected beside a home in Benfleet, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
+    </div>
+    <div>
+      <h2 id="why-axis-heading">Why Builders &amp; Homeowners Choose Axis</h2>
+      <p class="section-intro">Based in Rayleigh, serving South Essex and surrounding areas.</p>
+      <ul class="usp-list usp-evidence">
+        <li><strong>CISRS Qualified</strong><span>Our scaffolders hold current CISRS qualifications — the UK industry standard for trained scaffold professionals. Your installation is carried out to a recognised national standard.</span></li>
+        <li><strong>Fully Insured</strong><span>Public liability insurance in place. Added protection for your property and project.</span></li>
+        <li><strong>10+ Years' Experience</strong><span>Founder-led local operation with over a decade of scaffolding experience across residential and commercial work in South Essex.</span></li>
+        <li><strong>Same-Day Quote Response</strong><span>We aim to respond to all quote requests within the same working day. Emergency enquiries are prioritised — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</span></li>
+        <li><strong>RAMS Available</strong><span>Risk assessments and method statements available for commercial sites and principal contractors requiring documentation.</span></li>
+      </ul>
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
     </div>
   </div>
 </section>
@@ -2762,6 +2782,21 @@ def homepage() -> str:
         <span class="decision-link" aria-hidden="true">Get in touch &rarr;</span>
       </a>
     </div>
+  </div>
+</section>
+
+<section class="section section-dark" aria-labelledby="projects-heading">
+  <div class="container">
+    <h2 id="projects-heading">Recent Projects</h2>
+    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <div class="projects-feature-grid">
+      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
+      <div class="projects-feature-secondary">
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
+      </div>
+    </div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
 </section>
 
@@ -2808,54 +2843,10 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" aria-labelledby="why-axis-heading">
-  <div class="container split-grid">
-    <div>
-      <img src="/images/project-7.webp" alt="Domestic scaffolding structure erected beside a home in Benfleet, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
-    </div>
-    <div>
-      <h2 id="why-axis-heading">Why Builders &amp; Homeowners Choose Axis</h2>
-      <ul class="usp-list usp-evidence">
-        <li><strong>CISRS Qualified</strong><span>Our scaffolders hold current CISRS qualifications — the UK industry standard for trained scaffold professionals. Your installation is carried out to a recognised national standard.</span></li>
-        <li><strong>Fully Insured</strong><span>Public liability insurance in place. Added protection for your property and project.</span></li>
-        <li><strong>10+ Years' Experience</strong><span>Founder-led local operation with over a decade of scaffolding experience across residential and commercial work in South Essex.</span></li>
-        <li><strong>Same-Day Quote Response</strong><span>We aim to respond to all quote requests within the same working day. Emergency enquiries are prioritised — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</span></li>
-        <li><strong>RAMS Available</strong><span>Risk assessments and method statements available for commercial sites and principal contractors requiring documentation.</span></li>
-      </ul>
-      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
-    </div>
-  </div>
-</section>
-
-<section class="section section-dark" aria-labelledby="projects-heading">
-  <div class="container">
-    <h2 id="projects-heading">Recent Projects</h2>
-    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
-    <div class="projects-feature-grid">
-      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
-      <div class="projects-feature-secondary">
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
-      </div>
-    </div>
-    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
-  </div>
-</section>
-
-<section class="section section-light" aria-labelledby="reviews-heading">
-  <div class="container">
-    <h2 id="reviews-heading">What Our Customers Say</h2>
-    <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
-      <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
-    </div>
-    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://maps.google.com/?q=Axis+Scaffolding+Rayleigh+Essex" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
-  </div>
-</section>
-
 <section class="section" id="areas-covered" aria-labelledby="areas-heading">
   <div class="container">
     <h2 id="areas-heading">Areas We Cover in Essex</h2>
-    <p>Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding in Rayleigh, Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.</p>
+    <p>Based in Rayleigh, Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding across Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.</p>
     <ul class="area-pills">{area_pills()}</ul>
   </div>
 </section>
@@ -2878,17 +2869,27 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" aria-labelledby="quote-heading">
+<section class="section section-light" aria-labelledby="reviews-heading">
   <div class="container">
-    <h2 id="quote-heading">Get a Free Scaffolding Quote</h2>
-    {quote_form("home", "Tell us about your project")}
+    <h2 id="reviews-heading">What Our Customers Say</h2>
+    <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
+      <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
+    </div>
+    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://maps.google.com/?q=Axis+Scaffolding+Rayleigh+Essex" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
   </div>
 </section>
 
-<section class="section section-light" aria-labelledby="faq-heading">
+<section class="section" aria-labelledby="faq-heading">
   <div class="container faq-wrap">
     <h2 id="faq-heading">Frequently Asked Questions</h2>
     {faq_accordion()}
+  </div>
+</section>
+
+<section class="section section-light" aria-labelledby="quote-heading">
+  <div class="container">
+    <h2 id="quote-heading">Get a Free Scaffolding Quote</h2>
+    {quote_form("home", "Tell us about your project")}
   </div>
 </section>
 
