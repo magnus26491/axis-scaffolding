@@ -333,6 +333,32 @@ textarea:focus-visible {
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
 .section-intro { color:#9ca3af; margin-bottom:1.5rem; }
 
+/* ── PAPER (genuinely light) SECTIONS ──
+   .section-light is actually #0a0a0a — near-black, barely distinguishable
+   from .section-dark's #000000. Used everywhere on the site, so it isn't
+   touched here (redefining it would ripple through every page's child
+   text colours, which assume a dark backdrop). This is a separate,
+   self-contained light surface — genuine white/black editorial contrast,
+   not another shade of near-black — used deliberately on a few homepage
+   sections to break up what would otherwise be dark-on-dark-on-dark for
+   the entire page. */
+.section-paper { background:#f2f1ee !important; }
+.section-paper h2, .section-paper h3, .section-paper h4 { color:#0a0a0a; }
+.section-paper p, .section-paper li, .section-paper td { color:#2b2b2b; }
+.section-paper .section-intro { color:#5a5a58; }
+.section-paper a:not(.btn) { color:#000; text-decoration-color:#8e949c; }
+.section-paper .process-num {
+  background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fff;
+}
+.section-paper .process-step h3 { color:#0a0a0a; }
+.section-paper .process-step p { color:#4a4a48; }
+.section-paper .direct-answer {
+  color:#0a0a0a; background:#fff; border-left-color:#8e949c;
+  box-shadow:0 1px 2px rgba(0,0,0,0.08);
+}
+.section-paper .pricing-factors { color:#2b2b2b; }
+.section-paper .pricing-factors li::marker { color:#8e949c; }
+
 /* ── TRUST RAIL ── */
 .trust-bar {
   background:var(--surface) !important;
