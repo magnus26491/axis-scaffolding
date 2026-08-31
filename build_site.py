@@ -318,11 +318,14 @@ def local_business_schema() -> dict:
 
 
 def breadcrumb_schema(items: Iterable[tuple[str, str]]) -> dict:
+    # An empty path (no real hub page for this crumb level yet) omits
+    # "item" entirely rather than pointing the schema at the wrong URL —
+    # matches breadcrumb_nav()'s plain-text rendering for the same case.
     return {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-            {"@type": "ListItem", "position": i + 1, "name": name, "item": SITE + path}
+            {"@type": "ListItem", "position": i + 1, "name": name, **({"item": SITE + path} if path else {})}
             for i, (name, path) in enumerate(items)
         ],
     }
@@ -397,7 +400,10 @@ def head_tags(
 def breadcrumb_nav(items: list[tuple[str, str]]) -> str:
     parts = []
     for idx, (name, path) in enumerate(items):
-        if idx < len(items) - 1:
+        # An empty path means there's no real hub page for this crumb level
+        # yet (e.g. no standalone /guides index) — render as plain text
+        # rather than link to a URL that doesn't exist.
+        if idx < len(items) - 1 and path:
             parts.append(f'<a href="{path}">{name}</a>')
         else:
             parts.append(f"<span>{name}</span>")
@@ -3820,7 +3826,7 @@ def generate_pages() -> None:
     # ── Guide pages ──────────────────────────────────────────────────────────
     cost_guide_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost in Essex", "/guides/scaffolding-cost-essex")],
+            [("Home", "/"), ("Guides", ""), ("Scaffolding Cost in Essex", "/guides/scaffolding-cost-essex")],
             "How Much Does Scaffolding Cost in Essex?",
             "A straightforward guide to scaffolding prices in Essex — what affects the cost, typical price ranges for common jobs, and how to get an accurate quote from Axis Scaffolding Ltd.",
         )
@@ -3906,13 +3912,13 @@ def generate_pages() -> None:
             desc="Scaffolding cost guide for Essex homeowners and contractors. Typical price ranges for domestic, roof, chimney and commercial scaffolding — with a free quote from Axis Scaffolding.",
             path="/guides/scaffolding-cost-essex",
             body=cost_guide_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
+            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
         ),
     )
 
     need_scaffold_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+            [("Home", "/"), ("Guides", ""), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
             "Do I Need Scaffolding for My Project?",
             "A practical guide to help you work out whether your building or repair project requires scaffold access — and what the alternatives are.",
         )
@@ -3959,13 +3965,13 @@ def generate_pages() -> None:
             desc="Find out whether your building or repair project needs scaffolding. Practical guidance on when scaffold is required and when a ladder may be sufficient.",
             path="/guides/do-i-need-scaffolding",
             body=need_scaffold_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
+            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Do I Need Scaffolding?", "/guides/do-i-need-scaffolding")],
         ),
     )
 
     licence_guide_body = (
         inner_hero(
-            [("Home", "/"), ("Guides", "/guides"), ("Highway Licence for Scaffolding", "/guides/highway-licence-scaffolding")],
+            [("Home", "/"), ("Guides", ""), ("Highway Licence for Scaffolding", "/guides/highway-licence-scaffolding")],
             "Does Scaffolding on a Pavement Need a Licence?",
             "A plain-English guide to Section 169 highway licences for scaffolding over pavements and roads in Essex — when you need one, how to get one, and what it costs.",
         )
@@ -4007,7 +4013,7 @@ def generate_pages() -> None:
             desc="Do you need a licence to erect scaffolding on a pavement in Essex? Plain-English guide to Section 169 highway licences — when required, how to apply, and typical costs.",
             path="/guides/highway-licence-scaffolding",
             body=licence_guide_body,
-            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Highway Licence", "/guides/highway-licence-scaffolding")],
+            breadcrumb_items=[("Home", "/"), ("Guides", ""), ("Highway Licence", "/guides/highway-licence-scaffolding")],
         ),
     )
 
@@ -4270,6 +4276,7 @@ def generate_robots_sitemap() -> None:
         ("/contact", "0.8", "monthly"),
         ("/quote", "0.8", "monthly"),
         ("/contractors", "0.8", "monthly"),
+        ("/areas", "0.7", "monthly"),
         ("/guides/scaffolding-cost-essex", "0.7", "monthly"),
         ("/guides/do-i-need-scaffolding", "0.7", "monthly"),
         ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
