@@ -34,9 +34,27 @@
   --border:        var(--border-subtle);
   --border-strong: var(--border-glass);
 
+  /* V2.1 spacing scale — the deliberate rhythm tokens the layout/
+     alignment audit introduces. Mapped onto values already in use
+     across the stylesheet (not invented numbers), so applying them
+     doesn't shift anything visually — it just gives the repeated,
+     structural values (section rhythm, grid gaps) a shared name
+     instead of being restated as literals everywhere. */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6rem;
+
   /* V2 Phase 2 — spacing and type scale. Used by the refined nav, card,
      trust-rail and cookie-banner components below; existing components
-     keep their original hand-tuned values untouched. */
+     keep their original hand-tuned values untouched. Independent, named
+     differently, from the --space-3xs..3xl scale above — both are kept,
+     each still has real consumers. */
   --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
   --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
   --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
@@ -257,9 +275,20 @@ textarea:focus-visible {
 
 /* Hero trust rail — small structural "spec plate" tags rather than soft
    pills: flat corners, a thin silver top edge, hairline dividers between
-   them, closer to an engineering nameplate than a marketing badge. */
+   them, closer to an engineering nameplate than a marketing badge.
+   (Design merged from Phase 2's premium redesign of this component.)
+
+   display:inline-flex, not flex: a plain `flex` block still stretches
+   to the full width of .hero-content and, with no justify-content, its
+   flush-together spans sit left-aligned inside that oversized box — the
+   exact "badges don't read as one balanced, centred group" bug the
+   alignment audit fixed, just reintroduced by a different visual
+   treatment of the same element. inline-flex sizes the whole plate to
+   its content and lets it centre as a unit via the parent's
+   text-align:center, the same way the plate's own bordered edge should
+   only wrap its content, not the full hero width. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; margin-top:1.75rem;
+  display:inline-flex; flex-wrap:wrap; margin-top:1.75rem;
   border:1px solid rgba(255,255,255,0.18); border-radius:2px;
   overflow:hidden; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
 }
@@ -293,7 +322,7 @@ textarea:focus-visible {
 }
 
 /* ── SECTIONS ── */
-.section { padding:4.5rem 0; }
+.section { padding:var(--space-2xl) 0; }
 .section-light { background:#0a0a0a !important; }
 .section-dark  { background:#000000 !important; }
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
@@ -362,9 +391,28 @@ textarea:focus-visible {
 }
 .quote-form-card:hover { transform: none !important; }
 
-/* ── SERVICES GRID ── */
+/* ── SERVICES GRID ──
+   Both .services-grid and .service-listing always render the same 9
+   SERVICES entries, so — unlike .decision-grid, which is reused with
+   varying counts — this can be a fully deliberate, zero-ambiguity
+   composition rather than a general-purpose fallback:
+     mobile           (≤768px):     1 column
+     tablet + desktop (≥769px):     3 columns → 9 = 3 + 3 + 3, always
+   A 2-column tablet tier was deliberately rejected: 9 services in 2
+   columns is 4 + 4 + 1, the exact orphan-row problem this system
+   exists to avoid. Percentage-based flex-basis (not a fixed px
+   value) means a full row always sums to exactly 100% and sits flush
+   with the container edges, matching every other section. */
 .services-grid, .service-listing {
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;
+}
+.services-grid .service-card, .service-listing .service-card {
+  flex:0 0 100%;
+}
+@media (min-width:769px) {
+  .services-grid .service-card, .service-listing .service-card {
+    flex-basis:calc(33.333% - 0.667rem);
+  }
 }
 .service-card { padding:1.5rem; }
 .service-icon {
@@ -733,18 +781,40 @@ body.lightbox-open { overflow:hidden; }
   .cookie-bar { padding:var(--space-4); }
 }
 
-/* ── DECISION CARDS ── */
+/* ── DECISION CARDS ──
+   Explicit per-breakpoint composition, not organic reflow — a card's
+   width is a defined FRACTION of the row (100%, 33.333%, 20%), so a
+   full row always sums to exactly 100% and sits flush with the
+   container edges (matching every other section on the page), and
+   only a genuinely incomplete trailing row is narrower than 100% and
+   gets centred by justify-content:center. This is deliberately
+   designed for the 5-card homepage instance:
+     mobile  (≤768px):        1 column
+     tablet  (769–1024px):    3 columns  → 5 cards = 3 + 2, centred
+     desktop (≥1025px):       5 columns  → 5 cards = one full row
+   Other pages reuse .decision-grid with 3/4/6 cards; the same
+   percentage system still applies (a full row always reaches the
+   container edges; a short last row centres instead of sticking
+   left) even though the exact column counts above were tuned for 5. */
 .decision-section { padding-bottom:3rem; }
 .decision-grid {
-  display:grid; grid-template-columns:repeat(5,1fr);
+  display:flex; flex-wrap:wrap; justify-content:center;
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
   /* Background/border/hover come from the shared card system above —
-     this supplies layout only. */
+     this supplies layout (and, below, this component's explicit
+     per-breakpoint composition) only. */
+  flex:0 0 100%;
   padding:1.75rem 1.25rem 1.5rem;
   text-decoration:none; color:#ffffff;
   display:flex; flex-direction:column; gap:0.5rem;
+}
+@media (min-width:769px) {
+  .decision-card { flex-basis:calc(33.333% - 0.834rem); }
+}
+@media (min-width:1025px) {
+  .decision-card { flex-basis:calc(20% - 1rem); }
 }
 .decision-card-urgent {
   border-color:rgba(255,100,100,0.35) !important;
@@ -752,6 +822,16 @@ body.lightbox-open { overflow:hidden; }
   background:rgba(255,50,50,0.06) !important;
 }
 .decision-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
+/* "Not Sure" is a deliberately different job (an open catch-all, not
+   a category) — a subtly distinct treatment so its position in the
+   layout (whatever row it lands on) reads as intentional rather than
+   "the leftover card". Styling only; copy is unchanged in this PR. */
+.decision-card-open {
+  border-style:dashed !important;
+  border-color:rgba(255,255,255,0.24) !important;
+  background:rgba(255,255,255,0.02) !important;
+}
+.decision-card-open:hover { border-color:rgba(255,255,255,0.4) !important; }
 .decision-icon { width:44px; height:44px; color:#c8cdd4; margin-bottom:0.25rem; }
 .decision-icon svg { width:100%; height:100%; }
 .decision-card h3 { font-size:1.1rem; margin:0; color:#ffffff; }
@@ -828,9 +908,10 @@ body.lightbox-open { overflow:hidden; }
 
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
-  .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(3,1fr); }
+  /* .decision-grid is not a CSS Grid any more (see the deliberate
+     flex-based composition system above, with its own min-width media
+     queries) — no grid-template-columns override belongs here. */
   .projects-feature-grid { grid-template-columns:1fr; }
   .projects-feature-secondary { flex-direction:row; }
   .projects-feature-secondary .project-item { flex:1; }
@@ -870,7 +951,6 @@ body.lightbox-open { overflow:hidden; }
 }
 @media (max-width:480px) {
   .social-card { width:100%; min-width:unset; }
-  .decision-grid { grid-template-columns:1fr; }
 }
 @media (max-width:375px) {
   .container { width:calc(100% - 1rem); }
