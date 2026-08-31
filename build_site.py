@@ -1073,6 +1073,32 @@ textarea:focus-visible {
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
 .section-intro { color:#9ca3af; margin-bottom:1.5rem; }
 
+/* ── PAPER (genuinely light) SECTIONS ──
+   .section-light is actually #0a0a0a — near-black, barely distinguishable
+   from .section-dark's #000000. Used everywhere on the site, so it isn't
+   touched here (redefining it would ripple through every page's child
+   text colours, which assume a dark backdrop). This is a separate,
+   self-contained light surface — genuine white/black editorial contrast,
+   not another shade of near-black — used deliberately on a few homepage
+   sections to break up what would otherwise be dark-on-dark-on-dark for
+   the entire page. */
+.section-paper { background:#f2f1ee !important; }
+.section-paper h2, .section-paper h3, .section-paper h4 { color:#0a0a0a; }
+.section-paper p, .section-paper li, .section-paper td { color:#2b2b2b; }
+.section-paper .section-intro { color:#5a5a58; }
+.section-paper a:not(.btn) { color:#000; text-decoration-color:#8e949c; }
+.section-paper .process-num {
+  background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fff;
+}
+.section-paper .process-step h3 { color:#0a0a0a; }
+.section-paper .process-step p { color:#4a4a48; }
+.section-paper .direct-answer {
+  color:#0a0a0a; background:#fff; border-left-color:#8e949c;
+  box-shadow:0 1px 2px rgba(0,0,0,0.08);
+}
+.section-paper .pricing-factors { color:#2b2b2b; }
+.section-paper .pricing-factors li::marker { color:#8e949c; }
+
 /* ── TRUST RAIL ── */
 .trust-bar {
   background:var(--surface) !important;
@@ -2739,7 +2765,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" aria-labelledby="process-heading">
+<section class="section section-paper" aria-labelledby="process-heading">
   <div class="container">
     <h2 id="process-heading">How It Works</h2>
     <p class="section-intro">From your first call to final dismantling — here is what to expect when you work with Axis Scaffolding.</p>
@@ -2750,6 +2776,28 @@ def homepage() -> str:
       <li class="process-step"><span class="process-num" aria-hidden="true">4</span><div><h3>We erect safely and on time</h3><p>Our CISRS-qualified team installs the agreed scaffold, working around your roofer, builder or site schedule.</p></div></li>
       <li class="process-step"><span class="process-num" aria-hidden="true">5</span><div><h3>We dismantle and leave you tidy</h3><p>Once your work is finished, we return promptly to dismantle and remove all scaffold. Tidy handover — no materials left on site.</p></div></li>
     </ol>
+  </div>
+</section>
+
+<section class="section section-dark" aria-labelledby="builders-heading">
+  <div class="container split-grid">
+    <div>
+      <h2 id="builders-heading">For Builders &amp; Roofers</h2>
+      <p>Working with a trade or principal contractor is a different job to a one-off domestic scaffold — you need a scaffolder who turns up when agreed, communicates clearly and doesn't hold up your programme.</p>
+      <ul class="usp-list">
+        <li>CISRS-qualified team, verifiable on request</li>
+        <li>Planned erection and strike dates — we work to your programme</li>
+        <li>RAMS available for sites that require documentation</li>
+        <li>Trade and repeat-business enquiries welcome</li>
+      </ul>
+      <div class="hero-cta-row" style="justify-content:flex-start;">
+        <a class="btn btn-primary" href="/contractors">For Builders &amp; Contractors</a>
+        <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+      </div>
+    </div>
+    <div>
+      <img src="/images/project-2.webp" alt="Commercial scaffolding access at a site in Canvey Island, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
+    </div>
   </div>
 </section>
 
@@ -2812,10 +2860,11 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-light" aria-labelledby="pricing-heading">
+<section class="section section-paper" aria-labelledby="pricing-heading">
   <div class="container">
     <h2 id="pricing-heading">How Much Does Scaffolding Cost in Essex?</h2>
     <p class="direct-answer">Residential scaffolding in Essex typically starts from around &pound;300&ndash;&pound;500 for smaller jobs, rising to &pound;1,500 or more for full roof scaffolds on larger properties.</p>
+    <p class="section-intro"><strong>This is indicative guidance, not a quote.</strong> Your actual price depends on the factors below — we confirm it in writing after seeing the job or your photos, and it's free and no-obligation either way.</p>
     <h3>What affects the price?</h3>
     <ul class="pricing-factors">
       <li>Scaffold height and the number of elevations required</li>
@@ -3509,8 +3558,25 @@ def generate_pages() -> None:
             "About Axis Scaffolding Ltd",
             "Axis Scaffolding Ltd delivers scaffolding Essex services from Rayleigh with certified standards and practical project support. Contact us and get a free quote today.",
         )
-        + """
-<section class="section"><div class="container split-grid"><div><img src="/images/project-5.webp" alt="Roof scaffolding setup at a property in Benfleet, Essex" width="640" height="800" loading="lazy" decoding="async" class="rounded-image"></div><div><h2>Why Choose Axis Scaffolding Essex?</h2><p>Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136.</p><p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p></div></div></section>
+        + f"""
+<section class="section"><div class="container split-grid">
+  <div>
+    <img src="/images/ashley-founder.jpg" alt="Ashley, founder of Axis Scaffolding Ltd" width="560" height="560" loading="lazy" decoding="async" class="rounded-image">
+  </div>
+  <div>
+    <h2>A Founder-Led, Local Team</h2>
+    <p>Axis Scaffolding Ltd is a founder-led scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136. Customers who've worked with us know the team by name — as one recent review put it, &ldquo;Ashley and his team were professional throughout: on time, polite and great value for our project.&rdquo;</p>
+    <p>We're a CISRS-qualified team with over a decade of scaffolding experience across residential and commercial work in South Essex — full insurance and CISRS qualifications available to check on request.</p>
+    <p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p>
+    <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+  </div>
+</div></section>
+
+<section class="section section-paper"><div class="container">
+  <h2>Areas We Work In</h2>
+  <p class="section-intro">Based in Rayleigh, covering South Essex.</p>
+  <ul class="area-pills">{area_pills()}</ul>
+</div></section>
 """
     )
     write(
