@@ -548,12 +548,6 @@ def generate_media_assets() -> None:
                         ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=85
                     )
 
-    for idx in range(8, 15):
-        src = ROOT / f"assets/images/gallery-project-{idx}.jpg"
-        if src.exists():
-            with Image.open(src) as im:
-                im.convert("RGB").save(ROOT / f"images/gallery-project-{idx}.webp", format="WEBP", quality=85)
-
     og = Image.new("RGB", (1200, 630), "#0d0d0d")
     draw = ImageDraw.Draw(og)
     with Image.open(src_logo) as logo:
@@ -1024,47 +1018,70 @@ textarea:focus-visible {
   padding:0.9rem; border-radius:0.75rem; color:#d1d5db;
 }
 
-/* ── PROJECTS GRID ──
-   Interim composition fix only. The homepage's 6-project preview
-   divides evenly into 3-column rows either way (6 = 3+3 desktop, 3+3
-   tablet, 6×1 mobile — no orphan). The full gallery page's 14 items
-   don't (14 = 3+3+3+3+2 at 3 columns), so this uses the same
-   percentage-based system as the services grid — full rows flush
-   with the container edges, a short trailing row centred rather than
-   left-stuck.
-   This is deliberately NOT the featured-item + editorial-grid
-   treatment the gallery page's 14 photos would benefit from (a
-   uniform matrix isn't the best composition for 14 real, unequal
-   project photos) — that richer layout already exists, built for
-   Phase 3 (unmerged PR #21, which adds a featured card + accessible
-   lightbox on top of the same PROJECTS data). Rebuilding it here
-   would duplicate that work and conflict with it on merge. This PR
-   only makes the current simple grid's row composition deliberate;
-   see ALIGNMENT_SYSTEM.md for the merge-order note. */
-.projects-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
-.projects-grid .project-item { flex:0 0 100%; }
-@media (min-width:769px) {
-  .projects-grid .project-item { flex-basis:calc(33.333% - 0.667rem); }
+/* ── PROJECTS — EDITORIAL CARDS ──
+   Photography does the work here, not card chrome: flat corners, no
+   glass, no gradient overlay, no icons. Metadata (label + location) is
+   always visible below the photo — it used to live in a figcaption that
+   only appeared on :hover, which meant it was permanently invisible on
+   touch devices (no hover state). "View project" is the one genuinely
+   supplementary hover affordance; everything a customer actually needs
+   to evaluate the project is visible without interaction. */
+.projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+.project-item { position:relative; }
+.project-item-media {
+  position:relative; display:block; overflow:hidden;
+  aspect-ratio:4/5; background:var(--surface-2);
+  border-top:2px solid var(--border-strong);
 }
-/* .project-item is a <figure> — reset the browser's default figure
-   margin (1em 40px). Left unset, that 40px-per-side margin doesn't
-   collapse in a flex/grid row: it silently ate into each card's
-   available width, which is what caused the fixed percentage basis
-   above to overflow its row and wrap early instead of filling it
-   edge-to-edge. Independent of, and pre-dating, this composition
-   fix — the same default margin was already present under the
-   original CSS Grid version of this component. */
-.project-item { position:relative; overflow:hidden; border-radius:1rem; margin:0; }
-.project-item img { width:100%; height:100%; object-fit:cover; }
-.project-item figcaption {
-  position:absolute; inset:auto 0 0 0; padding:0.8rem;
-  background:linear-gradient(transparent,rgba(0,0,0,0.8));
-  color:#fff; transform:translateY(100%); transition:transform 0.25s ease;
+.project-item-media img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform 0.5s ease;
 }
-.project-item:hover figcaption { transform:translateY(0); }
-.project-item figcaption span { display:block; font-weight:700; }
-.project-item figcaption small { color:#f5f5f5; }
+.project-item-media:hover img,
+.project-item-media:focus-visible img { transform:scale(1.04); }
+.project-item-media::after {
+  content:'View project \2192'; position:absolute; right:var(--space-3); bottom:var(--space-3);
+  background:rgba(0,0,0,0.55); border:1px solid var(--silver); color:#fff;
+  font-size:var(--text-xs); font-weight:600; letter-spacing:0.02em;
+  padding:0.35rem 0.7rem; opacity:0; transform:translateY(6px);
+  transition:opacity 0.2s ease, transform 0.2s ease; pointer-events:none;
+}
+.project-item-media:hover::after,
+.project-item-media:focus-visible::after { opacity:1; transform:translateY(0); }
+.project-item figcaption { padding:var(--space-3) 0 0; }
+.project-item-label { display:block; color:#fff; font-weight:600; font-size:var(--text-base); }
+.project-item-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-item-meta a { color:var(--text-muted); text-decoration:underline; text-underline-offset:2px; }
+.project-item-meta a:hover { color:var(--silver); }
+.project-item-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+
+/* Homepage: one large featured project + secondaries, not a wall of
+   identical tiles. */
+.projects-feature-grid {
+  display:grid; grid-template-columns:1.4fr 1fr; gap:var(--space-8) var(--space-6);
+  align-items:start;
+}
+.projects-feature-grid .project-item-featured .project-item-media { aspect-ratio:4/3; }
+.projects-feature-secondary { display:flex; flex-direction:column; gap:var(--space-8); }
+
+@media (prefers-reduced-motion:reduce) {
+  .project-item-media img { transition:none; }
+  .project-item-media::after { transition:none; }
+}
 .centered { text-align:center; }
+
+/* ── PROJECT FILTERS ── */
+.project-filters { display:flex; flex-wrap:wrap; gap:0.6rem; margin:var(--space-6) 0 var(--space-8); }
+.project-filter-btn {
+  background:transparent; border:1px solid var(--border-strong); color:var(--text-secondary);
+  border-radius:9999px; padding:0.45rem 1.1rem; font-size:var(--text-sm); font-weight:600;
+  cursor:pointer; transition:border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.project-filter-btn:hover { border-color:var(--silver); color:#fff; }
+.project-filter-btn[aria-pressed="true"] {
+  background:var(--silver); border-color:var(--silver); color:#000;
+}
+.project-item[hidden] { display:none; }
 
 /* ── TESTIMONIALS ── */
 .testimonial-carousel { overflow:hidden; }
@@ -1395,6 +1412,16 @@ textarea:focus-visible {
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
   .split-grid,.two-col { grid-template-columns:1fr; }
+  /* .decision-grid is not a CSS Grid any more (see the deliberate
+     flex-based composition system above, with its own min-width media
+     queries) — no grid-template-columns override belongs here. */
+  .projects-feature-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:row; }
+  .projects-feature-secondary .project-item { flex:1; }
+}
+@media (max-width:640px) {
+  .projects-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:column; }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
@@ -1542,6 +1569,22 @@ def generate_js() -> None:
       });
     });
   });
+
+  const projectFilters = document.querySelector('.project-filters');
+  if (projectFilters) {
+    const items = document.querySelectorAll('.project-item');
+    projectFilters.addEventListener('click', (event) => {
+      const btn = event.target.closest('.project-filter-btn');
+      if (!btn) return;
+      projectFilters.querySelectorAll('.project-filter-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      const filter = btn.dataset.filter;
+      items.forEach((item) => {
+        item.hidden = filter !== 'all' && item.dataset.category !== filter;
+      });
+    });
+  }
 
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
@@ -1771,38 +1814,92 @@ def generate_js() -> None:
     write("assets/js/main.js", js)
 
 
-PROJECT_ROWS = [
-    ("project-1.webp",         "Residential Scaffolding",         "Benfleet",       "Full perimeter scaffold for roof replacement on a detached house."),
-    ("project-2.webp",         "Commercial Scaffolding",          "Canvey Island",  "Multi-elevation access scaffold for a commercial refurbishment."),
-    ("project-3.webp",         "Shopfront Access Scaffold",       "Rayleigh",       "Single-elevation scaffold for shopfront rendering and signage work."),
-    ("project-4.webp",         "Temporary Roofing Scaffold",      "Southend-on-Sea","Scaffold with temporary roof cover to protect during roof replacement."),
-    ("project-5.webp",         "Roof Scaffolding",                "Basildon",       "Roof-level scaffold for chimney repointing and ridge tile replacement."),
-    ("project-6.webp",         "Domestic Scaffolding",            "Chelmsford",     "Rear-elevation scaffold for extension construction access."),
-    ("project-7.webp",         "Residential Scaffolding",         "Wickford",       "Full scaffold erected for a complete re-roofing project."),
+CATEGORY_LABELS = {"residential": "Residential", "roofing": "Roofing", "commercial": "Commercial"}
+
+# Every entry here is a real, existing Axis project photograph. slug maps to
+# images/{slug}.webp (+ {slug}-480w/-768w/-1080w.webp responsive variants,
+# generated once from the true-resolution originals archived at
+# images/originals/ — see the image pipeline notes in the PR). category is
+# used only for the Projects-page filter UI (grouped from the existing
+# label text, nothing invented); area_slug/service_slug link each project
+# to its real area/service page where one exists.
+PROJECTS = [
+    {"slug": "project-1", "label": "Residential Scaffolding", "location": "Benfleet", "area_slug": "benfleet",
+     "desc": "Full perimeter scaffold for roof replacement on a detached house.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 1080, "h": 721},
+    {"slug": "project-2", "label": "Commercial Scaffolding", "location": "Canvey Island", "area_slug": "canvey-island",
+     "desc": "Multi-elevation access scaffold for a commercial refurbishment.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-3", "label": "Shopfront Access Scaffold", "location": "Rayleigh", "area_slug": "rayleigh",
+     "desc": "Single-elevation scaffold for shopfront rendering and signage work.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 1080, "h": 1350},
+    {"slug": "project-4", "label": "Temporary Roofing Scaffold", "location": "Southend-on-Sea", "area_slug": "southend",
+     "desc": "Scaffold with temporary roof cover to protect during roof replacement.",
+     "category": "roofing", "service_slug": "temporary-roofing", "w": 640, "h": 800},
+    {"slug": "project-5", "label": "Roof Scaffolding", "location": "Basildon", "area_slug": "basildon",
+     "desc": "Roof-level scaffold for chimney repointing and ridge tile replacement.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 1080, "h": 1440},
+    {"slug": "project-6", "label": "Domestic Scaffolding", "location": "Chelmsford", "area_slug": "chelmsford",
+     "desc": "Rear-elevation scaffold for extension construction access.",
+     "category": "residential", "service_slug": "domestic-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-7", "label": "Residential Scaffolding", "location": "Wickford", "area_slug": "wickford",
+     "desc": "Full scaffold erected for a complete re-roofing project.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-8", "label": "Roof Scaffolding", "location": "Hadleigh", "area_slug": "hadleigh",
+     "desc": "Scaffold for roof and roofline replacement on a semi-detached property.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-9", "label": "Domestic Scaffolding", "location": "Leigh-on-Sea", "area_slug": "leigh-on-sea",
+     "desc": "Single-elevation domestic scaffold for fascia and soffit replacement.",
+     "category": "residential", "service_slug": "domestic-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-10", "label": "Residential Scaffolding", "location": "Thundersley", "area_slug": "thundersley",
+     "desc": "Full perimeter scaffold for a complete exterior renovation project.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-11", "label": "Commercial Scaffolding", "location": "Rayleigh", "area_slug": "rayleigh",
+     "desc": "Commercial scaffold erected for building envelope maintenance works.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-12", "label": "Render Scaffold", "location": "Benfleet", "area_slug": "benfleet",
+     "desc": "Scaffold providing full access for external render replacement.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 720, "h": 1280},
+    {"slug": "project-13", "label": "Extension Scaffold", "location": "Chelmsford", "area_slug": "chelmsford",
+     "desc": "Side and rear scaffold to support a two-storey extension build.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-14", "label": "Roof Scaffolding", "location": "Rochford", "area_slug": "rochford",
+     "desc": "Roof scaffold for full tile replacement and chimney repointing.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
 ]
 
-GALLERY_ROWS = PROJECT_ROWS + [
-    ("gallery-project-8.webp",  "Roof Scaffolding",               "Hadleigh",       "Scaffold for roof and roofline replacement on a semi-detached property."),
-    ("gallery-project-9.webp",  "Domestic Scaffolding",           "Leigh-on-Sea",   "Single-elevation domestic scaffold for fascia and soffit replacement."),
-    ("gallery-project-10.webp", "Residential Scaffolding",        "Thundersley",    "Full perimeter scaffold for a complete exterior renovation project."),
-    ("gallery-project-11.webp", "Commercial Scaffolding",         "Rayleigh",       "Commercial scaffold erected for building envelope maintenance works."),
-    ("gallery-project-12.webp", "Render Scaffold",                "Benfleet",       "Scaffold providing full access for external render replacement."),
-    ("gallery-project-13.webp", "Extension Scaffold",             "Chelmsford",     "Side and rear scaffold to support a two-storey extension build."),
-    ("gallery-project-14.webp", "Roof Scaffolding",               "Rochford",       "Roof scaffold for full tile replacement and chimney repointing."),
-]
+
+def _project_srcset(slug: str, native_w: int) -> str:
+    widths = [w for w in (480, 768, 1080) if w <= native_w]
+    return ", ".join(f"/images/{slug}-{w}w.webp {w}w" for w in widths)
 
 
-def project_cards(full_gallery: bool = False) -> str:
-    rows = GALLERY_ROWS if full_gallery else PROJECT_ROWS[:6]
-    return "".join(
-        f"""
-<figure class="project-item">
-  <img src="/images/{img}" alt="{label} — {location}, Essex" width="640" height="800" loading="lazy" decoding="async">
-  <figcaption><span>{label}</span><small>{location} — {desc}</small></figcaption>
+def project_card(p: dict, *, featured: bool = False, eager: bool = False) -> str:
+    srcset = _project_srcset(p["slug"], p["w"])
+    sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" if not featured else "(max-width: 900px) 100vw, 60vw"
+    area_link = f'/areas/{p["area_slug"]}'
+    loading = "eager" if eager else "lazy"
+    fetchpriority = ' fetchpriority="high"' if eager else ""
+    return f"""
+<figure class="project-item{' project-item-featured' if featured else ''}" data-category="{p['category']}">
+  <a href="/services/{p['service_slug']}" class="project-item-media" aria-label="{p['label']} in {p['location']} — view the related service">
+    <img src="/images/{p['slug']}.webp" srcset="{srcset}" sizes="{sizes}"
+         alt="{p['label']} in {p['location']}, Essex — real Axis Scaffolding project photograph"
+         width="{p['w']}" height="{p['h']}" loading="{loading}"{fetchpriority} decoding="async">
+  </a>
+  <figcaption>
+    <span class="project-item-label">{p['label']}</span>
+    <span class="project-item-meta"><a href="{area_link}">{p['location']}</a> &middot; Essex</span>
+    {f'<p class="project-item-desc">{p["desc"]}</p>' if featured else ''}
+  </figcaption>
 </figure>
 """
-        for img, label, location, desc in rows
-    )
+
+
+def project_cards() -> str:
+    # First row (3-col desktop grid) is likely at or above the fold on the
+    # /gallery page, so it's a plausible LCP candidate — don't lazy-load it.
+    return "".join(project_card(p, eager=i < 3) for i, p in enumerate(PROJECTS))
 
 
 def service_cards() -> str:
@@ -2001,7 +2098,14 @@ def homepage() -> str:
 <section class="section section-dark" aria-labelledby="projects-heading">
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
-    <div class="projects-grid">{project_cards()}</div>
+    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <div class="projects-feature-grid">
+      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
+      <div class="projects-feature-secondary">
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
+      </div>
+    </div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
 </section>
@@ -2417,6 +2521,16 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """ if faq_html else "")
+        + (lambda related=[p for p in PROJECTS if p["service_slug"] == slug][:3]: f"""
+<section class="section section-dark">
+  <div class="container">
+    <h2>Related Projects</h2>
+    <p class="section-intro">Real {service['name'].lower()} completed by Axis.</p>
+    <div class="projects-grid">{"".join(project_card(p) for p in related)}</div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
+  </div>
+</section>
+""" if related else "")()
         + f"""
 <section class="section">
   <div class="container faq-wrap">
@@ -2672,22 +2786,31 @@ def generate_pages() -> None:
             ),
         )
 
+    project_filter_tabs = f"""
+<div class="project-filters" role="group" aria-label="Filter projects by type">
+  <button class="project-filter-btn" data-filter="all" aria-pressed="true">All</button>
+  {"".join(f'<button class="project-filter-btn" data-filter="{key}" aria-pressed="false">{label}</button>' for key, label in CATEGORY_LABELS.items())}
+</div>
+"""
     gallery_body = (
         inner_hero(
-            [("Home", "/"), ("Gallery", "/gallery")],
-            "Scaffolding Projects Gallery",
-            "View real scaffolding Essex projects completed from our Benfleet base. Explore domestic, commercial and roof access works, then get a free quote today.",
+            [("Home", "/"), ("Projects", "/gallery")],
+            "Real Projects Across South Essex",
+            "Every photograph below is a completed Axis Scaffolding project — no stock imagery. Browse by type or get a free quote for your own job.",
         )
-        + f"""<section class="section section-dark"><div class="container"><h2>Our Recent Projects</h2><div class="projects-grid">{project_cards(full_gallery=True)}</div></div></section>"""
+        + f"""<section class="section section-dark"><div class="container">
+{project_filter_tabs}
+<div class="projects-grid">{project_cards()}</div>
+</div></section>"""
     )
     write(
         "gallery/index.html",
         render_page(
-            title="Scaffolding Projects Gallery | Axis Scaffolding Essex",
-            desc="Browse scaffolding Essex projects completed by Axis Scaffolding from Rayleigh across domestic and commercial sites. Review our work and get a free quote today.",
+            title="Real Scaffolding Projects Across Essex | Axis Scaffolding",
+            desc="Browse real Axis Scaffolding projects across South Essex — residential, roofing and commercial work, each with its location and project type. Get a free quote today.",
             path="/gallery",
             body=gallery_body,
-            breadcrumb_items=[("Home", "/"), ("Gallery", "/gallery")],
+            breadcrumb_items=[("Home", "/"), ("Projects", "/gallery")],
         ),
     )
 

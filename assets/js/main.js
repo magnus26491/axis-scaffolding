@@ -94,6 +94,22 @@
     });
   });
 
+  const projectFilters = document.querySelector('.project-filters');
+  if (projectFilters) {
+    const items = document.querySelectorAll('.project-item');
+    projectFilters.addEventListener('click', (event) => {
+      const btn = event.target.closest('.project-filter-btn');
+      if (!btn) return;
+      projectFilters.querySelectorAll('.project-filter-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      const filter = btn.dataset.filter;
+      items.forEach((item) => {
+        item.hidden = filter !== 'all' && item.dataset.category !== filter;
+      });
+    });
+  }
+
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
   let idx = 0;
