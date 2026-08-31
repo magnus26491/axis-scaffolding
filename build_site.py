@@ -275,8 +275,6 @@ def head_tags(
   <title>{title}</title>
   <meta name="description" content="{desc}">
   <meta name="author" content="Axis Scaffolding Ltd">
-  <meta name="revisit-after" content="30 days">
-  <meta name="google-site-verification" content="REPLACE_WITH_GSC_CODE">
   <link rel="canonical" href="{canonical}">
   <link rel="alternate" hreflang="en-gb" href="{canonical}">
   <meta property="og:title" content="{title}">
@@ -1358,37 +1356,62 @@ def generate_js() -> None:
 
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {
+      const webhook = window.AXIS_QUOTE_WEBHOOK;
+
+      // No webhook is configured: allow the form's native FormSubmit action to run.
+      // The previous code prevented the native POST and then displayed a false success
+      // message, which could silently discard every quote enquiry.
+      if (!webhook) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'generate_lead', {
+            event_category: 'Lead',
+            event_label: form.dataset.formName || 'quote_form',
+          });
+        }
+        return;
+      }
+
       event.preventDefault();
       const message = form.querySelector('.form-message');
       const data = Object.fromEntries(new FormData(form).entries());
-      const webhook = window.AXIS_QUOTE_WEBHOOK;
       const payload = { ...data, notification_email: CONTACT_EMAIL };
-      let ok = true;
-      if (webhook) {
-        try {
-          const res = await fetch(webhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          ok = res.ok;
-        } catch (_err) {
-          ok = false;
-        }
+      let ok = false;
+
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        ok = res.ok;
+      } catch (_err) {
+        ok = false;
       }
+
       if (message) {
         message.textContent = ok
           ? 'Thanks. Your quote request has been received. We will respond within one working day.'
           : 'There was a problem submitting your request. Please call 01702 820468 to reach us directly.';
       }
-      if (ok) form.reset();
+
+      if (ok) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'generate_lead', {
+            event_category: 'Lead',
+            event_label: form.dataset.formName || 'quote_form',
+          });
+        }
+        form.reset();
+        window.setTimeout(() => {
+          window.location.assign('/thank-you');
+        }, 250);
+      }
     });
   });
 })();
 
 // ── WHITE MOUSE GLOW ──────────────────────
 (function() {
-  // Only run on non-touch desktop devices
   if (window.matchMedia('(hover: none)').matches) return;
   if (window.matchMedia('(max-width: 768px)').matches) return;
 
@@ -1399,9 +1422,7 @@ def generate_js() -> None:
   var mouseY = window.innerHeight / 2;
   var currentX = mouseX;
   var currentY = mouseY;
-  var rafId;
 
-  // Smooth lerp follow (makes it feel soft and organic)
   function lerp(start, end, factor) {
     return start + (end - start) * factor;
   }
@@ -1411,7 +1432,7 @@ def generate_js() -> None:
     currentY = lerp(currentY, mouseY, 0.12);
     glow.style.left = currentX + 'px';
     glow.style.top  = currentY + 'px';
-    rafId = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
   }
 
   document.addEventListener('mousemove', function(e) {
@@ -1419,10 +1440,8 @@ def generate_js() -> None:
     mouseY = e.clientY;
   }, { passive: true });
 
-  // Start animation loop
   animate();
 
-  // Fade out when mouse leaves window
   document.addEventListener('mouseleave', function() {
     glow.style.opacity = '0';
   });
@@ -1497,7 +1516,10 @@ def service_list_cards() -> str:
 
 
 def area_pills() -> str:
-    return "".join(f'<li><a class="area-pill-link" href="/contact">{area}</a></li>' for area in AREAS)
+    return "".join(
+        f'<li><a class="area-pill-link" href="/areas/{data["slug"]}">{name}</a></li>'
+        for name, data in AREA_DATA.items()
+    )
 
 
 def testimonials() -> str:
@@ -2221,7 +2243,7 @@ def area_page_body(area_name: str, data: dict) -> str:
     )
     return (
         inner_hero(
-            [("Home", "/"), ("Areas", "/#areas-covered"), (area_name, f"/areas/{data['slug']}")],
+            [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
             f"Scaffolding in {area_name}, Essex",
             data["intro"],
         )
@@ -2708,7 +2730,7 @@ def generate_pages() -> None:
                 desc=area_data["desc"],
                 path=f"/areas/{area_data['slug']}",
                 body=area_page_body(area_name, area_data),
-                breadcrumb_items=[("Home", "/"), ("Areas", "/#areas-covered"), (area_name, f"/areas/{area_data['slug']}")],
+                breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
             ),
         )
 
@@ -2807,21 +2829,28 @@ def generate_redirects() -> None:
         "cookies.html": "/cookie-policy",
         "services/residential.html": "/services/residential-scaffolding",
         "services/commercial.html": "/services/commercial-scaffolding",
-        "services/supply-erection.html": "/services/domestic-scaffolding",
-        "services/dismantling.html": "/services/emergency-scaffolding",
-        "services/loading-bays.html": "/services/roof-scaffolding",
+        "services/supply-erection.html": "/services/scaffold-supply-erection",
+        "services/dismantling.html": "/services/dismantling-scaffolding",
+        "services/loading-bays.html": "/services/loading-bay-scaffolding",
         "services/temporary-roofs.html": "/services/temporary-roofing",
     }
     for src, target in redirects.items():
         write(src, redirect_html.format(target=target, canonical=SITE + target))
-    for area_file in [
-        "brentwood",
-        "loughton",
-        "clacton",
-        "bromley",
-        "london",
-    ]:
-        write(f"areas/{area_file}.html", redirect_html.format(target="/#areas-covered", canonical=f"{SITE}/#areas-covered"))
+    legacy_area_targets = {
+        "brentwood": "/areas/brentwood",
+        "loughton": "/areas/loughton",
+        "london": "/areas/london",
+        "clacton": "/areas",
+        "bromley": "/areas",
+        # Stale flat area pages superseded by the canonical /areas/{slug} pages below.
+        "basildon": "/areas/basildon",
+        "canvey-island": "/areas/canvey-island",
+        "chelmsford": "/areas/chelmsford",
+        "rayleigh": "/areas/rayleigh",
+        "southend": "/areas/southend",
+    }
+    for area_file, target in legacy_area_targets.items():
+        write(f"areas/{area_file}.html", redirect_html.format(target=target, canonical=f"{SITE}{target}"))
 
     write(
         "_redirects",
@@ -2837,16 +2866,12 @@ def generate_redirects() -> None:
                 "/cookies.html /cookie-policy 301",
                 "/services/residential.html /services/residential-scaffolding 301",
                 "/services/commercial.html /services/commercial-scaffolding 301",
-                "/services/supply-erection.html /services/domestic-scaffolding 301",
-                "/services/dismantling.html /services/emergency-scaffolding 301",
-                "/services/loading-bays.html /services/roof-scaffolding 301",
+                "/services/supply-erection.html /services/scaffold-supply-erection 301",
+                "/services/dismantling.html /services/dismantling-scaffolding 301",
+                "/services/loading-bays.html /services/loading-bay-scaffolding 301",
                 "/services/temporary-roofs.html /services/temporary-roofing 301",
-                "/areas/brentwood /#areas-covered 301",
-                "/areas/loughton /#areas-covered 301",
-                "/areas/clacton /#areas-covered 301",
-                "/areas/bromley /#areas-covered 301",
-                "/areas/london /#areas-covered 301",
             ]
+            + [f"/areas/{slug}.html {target} 301" for slug, target in legacy_area_targets.items()]
         ),
     )
 
