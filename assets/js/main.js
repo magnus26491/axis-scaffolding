@@ -59,6 +59,48 @@
   }
   start();
 
+  // ── ANALYTICS (consent-gated, no-op until a real GA4 ID is configured) ──
+  const CATEGORIES_KEY = 'axis_cookie_categories';
+  function loadGA4() {
+    if (!window.AXIS_GA4_ID || window.__axisGA4Loaded) return;
+    window.__axisGA4Loaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AXIS_GA4_ID;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', window.AXIS_GA4_ID, { anonymize_ip: true });
+  }
+  function trackEvent(name, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  function applyConsentCategories(categories) {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    if (categories.analytics) loadGA4();
+  }
+  (function restoreConsent() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
+      if (stored && stored.analytics) loadGA4();
+    } catch (_err) { /* ignore malformed stored consent */ }
+  })();
+  document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('phone_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
+    });
+  });
+  document.querySelectorAll('.axis-quote-form').forEach((form) => {
+    let started = false;
+    form.addEventListener('input', () => {
+      if (started) return;
+      started = true;
+      trackEvent('quote_start', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+    }, { once: false, capture: true });
+  });
+  // ── END ANALYTICS ──
+
   const CONSENT_KEY = 'axis_cookie_consent';
   var bar = document.getElementById('axis-cookie-bar');
   function showBar() {
@@ -78,12 +120,14 @@
   if (acceptBtn) {
     acceptBtn.addEventListener('click', function() {
       setConsent('accepted');
+      applyConsentCategories({ analytics: true, marketing: true });
     });
   }
   var rejectBtn = document.getElementById('axis-cookie-reject');
   if (rejectBtn) {
     rejectBtn.addEventListener('click', function() {
       setConsent('rejected');
+      applyConsentCategories({ analytics: false, marketing: false });
     });
   }
   var manageBtn = document.getElementById('axis-cookie-manage');
@@ -113,8 +157,14 @@
       var save = document.getElementById('axis-pref-save');
       if (save) {
         save.addEventListener('click', function() {
+          var analyticsChecked = document.getElementById('axis-pref-analytics');
+          var marketingChecked = document.getElementById('axis-pref-marketing');
           panel.remove();
           setConsent('custom');
+          applyConsentCategories({
+            analytics: !!(analyticsChecked && analyticsChecked.checked),
+            marketing: !!(marketingChecked && marketingChecked.checked),
+          });
         });
       }
     });
@@ -123,6 +173,7 @@
   if (footerBtn) {
     footerBtn.addEventListener('click', function() {
       localStorage.removeItem(CONSENT_KEY);
+      localStorage.removeItem(CATEGORIES_KEY);
       showBar();
     });
   }
@@ -135,12 +186,7 @@
       // The previous code prevented the native POST and then displayed a false success
       // message, which could silently discard every quote enquiry.
       if (!webhook) {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'generate_lead', {
-            event_category: 'Lead',
-            event_label: form.dataset.formName || 'quote_form',
-          });
-        }
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
         return;
       }
 
@@ -168,16 +214,13 @@
       }
 
       if (ok) {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'generate_lead', {
-            event_category: 'Lead',
-            event_label: form.dataset.formName || 'quote_form',
-          });
-        }
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
         form.reset();
         window.setTimeout(() => {
           window.location.assign('/thank-you');
         }, 250);
+      } else {
+        trackEvent('quote_error', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
       }
     });
   });

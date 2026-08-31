@@ -16,6 +16,10 @@ TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://axisscaffoldingessex.co.uk/thank-you'
+# No verified GA4 property exists for this site yet. Leave unset (None) until a real
+# measurement ID is provided — do not hard-code a placeholder or invented ID here.
+# When set (e.g. "G-XXXXXXX"), analytics load only after the visitor grants consent.
+GA4_MEASUREMENT_ID: str | None = None
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
@@ -522,8 +526,7 @@ def render_page(
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
-  <script type="text/plain" data-consent-category="analytics">window.axisAnalyticsAllowed = true;</script>
-  <script type="text/plain" data-consent-category="marketing">window.axisMarketingAllowed = true;</script>
+  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -1286,6 +1289,48 @@ def generate_js() -> None:
   }
   start();
 
+  // ── ANALYTICS (consent-gated, no-op until a real GA4 ID is configured) ──
+  const CATEGORIES_KEY = 'axis_cookie_categories';
+  function loadGA4() {
+    if (!window.AXIS_GA4_ID || window.__axisGA4Loaded) return;
+    window.__axisGA4Loaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AXIS_GA4_ID;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', window.AXIS_GA4_ID, { anonymize_ip: true });
+  }
+  function trackEvent(name, params) {
+    if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+  }
+  function applyConsentCategories(categories) {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    if (categories.analytics) loadGA4();
+  }
+  (function restoreConsent() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
+      if (stored && stored.analytics) loadGA4();
+    } catch (_err) { /* ignore malformed stored consent */ }
+  })();
+  document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('phone_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
+    });
+  });
+  document.querySelectorAll('.axis-quote-form').forEach((form) => {
+    let started = false;
+    form.addEventListener('input', () => {
+      if (started) return;
+      started = true;
+      trackEvent('quote_start', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+    }, { once: false, capture: true });
+  });
+  // ── END ANALYTICS ──
+
   const CONSENT_KEY = 'axis_cookie_consent';
   var bar = document.getElementById('axis-cookie-bar');
   function showBar() {
@@ -1305,12 +1350,14 @@ def generate_js() -> None:
   if (acceptBtn) {
     acceptBtn.addEventListener('click', function() {
       setConsent('accepted');
+      applyConsentCategories({ analytics: true, marketing: true });
     });
   }
   var rejectBtn = document.getElementById('axis-cookie-reject');
   if (rejectBtn) {
     rejectBtn.addEventListener('click', function() {
       setConsent('rejected');
+      applyConsentCategories({ analytics: false, marketing: false });
     });
   }
   var manageBtn = document.getElementById('axis-cookie-manage');
@@ -1340,8 +1387,14 @@ def generate_js() -> None:
       var save = document.getElementById('axis-pref-save');
       if (save) {
         save.addEventListener('click', function() {
+          var analyticsChecked = document.getElementById('axis-pref-analytics');
+          var marketingChecked = document.getElementById('axis-pref-marketing');
           panel.remove();
           setConsent('custom');
+          applyConsentCategories({
+            analytics: !!(analyticsChecked && analyticsChecked.checked),
+            marketing: !!(marketingChecked && marketingChecked.checked),
+          });
         });
       }
     });
@@ -1350,6 +1403,7 @@ def generate_js() -> None:
   if (footerBtn) {
     footerBtn.addEventListener('click', function() {
       localStorage.removeItem(CONSENT_KEY);
+      localStorage.removeItem(CATEGORIES_KEY);
       showBar();
     });
   }
@@ -1362,12 +1416,7 @@ def generate_js() -> None:
       // The previous code prevented the native POST and then displayed a false success
       // message, which could silently discard every quote enquiry.
       if (!webhook) {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'generate_lead', {
-            event_category: 'Lead',
-            event_label: form.dataset.formName || 'quote_form',
-          });
-        }
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
         return;
       }
 
@@ -1395,16 +1444,13 @@ def generate_js() -> None:
       }
 
       if (ok) {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'generate_lead', {
-            event_category: 'Lead',
-            event_label: form.dataset.formName || 'quote_form',
-          });
-        }
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
         form.reset();
         window.setTimeout(() => {
           window.location.assign('/thank-you');
         }, 250);
+      } else {
+        trackEvent('quote_error', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
       }
     });
   });
