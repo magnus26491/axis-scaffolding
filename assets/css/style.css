@@ -49,6 +49,17 @@
   --space-xl:  3rem;
   --space-2xl: 4.5rem;
   --space-3xl: 6rem;
+
+  /* V2 Phase 2 — spacing and type scale. Used by the refined nav, card,
+     trust-rail and cookie-banner components below; existing components
+     keep their original hand-tuned values untouched. Independent, named
+     differently, from the --space-3xs..3xl scale above — both are kept,
+     each still has real consumers. */
+  --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-base: 1rem;
+  --text-lg: 1.125rem;  --text-xl: 1.25rem; --text-2xl: 1.5rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -73,7 +84,15 @@ html, body {
 h1,h2,h3,h4,h5,h6 {
   font-family: 'Poppins','Inter',sans-serif;
   color: #ffffff; margin: 0 0 1rem; line-height: 1.2;
+  letter-spacing: -0.01em;
 }
+/* Deliberate type scale — previously every heading below h1 fell back to
+   the browser's UA default size, so hierarchy was accidental rather than
+   designed. */
+h1 { font-size: clamp(2.25rem, 4.5vw, 3.25rem); font-weight: 700; }
+h2 { font-size: clamp(1.65rem, 3vw, 2.15rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.005em; }
+h4 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0; }
 p { margin: 0 0 1rem; color: #e5e7eb; }
 li, td { color: #e5e7eb; }
 small, .muted { color: #9ca3af; }
@@ -154,11 +173,19 @@ textarea:focus-visible {
   display:flex; justify-content:center;
   align-items:center; gap:1.2rem;
 }
-.site-nav a {
-  text-decoration:none; color:#ffffff;
-  font-weight:600; transition:color 0.2s;
+.site-nav a:not(.cta-pill) {
+  position:relative; text-decoration:none; color:#ffffff;
+  font-weight:600; font-size:var(--text-sm); transition:color 0.2s;
+  padding-bottom:2px;
 }
-.site-nav a:hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill)::after {
+  content:''; position:absolute; left:0; right:100%; bottom:0;
+  height:1px; background:var(--silver);
+  transition:right 0.2s ease;
+}
+.site-nav a:not(.cta-pill):hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill):hover::after,
+.site-nav a:not(.cta-pill):focus-visible::after { right:0; }
 .menu-toggle {
   display:none; width:48px; height:48px;
   border:1px solid rgba(255,255,255,0.4);
@@ -181,14 +208,34 @@ textarea:focus-visible {
   justify-content:center; border:2px solid transparent;
   cursor:pointer; transition: all 0.2s ease;
 }
-.btn-primary {
+/* A class-selector display rule beats the UA stylesheet's [hidden]
+   selector on specificity, so any element styled with display here
+   would otherwise stay visibly rendered even with the hidden attribute
+   set — exactly the bug this line exists to prevent. */
+.btn[hidden] { display:none !important; }
+.btn-primary,
+.cta-pill {
+  position:relative; overflow:hidden;
   background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
   color: #000000 !important; font-weight: 700 !important; border: none !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 15px rgba(200,205,212,0.15) !important;
 }
-.btn-primary:hover {
+.btn-primary::before,
+.cta-pill::before {
+  content:''; position:absolute; top:0; bottom:0; left:-60%; width:40%;
+  background:linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform:skewX(-20deg) translateX(-20%);
+  transition:transform 0.5s ease; pointer-events:none;
+}
+.btn-primary:hover,
+.cta-pill:hover {
   background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
   transform: translateY(-1px) !important;
+}
+.btn-primary:hover::before,
+.cta-pill:hover::before { transform:skewX(-20deg) translateX(340%); }
+@media (prefers-reduced-motion:reduce) {
+  .btn-primary::before, .cta-pill::before { display:none; }
 }
 .btn-outline { border-color:#fff; color:#fff; background:transparent; }
 .btn-outline:hover { background:rgba(255,255,255,0.1); }
@@ -199,15 +246,11 @@ textarea:focus-visible {
 .hero-cta-row { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; }
 
 .cta-pill {
-  background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
-  color: #000000 !important; font-weight: 700 !important;
+  /* Colour/hover/sweep are on the shared .btn-primary,.cta-pill rules
+     above — this just supplies the pill-specific box model, since
+     .cta-pill is used standalone (not combined with .btn) in the nav. */
   padding: 0.65rem 1.4rem !important; border-radius: 9999px !important;
   text-decoration: none !important; display: inline-block !important;
-  border: none !important;
-}
-.cta-pill:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
-  transform: translateY(-1px) !important; color: #000000 !important;
 }
 
 /* ── HERO ── */
@@ -235,23 +278,34 @@ textarea:focus-visible {
 .hero p { color:#fff; font-size:1.1rem; }
 .hero-phone a { color:#fff; text-decoration:underline; font-weight:600; }
 
-/* Hero trust badges
-   Root cause of the "badges don't read as one balanced, centred
-   group" report: every other row in the hero (h1, p, .hero-cta-row)
-   is explicitly centred, but this flex row had no justify-content,
-   so it defaulted to flex-start — left-aligned under a centred
-   headline/CTA row above it. Fixed as a group property, not by
-   nudging individual badges. */
+/* Hero trust rail — small structural "spec plate" tags rather than soft
+   pills: flat corners, a thin silver top edge, hairline dividers between
+   them, closer to an engineering nameplate than a marketing badge.
+   (Design merged from Phase 2's premium redesign of this component.)
+
+   display:inline-flex, not flex: a plain `flex` block still stretches
+   to the full width of .hero-content and, with no justify-content, its
+   flush-together spans sit left-aligned inside that oversized box — the
+   exact "badges don't read as one balanced, centred group" bug the
+   alignment audit fixed, just reintroduced by a different visual
+   treatment of the same element. inline-flex sizes the whole plate to
+   its content and lets it centre as a unit via the parent's
+   text-align:center, the same way the plate's own bordered edge should
+   only wrap its content, not the full hero width. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; justify-content:center;
-  gap:var(--space-2xs); margin-top:var(--space-md);
+  display:inline-flex; flex-wrap:wrap; margin-top:1.75rem;
+  border:1px solid rgba(255,255,255,0.18); border-radius:2px;
+  overflow:hidden; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
 }
 .hero-trust-badges span {
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.22);
-  color:#fff; font-size:0.82rem; font-weight:600;
-  padding:0.3rem 0.8rem; border-radius:9999px;
+  position:relative; background:rgba(0,0,0,0.35);
+  border-top:2px solid var(--silver);
+  border-left:1px solid rgba(255,255,255,0.14);
+  color:#fff; font-size:var(--text-xs); font-weight:600;
+  letter-spacing:0.03em; text-transform:uppercase;
+  padding:0.5rem 0.9rem;
 }
+.hero-trust-badges span:first-child { border-left:none; }
 
 /* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
    Axis's structural signature: a large, sparse hex mesh (steel-frame
@@ -305,61 +359,71 @@ textarea:focus-visible {
 .section-paper .pricing-factors { color:#2b2b2b; }
 .section-paper .pricing-factors li::marker { color:#8e949c; }
 
-/* ── TRUST BAR ── */
+/* ── TRUST RAIL ── */
 .trust-bar {
-  background:rgba(255,255,255,0.03) !important;
-  border-top:1px solid rgba(255,255,255,0.07);
-  border-bottom:1px solid rgba(255,255,255,0.07);
-  padding:2rem 0; overflow-x:auto;
+  background:var(--surface) !important;
+  border-top:1px solid var(--border-strong);
+  border-bottom:1px solid var(--border-strong);
+  padding:var(--space-8) 0; overflow-x:auto;
 }
-.trust-items { display:flex; gap:3rem; justify-content:center; flex-wrap:wrap; }
-.trust-item { display:flex; flex-direction:column; align-items:center; gap:0.25rem; }
-.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:2rem; font-weight:700; color:#ffffff; }
-.trust-label { color:#9ca3af; font-size:0.85rem; text-align:center; }
+.trust-items { display:flex; gap:0; justify-content:center; flex-wrap:wrap; }
+.trust-item {
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-1);
+  padding:0 var(--space-8); border-left:1px solid var(--border);
+}
+.trust-item:first-child { border-left:none; }
+.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:1.9rem; font-weight:700; color:#ffffff; letter-spacing:-0.02em; }
+.trust-label { color:#9ca3af; font-size:var(--text-xs); text-align:center; text-transform:uppercase; letter-spacing:0.04em; }
+@media (max-width:768px) {
+  .trust-item { padding:0 var(--space-4); }
+}
 
-/* ── GLASS CARDS ── */
-.glass-card,
+/* ── CARD SYSTEM ──
+   Default surface is solid and architectural — a deliberate steel panel
+   with a bright top edge, not glass. Heavy blur/saturate/brightness glass
+   used to be applied to every card on the site; that's now reserved for
+   .quote-form-card alone (the one genuine floating/input panel). Solid
+   cards read as material, not as a translucent overlay effect. */
 .service-card,
 .testimonial-card,
 .contact-card,
 .social-card,
-.quote-form-card {
+.decision-card {
+  position: relative;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 2px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.service-card:hover,
+.testimonial-card:hover,
+.social-card:hover,
+.decision-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--silver) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45), 0 16px 36px rgba(0,0,0,0.4) !important;
+}
+
+/* Reserved glass — the quote form and quote wizard only (the genuine
+   floating/input panels on the site). */
+.glass-card,
+.quote-form-card,
+.quote-wizard-card {
   position: relative; overflow: hidden;
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  border-radius: 16px !important;
+  background: rgba(255,255,255,0.045) !important;
+  border: 1px solid var(--border-strong) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border-radius: 14px !important;
   box-shadow:
     0 4px 6px rgba(0,0,0,0.4),
     0 10px 40px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.2) !important;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+    inset 0 1px 0 rgba(255,255,255,0.10) !important;
 }
-.glass-card::before,
-.service-card::before,
-.testimonial-card::before {
-  content:''; position:absolute; inset:0; border-radius:inherit;
-  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%,rgba(255,255,255,0.02) 100%);
-  pointer-events:none; z-index:0;
-}
-.glass-card > *,
-.service-card > *,
-.testimonial-card > * { position:relative; z-index:1; }
-.glass-card:hover,
-.service-card:hover,
-.testimonial-card:hover,
-.social-card:hover {
-  transform: translateY(-6px) !important;
-  border-color: rgba(255,255,255,0.28) !important;
-  box-shadow:
-    0 8px 12px rgba(0,0,0,0.5),
-    0 20px 60px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    0 0 0 1px rgba(255,255,255,0.06) !important;
-}
-.quote-form-card:hover { transform: none !important; }
+.quote-form-card:hover,
+.quote-wizard-card:hover { transform: none !important; }
 
 /* ── SERVICES GRID ──
    Both .services-grid and .service-listing always render the same 9
@@ -416,47 +480,139 @@ textarea:focus-visible {
   padding:0.9rem; border-radius:0.75rem; color:#d1d5db;
 }
 
-/* ── PROJECTS GRID ──
-   Interim composition fix only. The homepage's 6-project preview
-   divides evenly into 3-column rows either way (6 = 3+3 desktop, 3+3
-   tablet, 6×1 mobile — no orphan). The full gallery page's 14 items
-   don't (14 = 3+3+3+3+2 at 3 columns), so this uses the same
-   percentage-based system as the services grid — full rows flush
-   with the container edges, a short trailing row centred rather than
-   left-stuck.
-   This is deliberately NOT the featured-item + editorial-grid
-   treatment the gallery page's 14 photos would benefit from (a
-   uniform matrix isn't the best composition for 14 real, unequal
-   project photos) — that richer layout already exists, built for
-   Phase 3 (unmerged PR #21, which adds a featured card + accessible
-   lightbox on top of the same PROJECTS data). Rebuilding it here
-   would duplicate that work and conflict with it on merge. This PR
-   only makes the current simple grid's row composition deliberate;
-   see ALIGNMENT_SYSTEM.md for the merge-order note. */
-.projects-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
-.projects-grid .project-item { flex:0 0 100%; }
-@media (min-width:769px) {
-  .projects-grid .project-item { flex-basis:calc(33.333% - 0.667rem); }
+/* ── PROJECTS — EDITORIAL CARDS ──
+   Photography does the work here, not card chrome: flat corners, no
+   glass, no gradient overlay, no icons. Metadata (label + location) is
+   always visible below the photo — it used to live in a figcaption that
+   only appeared on :hover, which meant it was permanently invisible on
+   touch devices (no hover state). "View project" is the one genuinely
+   supplementary hover affordance; everything a customer actually needs
+   to evaluate the project is visible without interaction. */
+.projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+.project-item { position:relative; }
+.project-item-media {
+  position:relative; display:block; overflow:hidden; width:100%;
+  aspect-ratio:4/5; background:var(--surface-2);
+  border-top:2px solid var(--border-strong);
+  border-left:none; border-right:none; border-bottom:none;
+  padding:0; margin:0; font:inherit; text-align:inherit; cursor:pointer;
 }
-/* .project-item is a <figure> — reset the browser's default figure
-   margin (1em 40px). Left unset, that 40px-per-side margin doesn't
-   collapse in a flex/grid row: it silently ate into each card's
-   available width, which is what caused the fixed percentage basis
-   above to overflow its row and wrap early instead of filling it
-   edge-to-edge. Independent of, and pre-dating, this composition
-   fix — the same default margin was already present under the
-   original CSS Grid version of this component. */
-.project-item { position:relative; overflow:hidden; border-radius:1rem; margin:0; }
-.project-item img { width:100%; height:100%; object-fit:cover; }
-.project-item figcaption {
-  position:absolute; inset:auto 0 0 0; padding:0.8rem;
-  background:linear-gradient(transparent,rgba(0,0,0,0.8));
-  color:#fff; transform:translateY(100%); transition:transform 0.25s ease;
+.project-item-media img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform 0.5s ease;
 }
-.project-item:hover figcaption { transform:translateY(0); }
-.project-item figcaption span { display:block; font-weight:700; }
-.project-item figcaption small { color:#f5f5f5; }
+.project-item-media:hover img,
+.project-item-media:focus-visible img { transform:scale(1.04); }
+.project-item-media::after {
+  content:'View project 92'; position:absolute; right:var(--space-3); bottom:var(--space-3);
+  background:rgba(0,0,0,0.55); border:1px solid var(--silver); color:#fff;
+  font-size:var(--text-xs); font-weight:600; letter-spacing:0.02em;
+  padding:0.35rem 0.7rem; opacity:0; transform:translateY(6px);
+  transition:opacity 0.2s ease, transform 0.2s ease; pointer-events:none;
+}
+.project-item-media:hover::after,
+.project-item-media:focus-visible::after { opacity:1; transform:translateY(0); }
+.project-item figcaption { padding:var(--space-3) 0 0; }
+.project-item-label { display:block; color:#fff; font-weight:600; font-size:var(--text-base); }
+.project-item-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-item-meta a { color:var(--text-muted); text-decoration:underline; text-underline-offset:2px; }
+.project-item-meta a:hover { color:var(--silver); }
+.project-item-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-item-service-link {
+  display:inline-block; color:var(--silver); font-size:var(--text-xs); font-weight:600;
+  text-decoration:none; margin-top:var(--space-2);
+}
+.project-item-service-link:hover { text-decoration:underline; }
+
+/* Homepage: one large featured project + secondaries, not a wall of
+   identical tiles. */
+.projects-feature-grid {
+  display:grid; grid-template-columns:1.4fr 1fr; gap:var(--space-8) var(--space-6);
+  align-items:start;
+}
+.projects-feature-grid .project-item-featured .project-item-media { aspect-ratio:4/3; }
+.projects-feature-secondary { display:flex; flex-direction:column; gap:var(--space-8); }
+
+/* /gallery: one large featured project ahead of the filterable grid —
+   same "photography first, cards second" principle as the homepage,
+   applied to the full portfolio page. */
+.section-eyebrow {
+  color:var(--silver); font-size:var(--text-xs); font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em; margin:0 0 var(--space-3);
+}
+.projects-grid-heading { margin-top:0; }
+.projects-feature-single { margin-bottom:var(--space-12); max-width:900px; }
+.projects-feature-single .project-item-media { aspect-ratio:16/10; }
+@media (max-width:640px) {
+  .projects-feature-single .project-item-media { aspect-ratio:4/3; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .project-item-media img { transition:none; }
+  .project-item-media::after { transition:none; }
+}
 .centered { text-align:center; }
+
+/* ── PROJECT FILTERS ── */
+.project-filters { display:flex; flex-wrap:wrap; gap:0.6rem; margin:var(--space-6) 0 var(--space-8); }
+.project-filter-btn {
+  background:transparent; border:1px solid var(--border-strong); color:var(--text-secondary);
+  border-radius:9999px; padding:0.45rem 1.1rem; font-size:var(--text-sm); font-weight:600;
+  cursor:pointer; transition:border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.project-filter-btn:hover { border-color:var(--silver); color:#fff; }
+.project-filter-btn[aria-pressed="true"] {
+  background:var(--silver); border-color:var(--silver); color:#000;
+}
+.project-item[hidden] { display:none; }
+
+/* ── PROJECT LIGHTBOX ──
+   Full-size view of the real photograph. Every control is always
+   rendered (no hover-only affordances) — close/prev/next are plain
+   buttons, always visible and keyboard-reachable while open. */
+.project-lightbox {
+  position:fixed; inset:0; z-index:100000;
+  background:rgba(0,0,0,0.94);
+  display:flex; align-items:center; justify-content:center;
+  padding:var(--space-6);
+}
+.project-lightbox[hidden] { display:none; }
+body.lightbox-open { overflow:hidden; }
+.project-lightbox-figure {
+  max-width:min(1100px, 92vw); max-height:92vh; margin:0;
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-4);
+}
+.project-lightbox-img {
+  max-width:100%; max-height:72vh; width:auto; height:auto;
+  object-fit:contain; border-top:2px solid var(--silver); display:block;
+}
+.project-lightbox-figure figcaption { text-align:center; max-width:640px; }
+.project-lightbox-label { display:block; color:#fff; font-weight:600; font-size:var(--text-lg); }
+.project-lightbox-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-lightbox-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-lightbox-close,
+.project-lightbox-prev,
+.project-lightbox-next {
+  position:fixed; background:rgba(10,10,10,0.7); border:1px solid var(--border-strong);
+  color:#fff; border-radius:50%; width:48px; height:48px; font-size:1.4rem;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:border-color 0.2s ease, background 0.2s ease;
+}
+.project-lightbox-close:hover,
+.project-lightbox-prev:hover,
+.project-lightbox-next:hover { border-color:var(--silver); background:rgba(10,10,10,0.9); }
+.project-lightbox-close { top:var(--space-6); right:var(--space-6); }
+.project-lightbox-prev { left:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-next { right:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-prev:disabled,
+.project-lightbox-next:disabled { opacity:0.3; cursor:default; }
+@media (max-width:640px) {
+  .project-lightbox { padding:var(--space-4); }
+  .project-lightbox-prev,.project-lightbox-next { width:40px; height:40px; font-size:1.1rem; }
+  .project-lightbox-close { width:40px; height:40px; top:var(--space-3); right:var(--space-3); }
+  .project-lightbox-prev { left:var(--space-2); }
+  .project-lightbox-next { right:var(--space-2); }
+}
 
 /* ── TESTIMONIALS ── */
 .testimonial-carousel { overflow:hidden; }
@@ -530,6 +686,98 @@ textarea:focus-visible {
 .quote-form-card select option { background:#0a0a0a; color:#ffffff; }
 .quote-form-card textarea { min-height:120px; }
 .form-message { min-height:1.2rem; font-weight:600; color:#34d399; }
+
+/* ── QUOTE WIZARD ──
+   A premium multi-step project-intake tool, built as ONE real <form>
+   (same FormSubmit action, same .axis-quote-form submit/consent/analytics
+   handling already used everywhere else on the site) with a client-side
+   JS layer on top that shows one fieldset at a time. Without JS every
+   fieldset is visible and the real submit button is already showing —
+   it degrades to one long working form, not a broken one. */
+.quote-wizard-card { padding:1.75rem; }
+.quote-wizard-card form p { margin-bottom:0.9rem; }
+.quote-wizard-card label { display:block; margin-bottom:0.35rem; font-weight:600; color:#ffffff !important; }
+.quote-wizard-card .quote-optional { font-weight:400; color:#9ca3af; }
+.quote-wizard-card input[type="text"],
+.quote-wizard-card input[type="tel"],
+.quote-wizard-card input[type="email"],
+.quote-wizard-card input:not([type]),
+.quote-wizard-card select,
+.quote-wizard-card textarea {
+  width:100%; background:rgba(255,255,255,0.06) !important;
+  border:1px solid rgba(255,255,255,0.14) !important;
+  border-radius:10px !important; color:#ffffff !important;
+  padding:0.7rem 0.9rem !important; font:inherit !important;
+  transition:border-color 0.2s ease !important;
+}
+.quote-wizard-card input:focus,
+.quote-wizard-card select:focus,
+.quote-wizard-card textarea:focus {
+  border-color:rgba(255,255,255,0.45) !important; outline:none !important;
+  background:rgba(255,255,255,0.09) !important;
+}
+.quote-wizard-card select option { background:#0a0a0a; color:#ffffff; }
+.quote-wizard-card textarea { min-height:110px; }
+.quote-wizard-card fieldset { border:none; padding:0; margin:0 0 1.5rem; }
+.quote-wizard-card legend { font-family:'Poppins',sans-serif; font-size:1.2rem; font-weight:600; color:#fff; padding:0; margin:0 0 1rem; }
+.quote-wizard-card input[type="file"] { color:var(--text-secondary); }
+.quote-help-text { color:var(--text-muted); font-size:0.9rem; margin:0 0 0.75rem; }
+
+.quote-progress ol { list-style:none; display:flex; flex-wrap:wrap; gap:0.5rem 0; padding:0; margin:0 0 1.75rem; }
+.quote-progress-step {
+  display:flex; align-items:center; gap:0.4rem; flex:1; min-width:0;
+  color:var(--text-muted); font-size:0.78rem; font-weight:600;
+}
+.quote-progress-num {
+  flex-shrink:0; width:1.6rem; height:1.6rem; border-radius:50%;
+  border:1px solid var(--border-strong); display:flex; align-items:center; justify-content:center;
+  font-size:0.8rem;
+}
+.quote-progress-step.is-active { color:#fff; }
+.quote-progress-step.is-active .quote-progress-num { background:var(--silver); color:#000; border-color:var(--silver); }
+.quote-progress-step.is-done .quote-progress-num { background:rgba(200,205,212,0.25); border-color:var(--silver); }
+.quote-progress-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:560px) {
+  .quote-progress-label { display:none; }
+}
+
+.quote-choice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.6rem; }
+.quote-choice {
+  position:relative; display:flex; align-items:center;
+  border:1px solid var(--border-strong); border-radius:10px;
+  padding:0.75rem 1rem; cursor:pointer; color:var(--text-secondary);
+  font-weight:600; font-size:0.92rem; transition:border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.quote-choice input { position:absolute; opacity:0; width:1px; height:1px; }
+.quote-choice:hover { border-color:var(--silver); color:#fff; }
+.quote-choice:has(input:checked),
+.quote-choice.is-checked { background:var(--silver); border-color:var(--silver); color:#000; }
+.quote-choice:has(input:focus-visible),
+.quote-choice.is-focused { outline:3px solid var(--silver); outline-offset:2px; }
+.quote-choice input:focus-visible { outline:none; } /* outline lives on the label above instead */
+
+.quote-emergency-banner {
+  margin-top:1.25rem; padding:1rem 1.25rem; border-radius:10px;
+  background:rgba(220,60,60,0.1); border:1px solid rgba(220,90,90,0.4);
+  color:#fff; display:flex; flex-wrap:wrap; align-items:center; gap:0.9rem;
+}
+.quote-emergency-banner[hidden] { display:none !important; }
+.quote-emergency-banner .btn { flex-shrink:0; }
+
+.quote-photo-list { list-style:none; padding:0; margin:0.75rem 0 0; display:flex; flex-wrap:wrap; gap:0.6rem; }
+.quote-photo-list li {
+  display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.06);
+  border:1px solid var(--border-strong); border-radius:8px; padding:0.4rem 0.6rem; font-size:0.82rem; color:var(--text-secondary);
+}
+.quote-photo-list button {
+  background:none; border:none; color:#f87171; cursor:pointer; font-weight:700; font-size:1rem; line-height:1; padding:0;
+}
+.quote-photo-status { font-size:0.82rem; color:var(--text-muted); margin:0.5rem 0 0; min-height:1.1rem; }
+
+.quote-wizard-nav { display:flex; justify-content:space-between; gap:0.75rem; margin-top:0.5rem; }
+.quote-wizard-nav .quote-next,
+.quote-wizard-nav .quote-submit { margin-left:auto; }
+.quote-wizard-card .form-note { font-size:0.82rem; color:#6b7280; margin-top:0.75rem; }
 
 /* ── CTA BANNER ── */
 .cta-banner {
@@ -624,6 +872,41 @@ textarea:focus-visible {
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#6b7280; font-size:0.78rem; }
 
+/* ── COOKIE BAR ── */
+.cookie-bar {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:99999;
+  background:var(--surface); border-top:2px solid var(--border-strong);
+  padding:var(--space-4) var(--space-8); flex-wrap:wrap;
+  align-items:center; justify-content:space-between; gap:var(--space-4);
+}
+.cookie-bar p { color:var(--text-secondary); font-size:var(--text-sm); max-width:600px; margin:0; }
+.cookie-bar p strong { color:#fff; }
+.cookie-bar p a { color:var(--silver); text-decoration:underline; }
+.cookie-bar-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); align-items:center; }
+.cookie-bar-actions .btn-manage {
+  background:none; border:none; color:var(--text-muted);
+  font-size:var(--text-sm); cursor:pointer; text-decoration:underline; padding:0.5rem 0;
+}
+.cookie-prefs-panel {
+  position:fixed; bottom:80px; left:0; right:0; z-index:99998;
+  background:var(--surface); border-top:1px solid var(--border-strong);
+  padding:var(--space-6) var(--space-8); font-size:var(--text-sm); color:var(--text-secondary);
+}
+.cookie-prefs-panel .cookie-prefs-title { color:#fff; font-weight:600; margin:0 0 var(--space-4); }
+.cookie-prefs-panel .cookie-prefs-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:var(--space-2) 0; border-bottom:1px solid var(--border);
+}
+.cookie-prefs-panel .cookie-prefs-row:last-of-type { border-bottom:none; }
+.cookie-prefs-panel .btn-save-prefs {
+  margin-top:var(--space-4); background:linear-gradient(135deg,#e8eaed,#c8cdd4);
+  color:#000; border:none; border-radius:9999px; padding:0.5rem 1.5rem;
+  font-weight:700; cursor:pointer;
+}
+@media (max-width:768px) {
+  .cookie-bar { padding:var(--space-4); }
+}
+
 /* ── DECISION CARDS ──
    Explicit per-breakpoint composition, not organic reflow — a card's
    width is a defined FRACTION of the row (100%, 33.333%, 20%), so a
@@ -645,14 +928,12 @@ textarea:focus-visible {
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
+  /* Background/border/hover come from the shared card system above —
+     this supplies layout (and, below, this component's explicit
+     per-breakpoint composition) only. */
   flex:0 0 100%;
-  background:rgba(255,255,255,0.04) !important;
-  border:1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter:blur(20px) !important;
-  -webkit-backdrop-filter:blur(20px) !important;
-  border-radius:1.25rem; padding:1.75rem 1.25rem 1.5rem;
+  padding:1.75rem 1.25rem 1.5rem;
   text-decoration:none; color:#ffffff;
-  transition:border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   display:flex; flex-direction:column; gap:0.5rem;
 }
 @media (min-width:769px) {
@@ -661,16 +942,12 @@ textarea:focus-visible {
 @media (min-width:1025px) {
   .decision-card { flex-basis:calc(20% - 1rem); }
 }
-.decision-card:hover {
-  border-color:rgba(255,255,255,0.32) !important;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;
-  transform:translateY(-4px);
-}
 .decision-card-urgent {
-  border-color:rgba(255,100,100,0.3) !important;
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
   background:rgba(255,50,50,0.06) !important;
 }
-.decision-card-urgent:hover { border-color:rgba(255,120,120,0.5) !important; }
+.decision-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
 /* "Not Sure" is a deliberately different job (an open catch-all, not
    a category) — a subtly distinct treatment so its position in the
    layout (whatever row it lands on) reads as intentional rather than
@@ -734,9 +1011,10 @@ textarea:focus-visible {
 /* ── MOBILE STICKY CTA BAR ── */
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
-  z-index:9999; background:#1a1a2e; padding:0;
+  z-index:9999; background:var(--surface-3); padding:0;
   padding-bottom:env(safe-area-inset-bottom);
-  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.3);
+  border-top:2px solid var(--border-strong);
+  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.4);
 }
 .mobile-cta-bar .cta-buttons { display:flex; height:100%; }
 .mobile-cta-bar .btn-call,
@@ -745,27 +1023,54 @@ textarea:focus-visible {
   gap:0.5rem; font-size:16px; font-weight:700;
   text-decoration:none; transition:background 0.2s ease;
 }
-.mobile-cta-bar .btn-call { background:#4CAF50; color:#ffffff; }
-.mobile-cta-bar .btn-quote { background:#c8cdd4; color:#000000; }
+/* Call keeps a distinct (desaturated, on-brand-darkened) green — a
+   deliberate functional exception, not a decorative one: call vs. quote
+   need to read as two different actions at a glance on the one sticky
+   bar every mobile visitor sees on every page. */
+.mobile-cta-bar .btn-call { background:#2f6b46; color:#ffffff; border-right:1px solid var(--border); }
+.mobile-cta-bar .btn-quote { background:var(--silver); color:#000000; }
 .mobile-cta-bar svg { width:18px; height:18px; }
 @media (max-width:768px) { .mobile-cta-bar { display:flex; } }
 
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
   .split-grid,.two-col { grid-template-columns:1fr; }
+  /* .decision-grid is not a CSS Grid any more (see the deliberate
+     flex-based composition system above, with its own min-width media
+     queries) — no grid-template-columns override belongs here. */
+  .projects-feature-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:row; }
+  .projects-feature-secondary .project-item { flex:1; }
+}
+@media (max-width:640px) {
+  .projects-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:column; }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
   .nav-phone-mobile { display:inline-flex; align-items:center; }
   .nav-phone-desktop { display:none; }
   .site-nav {
-    position:fixed; inset:0 0 0 35%;
-    background:rgba(0,0,0,0.97); backdrop-filter:blur(20px);
-    padding:6rem 1.5rem 1.5rem; display:flex;
-    flex-direction:column; align-items:flex-start;
+    /* Deliberately not "inset:0 0 0 30%": .site-header has a
+       backdrop-filter, which creates a new containing block for
+       position:fixed descendants — bottom:0 would then resolve against
+       the ~90px header instead of the viewport, leaving the drawer only
+       as tall as the header. Explicit vh sizing sidesteps that (vh units
+       are always viewport-relative regardless of containing block). */
+    position:fixed; top:0; right:0; left:30%;
+    height:100vh; height:100dvh; overflow-y:auto;
+    background:var(--surface); border-left:1px solid var(--border-strong);
+    padding:6rem var(--space-6) var(--space-6); display:flex;
+    flex-direction:column; align-items:stretch; gap:0;
     transform:translateX(100%); transition:transform 0.3s ease;
   }
   .site-nav.open { transform:translateX(0); }
+  .site-nav a:not(.cta-pill) {
+    width:100%; padding:var(--space-4) 0;
+    border-bottom:1px solid var(--border); font-size:var(--text-lg);
+  }
+  .site-nav a:not(.cta-pill)::after { display:none; }
+  .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
   .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
