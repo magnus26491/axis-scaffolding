@@ -399,49 +399,17 @@ def footer() -> str:
 
 def cookie_ui() -> str:
     return """
-<div id="axis-cookie-bar" style="
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999;
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: 1rem 2rem;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: Inter, sans-serif;
-">
-  <p style="color:#d1d5db; font-size:0.875rem; max-width:600px; margin:0;">
+<div id="axis-cookie-bar" class="cookie-bar">
+  <p>
     We use cookies to improve your experience and analyse site traffic.
-    By clicking <strong style="color:#fff;">Accept All</strong> you consent
+    By clicking <strong>Accept All</strong> you consent
     to our use of cookies.
-    <a href="/privacy-policy" style="color:#c8cdd4; text-decoration:underline;">
-      Read our Privacy Policy
-    </a>
+    <a href="/privacy-policy">Read our Privacy Policy</a>
   </p>
-  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
-    <button id="axis-cookie-accept" style="
-      background: linear-gradient(135deg, #e8eaed, #c8cdd4); color:#000; border:none; border-radius:9999px;
-      padding:0.5rem 1.25rem; font-weight:700; font-size:0.875rem;
-      cursor:pointer; white-space:nowrap;
-    ">Accept All</button>
-    <button id="axis-cookie-reject" style="
-      background:transparent; color:#fff;
-      border:1px solid rgba(255,255,255,0.5);
-      border-radius:9999px; padding:0.5rem 1.25rem;
-      font-size:0.875rem; cursor:pointer; white-space:nowrap;
-    ">Reject Non-Essential</button>
-    <button id="axis-cookie-manage" style="
-      background:none; border:none; color:#9ca3af;
-      font-size:0.875rem; cursor:pointer;
-      text-decoration:underline; padding:0.5rem 0;
-    ">Manage Preferences</button>
+  <div class="cookie-bar-actions">
+    <button id="axis-cookie-accept" class="btn btn-primary">Accept All</button>
+    <button id="axis-cookie-reject" class="btn btn-outline">Reject Non-Essential</button>
+    <button id="axis-cookie-manage" class="btn-manage">Manage Preferences</button>
   </div>
 </div>
 """
@@ -659,6 +627,17 @@ def generate_css() -> None:
   --space-xl:  3rem;
   --space-2xl: 4.5rem;
   --space-3xl: 6rem;
+
+  /* V2 Phase 2 — spacing and type scale. Used by the refined nav, card,
+     trust-rail and cookie-banner components below; existing components
+     keep their original hand-tuned values untouched. Independent, named
+     differently, from the --space-3xs..3xl scale above — both are kept,
+     each still has real consumers. */
+  --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-base: 1rem;
+  --text-lg: 1.125rem;  --text-xl: 1.25rem; --text-2xl: 1.5rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -683,7 +662,15 @@ html, body {
 h1,h2,h3,h4,h5,h6 {
   font-family: 'Poppins','Inter',sans-serif;
   color: #ffffff; margin: 0 0 1rem; line-height: 1.2;
+  letter-spacing: -0.01em;
 }
+/* Deliberate type scale — previously every heading below h1 fell back to
+   the browser's UA default size, so hierarchy was accidental rather than
+   designed. */
+h1 { font-size: clamp(2.25rem, 4.5vw, 3.25rem); font-weight: 700; }
+h2 { font-size: clamp(1.65rem, 3vw, 2.15rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.005em; }
+h4 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0; }
 p { margin: 0 0 1rem; color: #e5e7eb; }
 li, td { color: #e5e7eb; }
 small, .muted { color: #9ca3af; }
@@ -764,11 +751,19 @@ textarea:focus-visible {
   display:flex; justify-content:center;
   align-items:center; gap:1.2rem;
 }
-.site-nav a {
-  text-decoration:none; color:#ffffff;
-  font-weight:600; transition:color 0.2s;
+.site-nav a:not(.cta-pill) {
+  position:relative; text-decoration:none; color:#ffffff;
+  font-weight:600; font-size:var(--text-sm); transition:color 0.2s;
+  padding-bottom:2px;
 }
-.site-nav a:hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill)::after {
+  content:''; position:absolute; left:0; right:100%; bottom:0;
+  height:1px; background:var(--silver);
+  transition:right 0.2s ease;
+}
+.site-nav a:not(.cta-pill):hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill):hover::after,
+.site-nav a:not(.cta-pill):focus-visible::after { right:0; }
 .menu-toggle {
   display:none; width:48px; height:48px;
   border:1px solid rgba(255,255,255,0.4);
@@ -791,14 +786,29 @@ textarea:focus-visible {
   justify-content:center; border:2px solid transparent;
   cursor:pointer; transition: all 0.2s ease;
 }
-.btn-primary {
+.btn-primary,
+.cta-pill {
+  position:relative; overflow:hidden;
   background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
   color: #000000 !important; font-weight: 700 !important; border: none !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 15px rgba(200,205,212,0.15) !important;
 }
-.btn-primary:hover {
+.btn-primary::before,
+.cta-pill::before {
+  content:''; position:absolute; top:0; bottom:0; left:-60%; width:40%;
+  background:linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform:skewX(-20deg) translateX(-20%);
+  transition:transform 0.5s ease; pointer-events:none;
+}
+.btn-primary:hover,
+.cta-pill:hover {
   background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
   transform: translateY(-1px) !important;
+}
+.btn-primary:hover::before,
+.cta-pill:hover::before { transform:skewX(-20deg) translateX(340%); }
+@media (prefers-reduced-motion:reduce) {
+  .btn-primary::before, .cta-pill::before { display:none; }
 }
 .btn-outline { border-color:#fff; color:#fff; background:transparent; }
 .btn-outline:hover { background:rgba(255,255,255,0.1); }
@@ -809,15 +819,11 @@ textarea:focus-visible {
 .hero-cta-row { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; }
 
 .cta-pill {
-  background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
-  color: #000000 !important; font-weight: 700 !important;
+  /* Colour/hover/sweep are on the shared .btn-primary,.cta-pill rules
+     above — this just supplies the pill-specific box model, since
+     .cta-pill is used standalone (not combined with .btn) in the nav. */
   padding: 0.65rem 1.4rem !important; border-radius: 9999px !important;
   text-decoration: none !important; display: inline-block !important;
-  border: none !important;
-}
-.cta-pill:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
-  transform: translateY(-1px) !important; color: #000000 !important;
 }
 
 /* ── HERO ── */
@@ -845,23 +851,34 @@ textarea:focus-visible {
 .hero p { color:#fff; font-size:1.1rem; }
 .hero-phone a { color:#fff; text-decoration:underline; font-weight:600; }
 
-/* Hero trust badges
-   Root cause of the "badges don't read as one balanced, centred
-   group" report: every other row in the hero (h1, p, .hero-cta-row)
-   is explicitly centred, but this flex row had no justify-content,
-   so it defaulted to flex-start — left-aligned under a centred
-   headline/CTA row above it. Fixed as a group property, not by
-   nudging individual badges. */
+/* Hero trust rail — small structural "spec plate" tags rather than soft
+   pills: flat corners, a thin silver top edge, hairline dividers between
+   them, closer to an engineering nameplate than a marketing badge.
+   (Design merged from Phase 2's premium redesign of this component.)
+
+   display:inline-flex, not flex: a plain `flex` block still stretches
+   to the full width of .hero-content and, with no justify-content, its
+   flush-together spans sit left-aligned inside that oversized box — the
+   exact "badges don't read as one balanced, centred group" bug the
+   alignment audit fixed, just reintroduced by a different visual
+   treatment of the same element. inline-flex sizes the whole plate to
+   its content and lets it centre as a unit via the parent's
+   text-align:center, the same way the plate's own bordered edge should
+   only wrap its content, not the full hero width. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; justify-content:center;
-  gap:var(--space-2xs); margin-top:var(--space-md);
+  display:inline-flex; flex-wrap:wrap; margin-top:1.75rem;
+  border:1px solid rgba(255,255,255,0.18); border-radius:2px;
+  overflow:hidden; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
 }
 .hero-trust-badges span {
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.22);
-  color:#fff; font-size:0.82rem; font-weight:600;
-  padding:0.3rem 0.8rem; border-radius:9999px;
+  position:relative; background:rgba(0,0,0,0.35);
+  border-top:2px solid var(--silver);
+  border-left:1px solid rgba(255,255,255,0.14);
+  color:#fff; font-size:var(--text-xs); font-weight:600;
+  letter-spacing:0.03em; text-transform:uppercase;
+  padding:0.5rem 0.9rem;
 }
+.hero-trust-badges span:first-child { border-left:none; }
 
 /* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
    Axis's structural signature: a large, sparse hex mesh (steel-frame
@@ -889,59 +906,66 @@ textarea:focus-visible {
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
 .section-intro { color:#9ca3af; margin-bottom:1.5rem; }
 
-/* ── TRUST BAR ── */
+/* ── TRUST RAIL ── */
 .trust-bar {
-  background:rgba(255,255,255,0.03) !important;
-  border-top:1px solid rgba(255,255,255,0.07);
-  border-bottom:1px solid rgba(255,255,255,0.07);
-  padding:2rem 0; overflow-x:auto;
+  background:var(--surface) !important;
+  border-top:1px solid var(--border-strong);
+  border-bottom:1px solid var(--border-strong);
+  padding:var(--space-8) 0; overflow-x:auto;
 }
-.trust-items { display:flex; gap:3rem; justify-content:center; flex-wrap:wrap; }
-.trust-item { display:flex; flex-direction:column; align-items:center; gap:0.25rem; }
-.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:2rem; font-weight:700; color:#ffffff; }
-.trust-label { color:#9ca3af; font-size:0.85rem; text-align:center; }
+.trust-items { display:flex; gap:0; justify-content:center; flex-wrap:wrap; }
+.trust-item {
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-1);
+  padding:0 var(--space-8); border-left:1px solid var(--border);
+}
+.trust-item:first-child { border-left:none; }
+.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:1.9rem; font-weight:700; color:#ffffff; letter-spacing:-0.02em; }
+.trust-label { color:#9ca3af; font-size:var(--text-xs); text-align:center; text-transform:uppercase; letter-spacing:0.04em; }
+@media (max-width:768px) {
+  .trust-item { padding:0 var(--space-4); }
+}
 
-/* ── GLASS CARDS ── */
-.glass-card,
+/* ── CARD SYSTEM ──
+   Default surface is solid and architectural — a deliberate steel panel
+   with a bright top edge, not glass. Heavy blur/saturate/brightness glass
+   used to be applied to every card on the site; that's now reserved for
+   .quote-form-card alone (the one genuine floating/input panel). Solid
+   cards read as material, not as a translucent overlay effect. */
 .service-card,
 .testimonial-card,
 .contact-card,
 .social-card,
+.decision-card {
+  position: relative;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 2px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.service-card:hover,
+.testimonial-card:hover,
+.social-card:hover,
+.decision-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--silver) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45), 0 16px 36px rgba(0,0,0,0.4) !important;
+}
+
+/* Reserved glass — the quote form only. */
+.glass-card,
 .quote-form-card {
   position: relative; overflow: hidden;
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  border-radius: 16px !important;
+  background: rgba(255,255,255,0.045) !important;
+  border: 1px solid var(--border-strong) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border-radius: 14px !important;
   box-shadow:
     0 4px 6px rgba(0,0,0,0.4),
     0 10px 40px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.2) !important;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
-}
-.glass-card::before,
-.service-card::before,
-.testimonial-card::before {
-  content:''; position:absolute; inset:0; border-radius:inherit;
-  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%,rgba(255,255,255,0.02) 100%);
-  pointer-events:none; z-index:0;
-}
-.glass-card > *,
-.service-card > *,
-.testimonial-card > * { position:relative; z-index:1; }
-.glass-card:hover,
-.service-card:hover,
-.testimonial-card:hover,
-.social-card:hover {
-  transform: translateY(-6px) !important;
-  border-color: rgba(255,255,255,0.28) !important;
-  box-shadow:
-    0 8px 12px rgba(0,0,0,0.5),
-    0 20px 60px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    0 0 0 1px rgba(255,255,255,0.06) !important;
+    inset 0 1px 0 rgba(255,255,255,0.10) !important;
 }
 .quote-form-card:hover { transform: none !important; }
 
@@ -1208,6 +1232,41 @@ textarea:focus-visible {
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#6b7280; font-size:0.78rem; }
 
+/* ── COOKIE BAR ── */
+.cookie-bar {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:99999;
+  background:var(--surface); border-top:2px solid var(--border-strong);
+  padding:var(--space-4) var(--space-8); flex-wrap:wrap;
+  align-items:center; justify-content:space-between; gap:var(--space-4);
+}
+.cookie-bar p { color:var(--text-secondary); font-size:var(--text-sm); max-width:600px; margin:0; }
+.cookie-bar p strong { color:#fff; }
+.cookie-bar p a { color:var(--silver); text-decoration:underline; }
+.cookie-bar-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); align-items:center; }
+.cookie-bar-actions .btn-manage {
+  background:none; border:none; color:var(--text-muted);
+  font-size:var(--text-sm); cursor:pointer; text-decoration:underline; padding:0.5rem 0;
+}
+.cookie-prefs-panel {
+  position:fixed; bottom:80px; left:0; right:0; z-index:99998;
+  background:var(--surface); border-top:1px solid var(--border-strong);
+  padding:var(--space-6) var(--space-8); font-size:var(--text-sm); color:var(--text-secondary);
+}
+.cookie-prefs-panel .cookie-prefs-title { color:#fff; font-weight:600; margin:0 0 var(--space-4); }
+.cookie-prefs-panel .cookie-prefs-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:var(--space-2) 0; border-bottom:1px solid var(--border);
+}
+.cookie-prefs-panel .cookie-prefs-row:last-of-type { border-bottom:none; }
+.cookie-prefs-panel .btn-save-prefs {
+  margin-top:var(--space-4); background:linear-gradient(135deg,#e8eaed,#c8cdd4);
+  color:#000; border:none; border-radius:9999px; padding:0.5rem 1.5rem;
+  font-weight:700; cursor:pointer;
+}
+@media (max-width:768px) {
+  .cookie-bar { padding:var(--space-4); }
+}
+
 /* ── DECISION CARDS ──
    Explicit per-breakpoint composition, not organic reflow — a card's
    width is a defined FRACTION of the row (100%, 33.333%, 20%), so a
@@ -1229,14 +1288,12 @@ textarea:focus-visible {
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
+  /* Background/border/hover come from the shared card system above —
+     this supplies layout (and, below, this component's explicit
+     per-breakpoint composition) only. */
   flex:0 0 100%;
-  background:rgba(255,255,255,0.04) !important;
-  border:1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter:blur(20px) !important;
-  -webkit-backdrop-filter:blur(20px) !important;
-  border-radius:1.25rem; padding:1.75rem 1.25rem 1.5rem;
+  padding:1.75rem 1.25rem 1.5rem;
   text-decoration:none; color:#ffffff;
-  transition:border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   display:flex; flex-direction:column; gap:0.5rem;
 }
 @media (min-width:769px) {
@@ -1245,16 +1302,12 @@ textarea:focus-visible {
 @media (min-width:1025px) {
   .decision-card { flex-basis:calc(20% - 1rem); }
 }
-.decision-card:hover {
-  border-color:rgba(255,255,255,0.32) !important;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;
-  transform:translateY(-4px);
-}
 .decision-card-urgent {
-  border-color:rgba(255,100,100,0.3) !important;
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
   background:rgba(255,50,50,0.06) !important;
 }
-.decision-card-urgent:hover { border-color:rgba(255,120,120,0.5) !important; }
+.decision-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
 /* "Not Sure" is a deliberately different job (an open catch-all, not
    a category) — a subtly distinct treatment so its position in the
    layout (whatever row it lands on) reads as intentional rather than
@@ -1318,9 +1371,10 @@ textarea:focus-visible {
 /* ── MOBILE STICKY CTA BAR ── */
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
-  z-index:9999; background:#1a1a2e; padding:0;
+  z-index:9999; background:var(--surface-3); padding:0;
   padding-bottom:env(safe-area-inset-bottom);
-  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.3);
+  border-top:2px solid var(--border-strong);
+  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.4);
 }
 .mobile-cta-bar .cta-buttons { display:flex; height:100%; }
 .mobile-cta-bar .btn-call,
@@ -1329,8 +1383,12 @@ textarea:focus-visible {
   gap:0.5rem; font-size:16px; font-weight:700;
   text-decoration:none; transition:background 0.2s ease;
 }
-.mobile-cta-bar .btn-call { background:#4CAF50; color:#ffffff; }
-.mobile-cta-bar .btn-quote { background:#c8cdd4; color:#000000; }
+/* Call keeps a distinct (desaturated, on-brand-darkened) green — a
+   deliberate functional exception, not a decorative one: call vs. quote
+   need to read as two different actions at a glance on the one sticky
+   bar every mobile visitor sees on every page. */
+.mobile-cta-bar .btn-call { background:#2f6b46; color:#ffffff; border-right:1px solid var(--border); }
+.mobile-cta-bar .btn-quote { background:var(--silver); color:#000000; }
 .mobile-cta-bar svg { width:18px; height:18px; }
 @media (max-width:768px) { .mobile-cta-bar { display:flex; } }
 
@@ -1343,13 +1401,26 @@ textarea:focus-visible {
   .nav-phone-mobile { display:inline-flex; align-items:center; }
   .nav-phone-desktop { display:none; }
   .site-nav {
-    position:fixed; inset:0 0 0 35%;
-    background:rgba(0,0,0,0.97); backdrop-filter:blur(20px);
-    padding:6rem 1.5rem 1.5rem; display:flex;
-    flex-direction:column; align-items:flex-start;
+    /* Deliberately not "inset:0 0 0 30%": .site-header has a
+       backdrop-filter, which creates a new containing block for
+       position:fixed descendants — bottom:0 would then resolve against
+       the ~90px header instead of the viewport, leaving the drawer only
+       as tall as the header. Explicit vh sizing sidesteps that (vh units
+       are always viewport-relative regardless of containing block). */
+    position:fixed; top:0; right:0; left:30%;
+    height:100vh; height:100dvh; overflow-y:auto;
+    background:var(--surface); border-left:1px solid var(--border-strong);
+    padding:6rem var(--space-6) var(--space-6); display:flex;
+    flex-direction:column; align-items:stretch; gap:0;
     transform:translateX(100%); transition:transform 0.3s ease;
   }
   .site-nav.open { transform:translateX(0); }
+  .site-nav a:not(.cta-pill) {
+    width:100%; padding:var(--space-4) 0;
+    border-bottom:1px solid var(--border); font-size:var(--text-lg);
+  }
+  .site-nav a:not(.cta-pill)::after { display:none; }
+  .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
   .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
@@ -1571,22 +1642,18 @@ def generate_js() -> None:
       if (existing) { existing.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'axis-cookie-prefs';
-      panel.style.cssText = 'position:fixed;bottom:80px;left:0;right:0;z-index:99998;' +
-        'background:rgba(15,15,15,0.97);border-top:1px solid rgba(255,255,255,0.1);' +
-        'padding:1.5rem 2rem;font-family:Inter,sans-serif;color:#d1d5db;font-size:0.875rem;';
-      panel.innerHTML = '<p style="color:#fff;font-weight:600;margin:0 0 1rem;">Cookie Preferences</p>' +
-        '<div style="display:flex;flex-direction:column;gap:0.75rem;">' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+      panel.className = 'cookie-prefs-panel';
+      panel.innerHTML = '<p class="cookie-prefs-title">Cookie Preferences</p>' +
+        '<div>' +
+        '<label class="cookie-prefs-row">' +
         '<span>Necessary <span style="color:#6b7280;font-size:0.75rem;">(always on)</span></span>' +
         '<input type="checkbox" checked disabled></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Analytics</span><input type="checkbox" id="axis-pref-analytics"></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Marketing</span><input type="checkbox" id="axis-pref-marketing"></label>' +
         '</div>' +
-        '<button id="axis-pref-save" style="margin-top:1rem;background:linear-gradient(135deg,#e8eaed,#c8cdd4);color:#000;' +
-        'border:none;border-radius:9999px;padding:0.5rem 1.5rem;font-weight:700;cursor:pointer;">' +
-        'Save Preferences</button>';
+        '<button id="axis-pref-save" class="btn-save-prefs">Save Preferences</button>';
       document.body.appendChild(panel);
       var save = document.getElementById('axis-pref-save');
       if (save) {
@@ -1805,7 +1872,7 @@ def testimonials() -> str:
     ]
     return "".join(
         f"""
-<div class="testimonial-card glass-card">
+<div class="testimonial-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
   </div>

@@ -193,22 +193,18 @@
       if (existing) { existing.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'axis-cookie-prefs';
-      panel.style.cssText = 'position:fixed;bottom:80px;left:0;right:0;z-index:99998;' +
-        'background:rgba(15,15,15,0.97);border-top:1px solid rgba(255,255,255,0.1);' +
-        'padding:1.5rem 2rem;font-family:Inter,sans-serif;color:#d1d5db;font-size:0.875rem;';
-      panel.innerHTML = '<p style="color:#fff;font-weight:600;margin:0 0 1rem;">Cookie Preferences</p>' +
-        '<div style="display:flex;flex-direction:column;gap:0.75rem;">' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+      panel.className = 'cookie-prefs-panel';
+      panel.innerHTML = '<p class="cookie-prefs-title">Cookie Preferences</p>' +
+        '<div>' +
+        '<label class="cookie-prefs-row">' +
         '<span>Necessary <span style="color:#6b7280;font-size:0.75rem;">(always on)</span></span>' +
         '<input type="checkbox" checked disabled></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Analytics</span><input type="checkbox" id="axis-pref-analytics"></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Marketing</span><input type="checkbox" id="axis-pref-marketing"></label>' +
         '</div>' +
-        '<button id="axis-pref-save" style="margin-top:1rem;background:linear-gradient(135deg,#e8eaed,#c8cdd4);color:#000;' +
-        'border:none;border-radius:9999px;padding:0.5rem 1.5rem;font-weight:700;cursor:pointer;">' +
-        'Save Preferences</button>';
+        '<button id="axis-pref-save" class="btn-save-prefs">Save Preferences</button>';
       document.body.appendChild(panel);
       var save = document.getElementById('axis-pref-save');
       if (save) {
