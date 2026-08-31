@@ -555,8 +555,18 @@ def generate_media_assets() -> None:
     if hero_src.exists():
         with Image.open(hero_src) as im:
             rgb = im.convert("RGB")
-            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
             orig_w, orig_h = rgb.size
+            # Cap the largest variant at 1920w — the widest size any srcset entry
+            # below claims. Previously hero-bg.webp was saved at the source image's
+            # full native resolution (several thousand px, ~3.8MB) but declared as
+            # "1920w" in the srcset, so a matching browser downloaded the full
+            # multi-megabyte original believing it was ~1920px wide.
+            HERO_MAX_W = 1920
+            if orig_w > HERO_MAX_W:
+                base_h = round(orig_h * HERO_MAX_W / orig_w)
+                rgb = rgb.resize((HERO_MAX_W, base_h), Image.LANCZOS)
+                orig_w, orig_h = rgb.size
+            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
             for w in (480, 768, 1024, 1440):
                 if orig_w >= w:
                     h = round(orig_h * w / orig_w)
