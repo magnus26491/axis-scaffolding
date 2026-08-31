@@ -454,9 +454,36 @@ textarea:focus-visible {
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
   margin-bottom:0.75rem;
 }
-.service-card h3, .service-card h2 { margin-bottom:0.6rem; }
+.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.6rem; font-size:1.1rem; }
 .service-card a { color:#e5e7eb; font-weight:600; text-decoration:none; }
 .service-card a:hover { color:#ffffff; }
+/* "Who is this for?" — one line, distinct from the WHAT summary above
+   it, so a card answers two questions instead of one paragraph doing
+   both jobs at once. */
+.service-card-audience {
+  display:block; color:#8e949c; font-size:0.82rem; font-weight:600;
+  margin:-0.3rem 0 0.75rem; text-transform:uppercase; letter-spacing:0.02em;
+}
+/* Same accent Emergency already uses on the homepage decision grid —
+   reused here so the one genuinely time-critical service reads as
+   different wherever it appears, not just on that one card. */
+.service-card-urgent {
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
+  background:rgba(255,50,50,0.06) !important;
+}
+.service-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
+
+/* ── SERVICE GROUPS ──
+   Three functional groups instead of nine equally-weighted cards —
+   the product-design fix, not just a visual one: a visitor should
+   recognise which third of the page is theirs before reading a single
+   card. Each group is a self-contained services-grid with exactly 3
+   cards, so the flex composition system above always renders one full,
+   flush row per group — never an orphan. */
+.services-group + .services-group { margin-top:2.5rem; }
+.services-group-heading { margin-bottom:0.35rem; }
+.services-group-intro { color:#9ca3af; font-size:0.95rem; margin:0 0 1.25rem; }
 
 /* ── SPLIT GRID ── */
 .split-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
