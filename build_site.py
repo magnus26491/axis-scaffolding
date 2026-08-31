@@ -399,50 +399,40 @@ def footer() -> str:
 
 def cookie_ui() -> str:
     return """
-<div id="axis-cookie-bar" style="
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999;
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: 1rem 2rem;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  font-family: Inter, sans-serif;
-">
-  <p style="color:#d1d5db; font-size:0.875rem; max-width:600px; margin:0;">
+<div id="axis-cookie-bar" class="cookie-bar">
+  <p>
     We use cookies to improve your experience and analyse site traffic.
-    By clicking <strong style="color:#fff;">Accept All</strong> you consent
+    By clicking <strong>Accept All</strong> you consent
     to our use of cookies.
-    <a href="/privacy-policy" style="color:#c8cdd4; text-decoration:underline;">
-      Read our Privacy Policy
-    </a>
+    <a href="/privacy-policy">Read our Privacy Policy</a>
   </p>
-  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
-    <button id="axis-cookie-accept" style="
-      background: linear-gradient(135deg, #e8eaed, #c8cdd4); color:#000; border:none; border-radius:9999px;
-      padding:0.5rem 1.25rem; font-weight:700; font-size:0.875rem;
-      cursor:pointer; white-space:nowrap;
-    ">Accept All</button>
-    <button id="axis-cookie-reject" style="
-      background:transparent; color:#fff;
-      border:1px solid rgba(255,255,255,0.5);
-      border-radius:9999px; padding:0.5rem 1.25rem;
-      font-size:0.875rem; cursor:pointer; white-space:nowrap;
-    ">Reject Non-Essential</button>
-    <button id="axis-cookie-manage" style="
-      background:none; border:none; color:#9ca3af;
-      font-size:0.875rem; cursor:pointer;
-      text-decoration:underline; padding:0.5rem 0;
-    ">Manage Preferences</button>
+  <div class="cookie-bar-actions">
+    <button id="axis-cookie-accept" class="btn btn-primary">Accept All</button>
+    <button id="axis-cookie-reject" class="btn btn-outline">Reject Non-Essential</button>
+    <button id="axis-cookie-manage" class="btn-manage">Manage Preferences</button>
   </div>
+</div>
+"""
+
+
+def project_lightbox() -> str:
+    # Populated entirely by JS from the clicked .project-item's data-*
+    # attributes — see generate_js(). One instance per page, hidden by
+    # default, works for any project grid (gallery, homepage, related
+    # projects on a service page) without page-specific wiring.
+    return """
+<div id="project-lightbox" class="project-lightbox" hidden role="dialog" aria-modal="true" aria-label="Project photo viewer">
+  <button type="button" class="project-lightbox-prev" aria-label="Previous project">&larr;</button>
+  <button type="button" class="project-lightbox-next" aria-label="Next project">&rarr;</button>
+  <button type="button" class="project-lightbox-close" aria-label="Close">&times;</button>
+  <figure class="project-lightbox-figure">
+    <img class="project-lightbox-img" src="" alt="">
+    <figcaption>
+      <span class="project-lightbox-label"></span>
+      <span class="project-lightbox-meta"></span>
+      <p class="project-lightbox-desc"></p>
+    </figcaption>
+  </figure>
 </div>
 """
 
@@ -532,6 +522,7 @@ def render_page(
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
+  {project_lightbox()}
   <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
@@ -579,12 +570,6 @@ def generate_media_assets() -> None:
                     rgb.resize((w, h), Image.LANCZOS).save(
                         ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=85
                     )
-
-    for idx in range(8, 15):
-        src = ROOT / f"assets/images/gallery-project-{idx}.jpg"
-        if src.exists():
-            with Image.open(src) as im:
-                im.convert("RGB").save(ROOT / f"images/gallery-project-{idx}.webp", format="WEBP", quality=85)
 
     og = Image.new("RGB", (1200, 630), "#0d0d0d")
     draw = ImageDraw.Draw(og)
@@ -659,6 +644,17 @@ def generate_css() -> None:
   --space-xl:  3rem;
   --space-2xl: 4.5rem;
   --space-3xl: 6rem;
+
+  /* V2 Phase 2 — spacing and type scale. Used by the refined nav, card,
+     trust-rail and cookie-banner components below; existing components
+     keep their original hand-tuned values untouched. Independent, named
+     differently, from the --space-3xs..3xl scale above — both are kept,
+     each still has real consumers. */
+  --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-base: 1rem;
+  --text-lg: 1.125rem;  --text-xl: 1.25rem; --text-2xl: 1.5rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -683,7 +679,15 @@ html, body {
 h1,h2,h3,h4,h5,h6 {
   font-family: 'Poppins','Inter',sans-serif;
   color: #ffffff; margin: 0 0 1rem; line-height: 1.2;
+  letter-spacing: -0.01em;
 }
+/* Deliberate type scale — previously every heading below h1 fell back to
+   the browser's UA default size, so hierarchy was accidental rather than
+   designed. */
+h1 { font-size: clamp(2.25rem, 4.5vw, 3.25rem); font-weight: 700; }
+h2 { font-size: clamp(1.65rem, 3vw, 2.15rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.005em; }
+h4 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0; }
 p { margin: 0 0 1rem; color: #e5e7eb; }
 li, td { color: #e5e7eb; }
 small, .muted { color: #9ca3af; }
@@ -764,11 +768,19 @@ textarea:focus-visible {
   display:flex; justify-content:center;
   align-items:center; gap:1.2rem;
 }
-.site-nav a {
-  text-decoration:none; color:#ffffff;
-  font-weight:600; transition:color 0.2s;
+.site-nav a:not(.cta-pill) {
+  position:relative; text-decoration:none; color:#ffffff;
+  font-weight:600; font-size:var(--text-sm); transition:color 0.2s;
+  padding-bottom:2px;
 }
-.site-nav a:hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill)::after {
+  content:''; position:absolute; left:0; right:100%; bottom:0;
+  height:1px; background:var(--silver);
+  transition:right 0.2s ease;
+}
+.site-nav a:not(.cta-pill):hover { color: #c8cdd4; }
+.site-nav a:not(.cta-pill):hover::after,
+.site-nav a:not(.cta-pill):focus-visible::after { right:0; }
 .menu-toggle {
   display:none; width:48px; height:48px;
   border:1px solid rgba(255,255,255,0.4);
@@ -791,14 +803,29 @@ textarea:focus-visible {
   justify-content:center; border:2px solid transparent;
   cursor:pointer; transition: all 0.2s ease;
 }
-.btn-primary {
+.btn-primary,
+.cta-pill {
+  position:relative; overflow:hidden;
   background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
   color: #000000 !important; font-weight: 700 !important; border: none !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 15px rgba(200,205,212,0.15) !important;
 }
-.btn-primary:hover {
+.btn-primary::before,
+.cta-pill::before {
+  content:''; position:absolute; top:0; bottom:0; left:-60%; width:40%;
+  background:linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform:skewX(-20deg) translateX(-20%);
+  transition:transform 0.5s ease; pointer-events:none;
+}
+.btn-primary:hover,
+.cta-pill:hover {
   background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
   transform: translateY(-1px) !important;
+}
+.btn-primary:hover::before,
+.cta-pill:hover::before { transform:skewX(-20deg) translateX(340%); }
+@media (prefers-reduced-motion:reduce) {
+  .btn-primary::before, .cta-pill::before { display:none; }
 }
 .btn-outline { border-color:#fff; color:#fff; background:transparent; }
 .btn-outline:hover { background:rgba(255,255,255,0.1); }
@@ -809,15 +836,11 @@ textarea:focus-visible {
 .hero-cta-row { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; }
 
 .cta-pill {
-  background: linear-gradient(135deg, #e8eaed 0%, #9ba3ab 40%, #c8cdd4 60%, #e2e5e8 100%) !important;
-  color: #000000 !important; font-weight: 700 !important;
+  /* Colour/hover/sweep are on the shared .btn-primary,.cta-pill rules
+     above — this just supplies the pill-specific box model, since
+     .cta-pill is used standalone (not combined with .btn) in the nav. */
   padding: 0.65rem 1.4rem !important; border-radius: 9999px !important;
   text-decoration: none !important; display: inline-block !important;
-  border: none !important;
-}
-.cta-pill:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #c8cdd4 40%, #e2e5e8 100%) !important;
-  transform: translateY(-1px) !important; color: #000000 !important;
 }
 
 /* ── HERO ── */
@@ -845,23 +868,34 @@ textarea:focus-visible {
 .hero p { color:#fff; font-size:1.1rem; }
 .hero-phone a { color:#fff; text-decoration:underline; font-weight:600; }
 
-/* Hero trust badges
-   Root cause of the "badges don't read as one balanced, centred
-   group" report: every other row in the hero (h1, p, .hero-cta-row)
-   is explicitly centred, but this flex row had no justify-content,
-   so it defaulted to flex-start — left-aligned under a centred
-   headline/CTA row above it. Fixed as a group property, not by
-   nudging individual badges. */
+/* Hero trust rail — small structural "spec plate" tags rather than soft
+   pills: flat corners, a thin silver top edge, hairline dividers between
+   them, closer to an engineering nameplate than a marketing badge.
+   (Design merged from Phase 2's premium redesign of this component.)
+
+   display:inline-flex, not flex: a plain `flex` block still stretches
+   to the full width of .hero-content and, with no justify-content, its
+   flush-together spans sit left-aligned inside that oversized box — the
+   exact "badges don't read as one balanced, centred group" bug the
+   alignment audit fixed, just reintroduced by a different visual
+   treatment of the same element. inline-flex sizes the whole plate to
+   its content and lets it centre as a unit via the parent's
+   text-align:center, the same way the plate's own bordered edge should
+   only wrap its content, not the full hero width. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; justify-content:center;
-  gap:var(--space-2xs); margin-top:var(--space-md);
+  display:inline-flex; flex-wrap:wrap; margin-top:1.75rem;
+  border:1px solid rgba(255,255,255,0.18); border-radius:2px;
+  overflow:hidden; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
 }
 .hero-trust-badges span {
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.22);
-  color:#fff; font-size:0.82rem; font-weight:600;
-  padding:0.3rem 0.8rem; border-radius:9999px;
+  position:relative; background:rgba(0,0,0,0.35);
+  border-top:2px solid var(--silver);
+  border-left:1px solid rgba(255,255,255,0.14);
+  color:#fff; font-size:var(--text-xs); font-weight:600;
+  letter-spacing:0.03em; text-transform:uppercase;
+  padding:0.5rem 0.9rem;
 }
+.hero-trust-badges span:first-child { border-left:none; }
 
 /* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
    Axis's structural signature: a large, sparse hex mesh (steel-frame
@@ -889,59 +923,66 @@ textarea:focus-visible {
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
 .section-intro { color:#9ca3af; margin-bottom:1.5rem; }
 
-/* ── TRUST BAR ── */
+/* ── TRUST RAIL ── */
 .trust-bar {
-  background:rgba(255,255,255,0.03) !important;
-  border-top:1px solid rgba(255,255,255,0.07);
-  border-bottom:1px solid rgba(255,255,255,0.07);
-  padding:2rem 0; overflow-x:auto;
+  background:var(--surface) !important;
+  border-top:1px solid var(--border-strong);
+  border-bottom:1px solid var(--border-strong);
+  padding:var(--space-8) 0; overflow-x:auto;
 }
-.trust-items { display:flex; gap:3rem; justify-content:center; flex-wrap:wrap; }
-.trust-item { display:flex; flex-direction:column; align-items:center; gap:0.25rem; }
-.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:2rem; font-weight:700; color:#ffffff; }
-.trust-label { color:#9ca3af; font-size:0.85rem; text-align:center; }
+.trust-items { display:flex; gap:0; justify-content:center; flex-wrap:wrap; }
+.trust-item {
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-1);
+  padding:0 var(--space-8); border-left:1px solid var(--border);
+}
+.trust-item:first-child { border-left:none; }
+.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:1.9rem; font-weight:700; color:#ffffff; letter-spacing:-0.02em; }
+.trust-label { color:#9ca3af; font-size:var(--text-xs); text-align:center; text-transform:uppercase; letter-spacing:0.04em; }
+@media (max-width:768px) {
+  .trust-item { padding:0 var(--space-4); }
+}
 
-/* ── GLASS CARDS ── */
-.glass-card,
+/* ── CARD SYSTEM ──
+   Default surface is solid and architectural — a deliberate steel panel
+   with a bright top edge, not glass. Heavy blur/saturate/brightness glass
+   used to be applied to every card on the site; that's now reserved for
+   .quote-form-card alone (the one genuine floating/input panel). Solid
+   cards read as material, not as a translucent overlay effect. */
 .service-card,
 .testimonial-card,
 .contact-card,
 .social-card,
+.decision-card {
+  position: relative;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 2px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.service-card:hover,
+.testimonial-card:hover,
+.social-card:hover,
+.decision-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--silver) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45), 0 16px 36px rgba(0,0,0,0.4) !important;
+}
+
+/* Reserved glass — the quote form only. */
+.glass-card,
 .quote-form-card {
   position: relative; overflow: hidden;
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(110%) !important;
-  border-radius: 16px !important;
+  background: rgba(255,255,255,0.045) !important;
+  border: 1px solid var(--border-strong) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border-radius: 14px !important;
   box-shadow:
     0 4px 6px rgba(0,0,0,0.4),
     0 10px 40px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.2) !important;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
-}
-.glass-card::before,
-.service-card::before,
-.testimonial-card::before {
-  content:''; position:absolute; inset:0; border-radius:inherit;
-  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%,rgba(255,255,255,0.02) 100%);
-  pointer-events:none; z-index:0;
-}
-.glass-card > *,
-.service-card > *,
-.testimonial-card > * { position:relative; z-index:1; }
-.glass-card:hover,
-.service-card:hover,
-.testimonial-card:hover,
-.social-card:hover {
-  transform: translateY(-6px) !important;
-  border-color: rgba(255,255,255,0.28) !important;
-  box-shadow:
-    0 8px 12px rgba(0,0,0,0.5),
-    0 20px 60px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    0 0 0 1px rgba(255,255,255,0.06) !important;
+    inset 0 1px 0 rgba(255,255,255,0.10) !important;
 }
 .quote-form-card:hover { transform: none !important; }
 
@@ -1000,47 +1041,139 @@ textarea:focus-visible {
   padding:0.9rem; border-radius:0.75rem; color:#d1d5db;
 }
 
-/* ── PROJECTS GRID ──
-   Interim composition fix only. The homepage's 6-project preview
-   divides evenly into 3-column rows either way (6 = 3+3 desktop, 3+3
-   tablet, 6×1 mobile — no orphan). The full gallery page's 14 items
-   don't (14 = 3+3+3+3+2 at 3 columns), so this uses the same
-   percentage-based system as the services grid — full rows flush
-   with the container edges, a short trailing row centred rather than
-   left-stuck.
-   This is deliberately NOT the featured-item + editorial-grid
-   treatment the gallery page's 14 photos would benefit from (a
-   uniform matrix isn't the best composition for 14 real, unequal
-   project photos) — that richer layout already exists, built for
-   Phase 3 (unmerged PR #21, which adds a featured card + accessible
-   lightbox on top of the same PROJECTS data). Rebuilding it here
-   would duplicate that work and conflict with it on merge. This PR
-   only makes the current simple grid's row composition deliberate;
-   see ALIGNMENT_SYSTEM.md for the merge-order note. */
-.projects-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
-.projects-grid .project-item { flex:0 0 100%; }
-@media (min-width:769px) {
-  .projects-grid .project-item { flex-basis:calc(33.333% - 0.667rem); }
+/* ── PROJECTS — EDITORIAL CARDS ──
+   Photography does the work here, not card chrome: flat corners, no
+   glass, no gradient overlay, no icons. Metadata (label + location) is
+   always visible below the photo — it used to live in a figcaption that
+   only appeared on :hover, which meant it was permanently invisible on
+   touch devices (no hover state). "View project" is the one genuinely
+   supplementary hover affordance; everything a customer actually needs
+   to evaluate the project is visible without interaction. */
+.projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+.project-item { position:relative; }
+.project-item-media {
+  position:relative; display:block; overflow:hidden; width:100%;
+  aspect-ratio:4/5; background:var(--surface-2);
+  border-top:2px solid var(--border-strong);
+  border-left:none; border-right:none; border-bottom:none;
+  padding:0; margin:0; font:inherit; text-align:inherit; cursor:pointer;
 }
-/* .project-item is a <figure> — reset the browser's default figure
-   margin (1em 40px). Left unset, that 40px-per-side margin doesn't
-   collapse in a flex/grid row: it silently ate into each card's
-   available width, which is what caused the fixed percentage basis
-   above to overflow its row and wrap early instead of filling it
-   edge-to-edge. Independent of, and pre-dating, this composition
-   fix — the same default margin was already present under the
-   original CSS Grid version of this component. */
-.project-item { position:relative; overflow:hidden; border-radius:1rem; margin:0; }
-.project-item img { width:100%; height:100%; object-fit:cover; }
-.project-item figcaption {
-  position:absolute; inset:auto 0 0 0; padding:0.8rem;
-  background:linear-gradient(transparent,rgba(0,0,0,0.8));
-  color:#fff; transform:translateY(100%); transition:transform 0.25s ease;
+.project-item-media img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform 0.5s ease;
 }
-.project-item:hover figcaption { transform:translateY(0); }
-.project-item figcaption span { display:block; font-weight:700; }
-.project-item figcaption small { color:#f5f5f5; }
+.project-item-media:hover img,
+.project-item-media:focus-visible img { transform:scale(1.04); }
+.project-item-media::after {
+  content:'View project \2192'; position:absolute; right:var(--space-3); bottom:var(--space-3);
+  background:rgba(0,0,0,0.55); border:1px solid var(--silver); color:#fff;
+  font-size:var(--text-xs); font-weight:600; letter-spacing:0.02em;
+  padding:0.35rem 0.7rem; opacity:0; transform:translateY(6px);
+  transition:opacity 0.2s ease, transform 0.2s ease; pointer-events:none;
+}
+.project-item-media:hover::after,
+.project-item-media:focus-visible::after { opacity:1; transform:translateY(0); }
+.project-item figcaption { padding:var(--space-3) 0 0; }
+.project-item-label { display:block; color:#fff; font-weight:600; font-size:var(--text-base); }
+.project-item-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-item-meta a { color:var(--text-muted); text-decoration:underline; text-underline-offset:2px; }
+.project-item-meta a:hover { color:var(--silver); }
+.project-item-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-item-service-link {
+  display:inline-block; color:var(--silver); font-size:var(--text-xs); font-weight:600;
+  text-decoration:none; margin-top:var(--space-2);
+}
+.project-item-service-link:hover { text-decoration:underline; }
+
+/* Homepage: one large featured project + secondaries, not a wall of
+   identical tiles. */
+.projects-feature-grid {
+  display:grid; grid-template-columns:1.4fr 1fr; gap:var(--space-8) var(--space-6);
+  align-items:start;
+}
+.projects-feature-grid .project-item-featured .project-item-media { aspect-ratio:4/3; }
+.projects-feature-secondary { display:flex; flex-direction:column; gap:var(--space-8); }
+
+/* /gallery: one large featured project ahead of the filterable grid —
+   same "photography first, cards second" principle as the homepage,
+   applied to the full portfolio page. */
+.section-eyebrow {
+  color:var(--silver); font-size:var(--text-xs); font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em; margin:0 0 var(--space-3);
+}
+.projects-grid-heading { margin-top:0; }
+.projects-feature-single { margin-bottom:var(--space-12); max-width:900px; }
+.projects-feature-single .project-item-media { aspect-ratio:16/10; }
+@media (max-width:640px) {
+  .projects-feature-single .project-item-media { aspect-ratio:4/3; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .project-item-media img { transition:none; }
+  .project-item-media::after { transition:none; }
+}
 .centered { text-align:center; }
+
+/* ── PROJECT FILTERS ── */
+.project-filters { display:flex; flex-wrap:wrap; gap:0.6rem; margin:var(--space-6) 0 var(--space-8); }
+.project-filter-btn {
+  background:transparent; border:1px solid var(--border-strong); color:var(--text-secondary);
+  border-radius:9999px; padding:0.45rem 1.1rem; font-size:var(--text-sm); font-weight:600;
+  cursor:pointer; transition:border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.project-filter-btn:hover { border-color:var(--silver); color:#fff; }
+.project-filter-btn[aria-pressed="true"] {
+  background:var(--silver); border-color:var(--silver); color:#000;
+}
+.project-item[hidden] { display:none; }
+
+/* ── PROJECT LIGHTBOX ──
+   Full-size view of the real photograph. Every control is always
+   rendered (no hover-only affordances) — close/prev/next are plain
+   buttons, always visible and keyboard-reachable while open. */
+.project-lightbox {
+  position:fixed; inset:0; z-index:100000;
+  background:rgba(0,0,0,0.94);
+  display:flex; align-items:center; justify-content:center;
+  padding:var(--space-6);
+}
+.project-lightbox[hidden] { display:none; }
+body.lightbox-open { overflow:hidden; }
+.project-lightbox-figure {
+  max-width:min(1100px, 92vw); max-height:92vh; margin:0;
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-4);
+}
+.project-lightbox-img {
+  max-width:100%; max-height:72vh; width:auto; height:auto;
+  object-fit:contain; border-top:2px solid var(--silver); display:block;
+}
+.project-lightbox-figure figcaption { text-align:center; max-width:640px; }
+.project-lightbox-label { display:block; color:#fff; font-weight:600; font-size:var(--text-lg); }
+.project-lightbox-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-lightbox-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-lightbox-close,
+.project-lightbox-prev,
+.project-lightbox-next {
+  position:fixed; background:rgba(10,10,10,0.7); border:1px solid var(--border-strong);
+  color:#fff; border-radius:50%; width:48px; height:48px; font-size:1.4rem;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:border-color 0.2s ease, background 0.2s ease;
+}
+.project-lightbox-close:hover,
+.project-lightbox-prev:hover,
+.project-lightbox-next:hover { border-color:var(--silver); background:rgba(10,10,10,0.9); }
+.project-lightbox-close { top:var(--space-6); right:var(--space-6); }
+.project-lightbox-prev { left:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-next { right:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-prev:disabled,
+.project-lightbox-next:disabled { opacity:0.3; cursor:default; }
+@media (max-width:640px) {
+  .project-lightbox { padding:var(--space-4); }
+  .project-lightbox-prev,.project-lightbox-next { width:40px; height:40px; font-size:1.1rem; }
+  .project-lightbox-close { width:40px; height:40px; top:var(--space-3); right:var(--space-3); }
+  .project-lightbox-prev { left:var(--space-2); }
+  .project-lightbox-next { right:var(--space-2); }
+}
 
 /* ── TESTIMONIALS ── */
 .testimonial-carousel { overflow:hidden; }
@@ -1208,6 +1341,41 @@ textarea:focus-visible {
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#6b7280; font-size:0.78rem; }
 
+/* ── COOKIE BAR ── */
+.cookie-bar {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:99999;
+  background:var(--surface); border-top:2px solid var(--border-strong);
+  padding:var(--space-4) var(--space-8); flex-wrap:wrap;
+  align-items:center; justify-content:space-between; gap:var(--space-4);
+}
+.cookie-bar p { color:var(--text-secondary); font-size:var(--text-sm); max-width:600px; margin:0; }
+.cookie-bar p strong { color:#fff; }
+.cookie-bar p a { color:var(--silver); text-decoration:underline; }
+.cookie-bar-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); align-items:center; }
+.cookie-bar-actions .btn-manage {
+  background:none; border:none; color:var(--text-muted);
+  font-size:var(--text-sm); cursor:pointer; text-decoration:underline; padding:0.5rem 0;
+}
+.cookie-prefs-panel {
+  position:fixed; bottom:80px; left:0; right:0; z-index:99998;
+  background:var(--surface); border-top:1px solid var(--border-strong);
+  padding:var(--space-6) var(--space-8); font-size:var(--text-sm); color:var(--text-secondary);
+}
+.cookie-prefs-panel .cookie-prefs-title { color:#fff; font-weight:600; margin:0 0 var(--space-4); }
+.cookie-prefs-panel .cookie-prefs-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:var(--space-2) 0; border-bottom:1px solid var(--border);
+}
+.cookie-prefs-panel .cookie-prefs-row:last-of-type { border-bottom:none; }
+.cookie-prefs-panel .btn-save-prefs {
+  margin-top:var(--space-4); background:linear-gradient(135deg,#e8eaed,#c8cdd4);
+  color:#000; border:none; border-radius:9999px; padding:0.5rem 1.5rem;
+  font-weight:700; cursor:pointer;
+}
+@media (max-width:768px) {
+  .cookie-bar { padding:var(--space-4); }
+}
+
 /* ── DECISION CARDS ──
    Explicit per-breakpoint composition, not organic reflow — a card's
    width is a defined FRACTION of the row (100%, 33.333%, 20%), so a
@@ -1229,14 +1397,12 @@ textarea:focus-visible {
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
+  /* Background/border/hover come from the shared card system above —
+     this supplies layout (and, below, this component's explicit
+     per-breakpoint composition) only. */
   flex:0 0 100%;
-  background:rgba(255,255,255,0.04) !important;
-  border:1px solid rgba(255,255,255,0.12) !important;
-  backdrop-filter:blur(20px) !important;
-  -webkit-backdrop-filter:blur(20px) !important;
-  border-radius:1.25rem; padding:1.75rem 1.25rem 1.5rem;
+  padding:1.75rem 1.25rem 1.5rem;
   text-decoration:none; color:#ffffff;
-  transition:border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   display:flex; flex-direction:column; gap:0.5rem;
 }
 @media (min-width:769px) {
@@ -1245,16 +1411,12 @@ textarea:focus-visible {
 @media (min-width:1025px) {
   .decision-card { flex-basis:calc(20% - 1rem); }
 }
-.decision-card:hover {
-  border-color:rgba(255,255,255,0.32) !important;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;
-  transform:translateY(-4px);
-}
 .decision-card-urgent {
-  border-color:rgba(255,100,100,0.3) !important;
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
   background:rgba(255,50,50,0.06) !important;
 }
-.decision-card-urgent:hover { border-color:rgba(255,120,120,0.5) !important; }
+.decision-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
 /* "Not Sure" is a deliberately different job (an open catch-all, not
    a category) — a subtly distinct treatment so its position in the
    layout (whatever row it lands on) reads as intentional rather than
@@ -1318,9 +1480,10 @@ textarea:focus-visible {
 /* ── MOBILE STICKY CTA BAR ── */
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
-  z-index:9999; background:#1a1a2e; padding:0;
+  z-index:9999; background:var(--surface-3); padding:0;
   padding-bottom:env(safe-area-inset-bottom);
-  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.3);
+  border-top:2px solid var(--border-strong);
+  height:56px; box-shadow:0 -2px 10px rgba(0,0,0,0.4);
 }
 .mobile-cta-bar .cta-buttons { display:flex; height:100%; }
 .mobile-cta-bar .btn-call,
@@ -1329,27 +1492,54 @@ textarea:focus-visible {
   gap:0.5rem; font-size:16px; font-weight:700;
   text-decoration:none; transition:background 0.2s ease;
 }
-.mobile-cta-bar .btn-call { background:#4CAF50; color:#ffffff; }
-.mobile-cta-bar .btn-quote { background:#c8cdd4; color:#000000; }
+/* Call keeps a distinct (desaturated, on-brand-darkened) green — a
+   deliberate functional exception, not a decorative one: call vs. quote
+   need to read as two different actions at a glance on the one sticky
+   bar every mobile visitor sees on every page. */
+.mobile-cta-bar .btn-call { background:#2f6b46; color:#ffffff; border-right:1px solid var(--border); }
+.mobile-cta-bar .btn-quote { background:var(--silver); color:#000000; }
 .mobile-cta-bar svg { width:18px; height:18px; }
 @media (max-width:768px) { .mobile-cta-bar { display:flex; } }
 
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
   .split-grid,.two-col { grid-template-columns:1fr; }
+  /* .decision-grid is not a CSS Grid any more (see the deliberate
+     flex-based composition system above, with its own min-width media
+     queries) — no grid-template-columns override belongs here. */
+  .projects-feature-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:row; }
+  .projects-feature-secondary .project-item { flex:1; }
+}
+@media (max-width:640px) {
+  .projects-grid { grid-template-columns:1fr; }
+  .projects-feature-secondary { flex-direction:column; }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
   .nav-phone-mobile { display:inline-flex; align-items:center; }
   .nav-phone-desktop { display:none; }
   .site-nav {
-    position:fixed; inset:0 0 0 35%;
-    background:rgba(0,0,0,0.97); backdrop-filter:blur(20px);
-    padding:6rem 1.5rem 1.5rem; display:flex;
-    flex-direction:column; align-items:flex-start;
+    /* Deliberately not "inset:0 0 0 30%": .site-header has a
+       backdrop-filter, which creates a new containing block for
+       position:fixed descendants — bottom:0 would then resolve against
+       the ~90px header instead of the viewport, leaving the drawer only
+       as tall as the header. Explicit vh sizing sidesteps that (vh units
+       are always viewport-relative regardless of containing block). */
+    position:fixed; top:0; right:0; left:30%;
+    height:100vh; height:100dvh; overflow-y:auto;
+    background:var(--surface); border-left:1px solid var(--border-strong);
+    padding:6rem var(--space-6) var(--space-6); display:flex;
+    flex-direction:column; align-items:stretch; gap:0;
     transform:translateX(100%); transition:transform 0.3s ease;
   }
   .site-nav.open { transform:translateX(0); }
+  .site-nav a:not(.cta-pill) {
+    width:100%; padding:var(--space-4) 0;
+    border-bottom:1px solid var(--border); font-size:var(--text-lg);
+  }
+  .site-nav a:not(.cta-pill)::after { display:none; }
+  .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
   .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
@@ -1472,6 +1662,140 @@ def generate_js() -> None:
     });
   });
 
+  const projectFilters = document.querySelector('.project-filters');
+  if (projectFilters) {
+    // Scoped to the grid, not project-item-featured — a page's single
+    // editorial "featured" card (outside .projects-grid) stays visible
+    // regardless of the active filter; it's a fixed editorial choice,
+    // not part of the filterable set.
+    const items = document.querySelectorAll('.projects-grid .project-item');
+    projectFilters.addEventListener('click', (event) => {
+      const btn = event.target.closest('.project-filter-btn');
+      if (!btn) return;
+      projectFilters.querySelectorAll('.project-filter-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      const filter = btn.dataset.filter;
+      items.forEach((item) => {
+        item.hidden = filter !== 'all' && item.dataset.category !== filter;
+      });
+    });
+  }
+
+  (function projectLightbox() {
+    const lightbox = document.getElementById('project-lightbox');
+    if (!lightbox) return;
+    const imgEl = lightbox.querySelector('.project-lightbox-img');
+    const labelEl = lightbox.querySelector('.project-lightbox-label');
+    const metaEl = lightbox.querySelector('.project-lightbox-meta');
+    const descEl = lightbox.querySelector('.project-lightbox-desc');
+    const prevBtn = lightbox.querySelector('.project-lightbox-prev');
+    const nextBtn = lightbox.querySelector('.project-lightbox-next');
+    const closeBtn = lightbox.querySelector('.project-lightbox-close');
+    const triggers = document.querySelectorAll('.project-item-media');
+    if (!triggers.length) return;
+
+    let items = [];
+    let idx = 0;
+    let lastFocused = null;
+
+    function visibleItems() {
+      return Array.from(document.querySelectorAll('.project-item')).filter((el) => !el.hidden);
+    }
+
+    function preload(item) {
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      if (!srcImg) return;
+      const pre = new Image();
+      pre.src = srcImg.currentSrc || srcImg.src;
+    }
+
+    function render() {
+      const item = items[idx];
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      imgEl.src = srcImg.currentSrc || srcImg.src;
+      imgEl.alt = srcImg.alt;
+      labelEl.textContent = item.dataset.label || '';
+      metaEl.textContent = item.dataset.location ? (item.dataset.location + ' · Essex') : '';
+      descEl.textContent = item.dataset.desc || '';
+      const multiple = items.length > 1;
+      prevBtn.hidden = !multiple;
+      nextBtn.hidden = !multiple;
+      // Lazy-load neighbours only — not all 14 photos up front.
+      preload(items[(idx - 1 + items.length) % items.length]);
+      preload(items[(idx + 1) % items.length]);
+    }
+
+    function open(item) {
+      items = visibleItems();
+      idx = items.indexOf(item);
+      if (idx === -1) idx = 0;
+      lastFocused = document.activeElement;
+      lightbox.hidden = false;
+      document.body.classList.add('lightbox-open');
+      render();
+      closeBtn.focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    function close() {
+      lightbox.hidden = true;
+      document.body.classList.remove('lightbox-open');
+      document.removeEventListener('keydown', onKeydown);
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    function show(delta) {
+      if (items.length < 2) return;
+      idx = (idx + delta + items.length) % items.length;
+      render();
+    }
+
+    function onKeydown(event) {
+      if (event.key === 'Escape') {
+        close();
+      } else if (event.key === 'ArrowRight') {
+        show(1);
+      } else if (event.key === 'ArrowLeft') {
+        show(-1);
+      } else if (event.key === 'Tab') {
+        const focusable = Array.from(lightbox.querySelectorAll('button')).filter((b) => !b.hidden);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', () => open(btn.closest('.project-item')));
+    });
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => show(-1));
+    nextBtn.addEventListener('click', () => show(1));
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    let touchStartX = null;
+    lightbox.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', (event) => {
+      if (touchStartX === null) return;
+      const dx = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) show(dx > 0 ? -1 : 1);
+      touchStartX = null;
+    }, { passive: true });
+  })();
+
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
   let idx = 0;
@@ -1571,22 +1895,18 @@ def generate_js() -> None:
       if (existing) { existing.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'axis-cookie-prefs';
-      panel.style.cssText = 'position:fixed;bottom:80px;left:0;right:0;z-index:99998;' +
-        'background:rgba(15,15,15,0.97);border-top:1px solid rgba(255,255,255,0.1);' +
-        'padding:1.5rem 2rem;font-family:Inter,sans-serif;color:#d1d5db;font-size:0.875rem;';
-      panel.innerHTML = '<p style="color:#fff;font-weight:600;margin:0 0 1rem;">Cookie Preferences</p>' +
-        '<div style="display:flex;flex-direction:column;gap:0.75rem;">' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+      panel.className = 'cookie-prefs-panel';
+      panel.innerHTML = '<p class="cookie-prefs-title">Cookie Preferences</p>' +
+        '<div>' +
+        '<label class="cookie-prefs-row">' +
         '<span>Necessary <span style="color:#6b7280;font-size:0.75rem;">(always on)</span></span>' +
         '<input type="checkbox" checked disabled></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Analytics</span><input type="checkbox" id="axis-pref-analytics"></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Marketing</span><input type="checkbox" id="axis-pref-marketing"></label>' +
         '</div>' +
-        '<button id="axis-pref-save" style="margin-top:1rem;background:linear-gradient(135deg,#e8eaed,#c8cdd4);color:#000;' +
-        'border:none;border-radius:9999px;padding:0.5rem 1.5rem;font-weight:700;cursor:pointer;">' +
-        'Save Preferences</button>';
+        '<button id="axis-pref-save" class="btn-save-prefs">Save Preferences</button>';
       document.body.appendChild(panel);
       var save = document.getElementById('axis-pref-save');
       if (save) {
@@ -1704,38 +2024,105 @@ def generate_js() -> None:
     write("assets/js/main.js", js)
 
 
-PROJECT_ROWS = [
-    ("project-1.webp",         "Residential Scaffolding",         "Benfleet",       "Full perimeter scaffold for roof replacement on a detached house."),
-    ("project-2.webp",         "Commercial Scaffolding",          "Canvey Island",  "Multi-elevation access scaffold for a commercial refurbishment."),
-    ("project-3.webp",         "Shopfront Access Scaffold",       "Rayleigh",       "Single-elevation scaffold for shopfront rendering and signage work."),
-    ("project-4.webp",         "Temporary Roofing Scaffold",      "Southend-on-Sea","Scaffold with temporary roof cover to protect during roof replacement."),
-    ("project-5.webp",         "Roof Scaffolding",                "Basildon",       "Roof-level scaffold for chimney repointing and ridge tile replacement."),
-    ("project-6.webp",         "Domestic Scaffolding",            "Chelmsford",     "Rear-elevation scaffold for extension construction access."),
-    ("project-7.webp",         "Residential Scaffolding",         "Wickford",       "Full scaffold erected for a complete re-roofing project."),
+CATEGORY_LABELS = {"residential": "Residential", "roofing": "Roofing", "commercial": "Commercial"}
+
+# Every entry here is a real, existing Axis project photograph. slug maps to
+# images/{slug}.webp (+ {slug}-480w/-768w/-1080w.webp responsive variants,
+# generated once from the true-resolution originals archived at
+# images/originals/ — see the image pipeline notes in the PR). category is
+# used only for the Projects-page filter UI (grouped from the existing
+# label text, nothing invented); area_slug/service_slug link each project
+# to its real area/service page where one exists.
+PROJECTS = [
+    {"slug": "project-1", "label": "Residential Scaffolding", "location": "Benfleet", "area_slug": "benfleet",
+     "desc": "Full perimeter scaffold for roof replacement on a detached house.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 1080, "h": 721},
+    {"slug": "project-2", "label": "Commercial Scaffolding", "location": "Canvey Island", "area_slug": "canvey-island",
+     "desc": "Multi-elevation access scaffold for a commercial refurbishment.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-3", "label": "Shopfront Access Scaffold", "location": "Rayleigh", "area_slug": "rayleigh",
+     "desc": "Single-elevation scaffold for shopfront rendering and signage work.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 1080, "h": 1350},
+    {"slug": "project-4", "label": "Temporary Roofing Scaffold", "location": "Southend-on-Sea", "area_slug": "southend",
+     "desc": "Scaffold with temporary roof cover to protect during roof replacement.",
+     "category": "roofing", "service_slug": "temporary-roofing", "w": 640, "h": 800},
+    {"slug": "project-5", "label": "Roof Scaffolding", "location": "Basildon", "area_slug": "basildon",
+     "desc": "Roof-level scaffold for chimney repointing and ridge tile replacement.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 1080, "h": 1440},
+    {"slug": "project-6", "label": "Domestic Scaffolding", "location": "Chelmsford", "area_slug": "chelmsford",
+     "desc": "Rear-elevation scaffold for extension construction access.",
+     "category": "residential", "service_slug": "domestic-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-7", "label": "Residential Scaffolding", "location": "Wickford", "area_slug": "wickford",
+     "desc": "Full scaffold erected for a complete re-roofing project.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 640, "h": 800},
+    {"slug": "project-8", "label": "Roof Scaffolding", "location": "Hadleigh", "area_slug": "hadleigh",
+     "desc": "Scaffold for roof and roofline replacement on a semi-detached property.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-9", "label": "Domestic Scaffolding", "location": "Leigh-on-Sea", "area_slug": "leigh-on-sea",
+     "desc": "Single-elevation domestic scaffold for fascia and soffit replacement.",
+     "category": "residential", "service_slug": "domestic-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-10", "label": "Residential Scaffolding", "location": "Thundersley", "area_slug": "thundersley",
+     "desc": "Full perimeter scaffold for a complete exterior renovation project.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-11", "label": "Commercial Scaffolding", "location": "Rayleigh", "area_slug": "rayleigh",
+     "desc": "Commercial scaffold erected for building envelope maintenance works.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-12", "label": "Render Scaffold", "location": "Benfleet", "area_slug": "benfleet",
+     "desc": "Scaffold providing full access for external render replacement.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 720, "h": 1280},
+    {"slug": "project-13", "label": "Extension Scaffold", "location": "Chelmsford", "area_slug": "chelmsford",
+     "desc": "Side and rear scaffold to support a two-storey extension build.",
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-14", "label": "Roof Scaffolding", "location": "Rochford", "area_slug": "rochford",
+     "desc": "Roof scaffold for full tile replacement and chimney repointing.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
 ]
 
-GALLERY_ROWS = PROJECT_ROWS + [
-    ("gallery-project-8.webp",  "Roof Scaffolding",               "Hadleigh",       "Scaffold for roof and roofline replacement on a semi-detached property."),
-    ("gallery-project-9.webp",  "Domestic Scaffolding",           "Leigh-on-Sea",   "Single-elevation domestic scaffold for fascia and soffit replacement."),
-    ("gallery-project-10.webp", "Residential Scaffolding",        "Thundersley",    "Full perimeter scaffold for a complete exterior renovation project."),
-    ("gallery-project-11.webp", "Commercial Scaffolding",         "Rayleigh",       "Commercial scaffold erected for building envelope maintenance works."),
-    ("gallery-project-12.webp", "Render Scaffold",                "Benfleet",       "Scaffold providing full access for external render replacement."),
-    ("gallery-project-13.webp", "Extension Scaffold",             "Chelmsford",     "Side and rear scaffold to support a two-storey extension build."),
-    ("gallery-project-14.webp", "Roof Scaffolding",               "Rochford",       "Roof scaffold for full tile replacement and chimney repointing."),
-]
+
+def _project_srcset(slug: str, native_w: int) -> str:
+    widths = [w for w in (480, 768, 1080) if w <= native_w]
+    return ", ".join(f"/images/{slug}-{w}w.webp {w}w" for w in widths)
 
 
-def project_cards(full_gallery: bool = False) -> str:
-    rows = GALLERY_ROWS if full_gallery else PROJECT_ROWS[:6]
-    return "".join(
-        f"""
-<figure class="project-item">
-  <img src="/images/{img}" alt="{label} — {location}, Essex" width="640" height="800" loading="lazy" decoding="async">
-  <figcaption><span>{label}</span><small>{location} — {desc}</small></figcaption>
+SERVICE_NAME_BY_SLUG = {s["slug"]: s["name"] for s in SERVICES}
+
+
+def project_card(p: dict, *, featured: bool = False, eager: bool = False) -> str:
+    srcset = _project_srcset(p["slug"], p["w"])
+    sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" if not featured else "(max-width: 900px) 100vw, 60vw"
+    area_link = f'/areas/{p["area_slug"]}'
+    service_link = f'/services/{p["service_slug"]}'
+    service_name = SERVICE_NAME_BY_SLUG.get(p["service_slug"], p["service_slug"])
+    loading = "eager" if eager else "lazy"
+    fetchpriority = ' fetchpriority="high"' if eager else ""
+    alt = f"{p['label']} in {p['location']}, Essex — real Axis Scaffolding project photograph"
+    # The photo itself opens the lightbox (a button, not a link — it performs
+    # an in-page action, it doesn't navigate); the service relationship gets
+    # its own explicit text link instead of overloading the image's click
+    # target with two different destinations.
+    return f"""
+<figure class="project-item{' project-item-featured' if featured else ''}" data-category="{p['category']}"
+        data-label="{p['label']}" data-location="{p['location']}" data-desc="{p['desc']}"
+        data-service-href="{service_link}" data-service-name="{service_name}" data-area-href="{area_link}">
+  <button type="button" class="project-item-media" aria-label="View full-size photo — {p['label']} in {p['location']}">
+    <img src="/images/{p['slug']}.webp" srcset="{srcset}" sizes="{sizes}"
+         alt="{alt}"
+         width="{p['w']}" height="{p['h']}" loading="{loading}"{fetchpriority} decoding="async">
+  </button>
+  <figcaption>
+    <span class="project-item-label">{p['label']}</span>
+    <span class="project-item-meta"><a href="{area_link}">{p['location']}</a> &middot; Essex</span>
+    {f'<p class="project-item-desc">{p["desc"]}</p>' if featured else ''}
+    <a class="project-item-service-link" href="{service_link}">View {service_name} &rarr;</a>
+  </figcaption>
 </figure>
 """
-        for img, label, location, desc in rows
-    )
+
+
+def project_cards() -> str:
+    # First row (3-col desktop grid) is likely at or above the fold on the
+    # /gallery page, so it's a plausible LCP candidate — don't lazy-load it.
+    return "".join(project_card(p, eager=i < 3) for i, p in enumerate(PROJECTS))
 
 
 def service_cards() -> str:
@@ -1805,7 +2192,7 @@ def testimonials() -> str:
     ]
     return "".join(
         f"""
-<div class="testimonial-card glass-card">
+<div class="testimonial-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
   </div>
@@ -1934,7 +2321,14 @@ def homepage() -> str:
 <section class="section section-dark" aria-labelledby="projects-heading">
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
-    <div class="projects-grid">{project_cards()}</div>
+    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <div class="projects-feature-grid">
+      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
+      <div class="projects-feature-secondary">
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
+      </div>
+    </div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
 </section>
@@ -2350,6 +2744,16 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """ if faq_html else "")
+        + (lambda related=[p for p in PROJECTS if p["service_slug"] == slug][:3]: f"""
+<section class="section section-dark">
+  <div class="container">
+    <h2>Related Projects</h2>
+    <p class="section-intro">Real {service['name'].lower()} completed by Axis.</p>
+    <div class="projects-grid">{"".join(project_card(p) for p in related)}</div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
+  </div>
+</section>
+""" if related else "")()
         + f"""
 <section class="section">
   <div class="container faq-wrap">
@@ -2605,22 +3009,36 @@ def generate_pages() -> None:
             ),
         )
 
+    project_filter_tabs = f"""
+<div class="project-filters" role="group" aria-label="Filter projects by type">
+  <button class="project-filter-btn" data-filter="all" aria-pressed="true">All</button>
+  {"".join(f'<button class="project-filter-btn" data-filter="{key}" aria-pressed="false">{label}</button>' for key, label in CATEGORY_LABELS.items())}
+</div>
+"""
+    gallery_featured = next(p for p in PROJECTS if p["slug"] == "project-3")
+    gallery_rest = [p for p in PROJECTS if p["slug"] != gallery_featured["slug"]]
     gallery_body = (
         inner_hero(
-            [("Home", "/"), ("Gallery", "/gallery")],
-            "Scaffolding Projects Gallery",
-            "View real scaffolding Essex projects completed from our Benfleet base. Explore domestic, commercial and roof access works, then get a free quote today.",
+            [("Home", "/"), ("Projects", "/gallery")],
+            "Real Projects Across South Essex",
+            "Every photograph below is a completed Axis Scaffolding project — no stock imagery. Browse by type or get a free quote for your own job.",
         )
-        + f"""<section class="section section-dark"><div class="container"><h2>Our Recent Projects</h2><div class="projects-grid">{project_cards(full_gallery=True)}</div></div></section>"""
+        + f"""<section class="section section-dark"><div class="container">
+<p class="section-eyebrow">Featured Project</p>
+<div class="projects-feature-single">{project_card(gallery_featured, featured=True, eager=True)}</div>
+<h2 class="projects-grid-heading">The Full Portfolio</h2>
+{project_filter_tabs}
+<div class="projects-grid">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
+</div></section>"""
     )
     write(
         "gallery/index.html",
         render_page(
-            title="Scaffolding Projects Gallery | Axis Scaffolding Essex",
-            desc="Browse scaffolding Essex projects completed by Axis Scaffolding from Rayleigh across domestic and commercial sites. Review our work and get a free quote today.",
+            title="Real Scaffolding Projects Across Essex | Axis Scaffolding",
+            desc="Browse real Axis Scaffolding projects across South Essex — residential, roofing and commercial work, each with its location and project type. Get a free quote today.",
             path="/gallery",
             body=gallery_body,
-            breadcrumb_items=[("Home", "/"), ("Gallery", "/gallery")],
+            breadcrumb_items=[("Home", "/"), ("Projects", "/gallery")],
         ),
     )
 

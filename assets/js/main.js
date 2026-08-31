@@ -94,6 +94,140 @@
     });
   });
 
+  const projectFilters = document.querySelector('.project-filters');
+  if (projectFilters) {
+    // Scoped to the grid, not project-item-featured — a page's single
+    // editorial "featured" card (outside .projects-grid) stays visible
+    // regardless of the active filter; it's a fixed editorial choice,
+    // not part of the filterable set.
+    const items = document.querySelectorAll('.projects-grid .project-item');
+    projectFilters.addEventListener('click', (event) => {
+      const btn = event.target.closest('.project-filter-btn');
+      if (!btn) return;
+      projectFilters.querySelectorAll('.project-filter-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      const filter = btn.dataset.filter;
+      items.forEach((item) => {
+        item.hidden = filter !== 'all' && item.dataset.category !== filter;
+      });
+    });
+  }
+
+  (function projectLightbox() {
+    const lightbox = document.getElementById('project-lightbox');
+    if (!lightbox) return;
+    const imgEl = lightbox.querySelector('.project-lightbox-img');
+    const labelEl = lightbox.querySelector('.project-lightbox-label');
+    const metaEl = lightbox.querySelector('.project-lightbox-meta');
+    const descEl = lightbox.querySelector('.project-lightbox-desc');
+    const prevBtn = lightbox.querySelector('.project-lightbox-prev');
+    const nextBtn = lightbox.querySelector('.project-lightbox-next');
+    const closeBtn = lightbox.querySelector('.project-lightbox-close');
+    const triggers = document.querySelectorAll('.project-item-media');
+    if (!triggers.length) return;
+
+    let items = [];
+    let idx = 0;
+    let lastFocused = null;
+
+    function visibleItems() {
+      return Array.from(document.querySelectorAll('.project-item')).filter((el) => !el.hidden);
+    }
+
+    function preload(item) {
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      if (!srcImg) return;
+      const pre = new Image();
+      pre.src = srcImg.currentSrc || srcImg.src;
+    }
+
+    function render() {
+      const item = items[idx];
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      imgEl.src = srcImg.currentSrc || srcImg.src;
+      imgEl.alt = srcImg.alt;
+      labelEl.textContent = item.dataset.label || '';
+      metaEl.textContent = item.dataset.location ? (item.dataset.location + ' · Essex') : '';
+      descEl.textContent = item.dataset.desc || '';
+      const multiple = items.length > 1;
+      prevBtn.hidden = !multiple;
+      nextBtn.hidden = !multiple;
+      // Lazy-load neighbours only — not all 14 photos up front.
+      preload(items[(idx - 1 + items.length) % items.length]);
+      preload(items[(idx + 1) % items.length]);
+    }
+
+    function open(item) {
+      items = visibleItems();
+      idx = items.indexOf(item);
+      if (idx === -1) idx = 0;
+      lastFocused = document.activeElement;
+      lightbox.hidden = false;
+      document.body.classList.add('lightbox-open');
+      render();
+      closeBtn.focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    function close() {
+      lightbox.hidden = true;
+      document.body.classList.remove('lightbox-open');
+      document.removeEventListener('keydown', onKeydown);
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    function show(delta) {
+      if (items.length < 2) return;
+      idx = (idx + delta + items.length) % items.length;
+      render();
+    }
+
+    function onKeydown(event) {
+      if (event.key === 'Escape') {
+        close();
+      } else if (event.key === 'ArrowRight') {
+        show(1);
+      } else if (event.key === 'ArrowLeft') {
+        show(-1);
+      } else if (event.key === 'Tab') {
+        const focusable = Array.from(lightbox.querySelectorAll('button')).filter((b) => !b.hidden);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', () => open(btn.closest('.project-item')));
+    });
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => show(-1));
+    nextBtn.addEventListener('click', () => show(1));
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    let touchStartX = null;
+    lightbox.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', (event) => {
+      if (touchStartX === null) return;
+      const dx = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) show(dx > 0 ? -1 : 1);
+      touchStartX = null;
+    }, { passive: true });
+  })();
+
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
   let idx = 0;
@@ -193,22 +327,18 @@
       if (existing) { existing.remove(); return; }
       var panel = document.createElement('div');
       panel.id = 'axis-cookie-prefs';
-      panel.style.cssText = 'position:fixed;bottom:80px;left:0;right:0;z-index:99998;' +
-        'background:rgba(15,15,15,0.97);border-top:1px solid rgba(255,255,255,0.1);' +
-        'padding:1.5rem 2rem;font-family:Inter,sans-serif;color:#d1d5db;font-size:0.875rem;';
-      panel.innerHTML = '<p style="color:#fff;font-weight:600;margin:0 0 1rem;">Cookie Preferences</p>' +
-        '<div style="display:flex;flex-direction:column;gap:0.75rem;">' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+      panel.className = 'cookie-prefs-panel';
+      panel.innerHTML = '<p class="cookie-prefs-title">Cookie Preferences</p>' +
+        '<div>' +
+        '<label class="cookie-prefs-row">' +
         '<span>Necessary <span style="color:#6b7280;font-size:0.75rem;">(always on)</span></span>' +
         '<input type="checkbox" checked disabled></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Analytics</span><input type="checkbox" id="axis-pref-analytics"></label>' +
-        '<label style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<label class="cookie-prefs-row">' +
         '<span>Marketing</span><input type="checkbox" id="axis-pref-marketing"></label>' +
         '</div>' +
-        '<button id="axis-pref-save" style="margin-top:1rem;background:linear-gradient(135deg,#e8eaed,#c8cdd4);color:#000;' +
-        'border:none;border-radius:9999px;padding:0.5rem 1.5rem;font-weight:700;cursor:pointer;">' +
-        'Save Preferences</button>';
+        '<button id="axis-pref-save" class="btn-save-prefs">Save Preferences</button>';
       document.body.appendChild(panel);
       var save = document.getElementById('axis-pref-save');
       if (save) {
