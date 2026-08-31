@@ -643,6 +643,22 @@ def generate_css() -> None:
   --silver-light:  var(--accent-light);
   --border:        var(--border-subtle);
   --border-strong: var(--border-glass);
+
+  /* V2.1 spacing scale — the deliberate rhythm tokens the layout/
+     alignment audit introduces. Mapped onto values already in use
+     across the stylesheet (not invented numbers), so applying them
+     doesn't shift anything visually — it just gives the repeated,
+     structural values (section rhythm, grid gaps) a shared name
+     instead of being restated as literals everywhere. */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -829,9 +845,16 @@ textarea:focus-visible {
 .hero p { color:#fff; font-size:1.1rem; }
 .hero-phone a { color:#fff; text-decoration:underline; font-weight:600; }
 
-/* Hero trust badges */
+/* Hero trust badges
+   Root cause of the "badges don't read as one balanced, centred
+   group" report: every other row in the hero (h1, p, .hero-cta-row)
+   is explicitly centred, but this flex row had no justify-content,
+   so it defaulted to flex-start — left-aligned under a centred
+   headline/CTA row above it. Fixed as a group property, not by
+   nudging individual badges. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.5rem;
+  display:flex; flex-wrap:wrap; justify-content:center;
+  gap:var(--space-2xs); margin-top:var(--space-md);
 }
 .hero-trust-badges span {
   background:rgba(255,255,255,0.1);
@@ -860,7 +883,7 @@ textarea:focus-visible {
 }
 
 /* ── SECTIONS ── */
-.section { padding:4.5rem 0; }
+.section { padding:var(--space-2xl) 0; }
 .section-light { background:#0a0a0a !important; }
 .section-dark  { background:#000000 !important; }
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
@@ -922,9 +945,28 @@ textarea:focus-visible {
 }
 .quote-form-card:hover { transform: none !important; }
 
-/* ── SERVICES GRID ── */
+/* ── SERVICES GRID ──
+   Both .services-grid and .service-listing always render the same 9
+   SERVICES entries, so — unlike .decision-grid, which is reused with
+   varying counts — this can be a fully deliberate, zero-ambiguity
+   composition rather than a general-purpose fallback:
+     mobile           (≤768px):     1 column
+     tablet + desktop (≥769px):     3 columns → 9 = 3 + 3 + 3, always
+   A 2-column tablet tier was deliberately rejected: 9 services in 2
+   columns is 4 + 4 + 1, the exact orphan-row problem this system
+   exists to avoid. Percentage-based flex-basis (not a fixed px
+   value) means a full row always sums to exactly 100% and sits flush
+   with the container edges, matching every other section. */
 .services-grid, .service-listing {
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;
+}
+.services-grid .service-card, .service-listing .service-card {
+  flex:0 0 100%;
+}
+@media (min-width:769px) {
+  .services-grid .service-card, .service-listing .service-card {
+    flex-basis:calc(33.333% - 0.667rem);
+  }
 }
 .service-card { padding:1.5rem; }
 .service-icon {
@@ -958,9 +1000,37 @@ textarea:focus-visible {
   padding:0.9rem; border-radius:0.75rem; color:#d1d5db;
 }
 
-/* ── PROJECTS GRID ── */
-.projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
-.project-item { position:relative; overflow:hidden; border-radius:1rem; }
+/* ── PROJECTS GRID ──
+   Interim composition fix only. The homepage's 6-project preview
+   divides evenly into 3-column rows either way (6 = 3+3 desktop, 3+3
+   tablet, 6×1 mobile — no orphan). The full gallery page's 14 items
+   don't (14 = 3+3+3+3+2 at 3 columns), so this uses the same
+   percentage-based system as the services grid — full rows flush
+   with the container edges, a short trailing row centred rather than
+   left-stuck.
+   This is deliberately NOT the featured-item + editorial-grid
+   treatment the gallery page's 14 photos would benefit from (a
+   uniform matrix isn't the best composition for 14 real, unequal
+   project photos) — that richer layout already exists, built for
+   Phase 3 (unmerged PR #21, which adds a featured card + accessible
+   lightbox on top of the same PROJECTS data). Rebuilding it here
+   would duplicate that work and conflict with it on merge. This PR
+   only makes the current simple grid's row composition deliberate;
+   see ALIGNMENT_SYSTEM.md for the merge-order note. */
+.projects-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
+.projects-grid .project-item { flex:0 0 100%; }
+@media (min-width:769px) {
+  .projects-grid .project-item { flex-basis:calc(33.333% - 0.667rem); }
+}
+/* .project-item is a <figure> — reset the browser's default figure
+   margin (1em 40px). Left unset, that 40px-per-side margin doesn't
+   collapse in a flex/grid row: it silently ate into each card's
+   available width, which is what caused the fixed percentage basis
+   above to overflow its row and wrap early instead of filling it
+   edge-to-edge. Independent of, and pre-dating, this composition
+   fix — the same default margin was already present under the
+   original CSS Grid version of this component. */
+.project-item { position:relative; overflow:hidden; border-radius:1rem; margin:0; }
 .project-item img { width:100%; height:100%; object-fit:cover; }
 .project-item figcaption {
   position:absolute; inset:auto 0 0 0; padding:0.8rem;
@@ -1138,13 +1208,28 @@ textarea:focus-visible {
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#6b7280; font-size:0.78rem; }
 
-/* ── DECISION CARDS ── */
+/* ── DECISION CARDS ──
+   Explicit per-breakpoint composition, not organic reflow — a card's
+   width is a defined FRACTION of the row (100%, 33.333%, 20%), so a
+   full row always sums to exactly 100% and sits flush with the
+   container edges (matching every other section on the page), and
+   only a genuinely incomplete trailing row is narrower than 100% and
+   gets centred by justify-content:center. This is deliberately
+   designed for the 5-card homepage instance:
+     mobile  (≤768px):        1 column
+     tablet  (769–1024px):    3 columns  → 5 cards = 3 + 2, centred
+     desktop (≥1025px):       5 columns  → 5 cards = one full row
+   Other pages reuse .decision-grid with 3/4/6 cards; the same
+   percentage system still applies (a full row always reaches the
+   container edges; a short last row centres instead of sticking
+   left) even though the exact column counts above were tuned for 5. */
 .decision-section { padding-bottom:3rem; }
 .decision-grid {
-  display:grid; grid-template-columns:repeat(5,1fr);
+  display:flex; flex-wrap:wrap; justify-content:center;
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
+  flex:0 0 100%;
   background:rgba(255,255,255,0.04) !important;
   border:1px solid rgba(255,255,255,0.12) !important;
   backdrop-filter:blur(20px) !important;
@@ -1153,6 +1238,12 @@ textarea:focus-visible {
   text-decoration:none; color:#ffffff;
   transition:border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   display:flex; flex-direction:column; gap:0.5rem;
+}
+@media (min-width:769px) {
+  .decision-card { flex-basis:calc(33.333% - 0.834rem); }
+}
+@media (min-width:1025px) {
+  .decision-card { flex-basis:calc(20% - 1rem); }
 }
 .decision-card:hover {
   border-color:rgba(255,255,255,0.32) !important;
@@ -1164,6 +1255,16 @@ textarea:focus-visible {
   background:rgba(255,50,50,0.06) !important;
 }
 .decision-card-urgent:hover { border-color:rgba(255,120,120,0.5) !important; }
+/* "Not Sure" is a deliberately different job (an open catch-all, not
+   a category) — a subtly distinct treatment so its position in the
+   layout (whatever row it lands on) reads as intentional rather than
+   "the leftover card". Styling only; copy is unchanged in this PR. */
+.decision-card-open {
+  border-style:dashed !important;
+  border-color:rgba(255,255,255,0.24) !important;
+  background:rgba(255,255,255,0.02) !important;
+}
+.decision-card-open:hover { border-color:rgba(255,255,255,0.4) !important; }
 .decision-icon { width:44px; height:44px; color:#c8cdd4; margin-bottom:0.25rem; }
 .decision-icon svg { width:100%; height:100%; }
 .decision-card h3 { font-size:1.1rem; margin:0; color:#ffffff; }
@@ -1235,9 +1336,7 @@ textarea:focus-visible {
 
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
-  .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(3,1fr); }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
@@ -1257,7 +1356,6 @@ textarea:focus-visible {
 }
 @media (max-width:480px) {
   .social-card { width:100%; min-width:unset; }
-  .decision-grid { grid-template-columns:1fr; }
 }
 @media (max-width:375px) {
   .container { width:calc(100% - 1rem); }
@@ -1783,7 +1881,7 @@ def homepage() -> str:
         <p>Storm damage &middot; urgent access &middot; temporary protection</p>
         <span class="decision-link" aria-hidden="true">Call us now &rarr;</span>
       </a>
-      <a href="/contact" class="decision-card">
+      <a href="/contact" class="decision-card decision-card-open">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <h3>Not Sure</h3>
         <p>Tell us what you're doing and we'll point you in the right direction.</p>
