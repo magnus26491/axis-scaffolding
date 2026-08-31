@@ -415,6 +415,28 @@ def cookie_ui() -> str:
 """
 
 
+def project_lightbox() -> str:
+    # Populated entirely by JS from the clicked .project-item's data-*
+    # attributes — see generate_js(). One instance per page, hidden by
+    # default, works for any project grid (gallery, homepage, related
+    # projects on a service page) without page-specific wiring.
+    return """
+<div id="project-lightbox" class="project-lightbox" hidden role="dialog" aria-modal="true" aria-label="Project photo viewer">
+  <button type="button" class="project-lightbox-prev" aria-label="Previous project">&larr;</button>
+  <button type="button" class="project-lightbox-next" aria-label="Next project">&rarr;</button>
+  <button type="button" class="project-lightbox-close" aria-label="Close">&times;</button>
+  <figure class="project-lightbox-figure">
+    <img class="project-lightbox-img" src="" alt="">
+    <figcaption>
+      <span class="project-lightbox-label"></span>
+      <span class="project-lightbox-meta"></span>
+      <p class="project-lightbox-desc"></p>
+    </figcaption>
+  </figure>
+</div>
+"""
+
+
 def moved_site_banner() -> str:
     return """
 <div id="domain-move-banner" class="domain-move-banner" hidden>
@@ -500,6 +522,7 @@ def render_page(
   <main id="main-content">{body}</main>
   {footer()}
   {cookie_ui()}
+  {project_lightbox()}
   <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
@@ -1029,9 +1052,11 @@ textarea:focus-visible {
 .projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
 .project-item { position:relative; }
 .project-item-media {
-  position:relative; display:block; overflow:hidden;
+  position:relative; display:block; overflow:hidden; width:100%;
   aspect-ratio:4/5; background:var(--surface-2);
   border-top:2px solid var(--border-strong);
+  border-left:none; border-right:none; border-bottom:none;
+  padding:0; margin:0; font:inherit; text-align:inherit; cursor:pointer;
 }
 .project-item-media img {
   width:100%; height:100%; object-fit:cover; display:block;
@@ -1054,6 +1079,11 @@ textarea:focus-visible {
 .project-item-meta a { color:var(--text-muted); text-decoration:underline; text-underline-offset:2px; }
 .project-item-meta a:hover { color:var(--silver); }
 .project-item-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-item-service-link {
+  display:inline-block; color:var(--silver); font-size:var(--text-xs); font-weight:600;
+  text-decoration:none; margin-top:var(--space-2);
+}
+.project-item-service-link:hover { text-decoration:underline; }
 
 /* Homepage: one large featured project + secondaries, not a wall of
    identical tiles. */
@@ -1063,6 +1093,20 @@ textarea:focus-visible {
 }
 .projects-feature-grid .project-item-featured .project-item-media { aspect-ratio:4/3; }
 .projects-feature-secondary { display:flex; flex-direction:column; gap:var(--space-8); }
+
+/* /gallery: one large featured project ahead of the filterable grid —
+   same "photography first, cards second" principle as the homepage,
+   applied to the full portfolio page. */
+.section-eyebrow {
+  color:var(--silver); font-size:var(--text-xs); font-weight:700;
+  text-transform:uppercase; letter-spacing:0.08em; margin:0 0 var(--space-3);
+}
+.projects-grid-heading { margin-top:0; }
+.projects-feature-single { margin-bottom:var(--space-12); max-width:900px; }
+.projects-feature-single .project-item-media { aspect-ratio:16/10; }
+@media (max-width:640px) {
+  .projects-feature-single .project-item-media { aspect-ratio:4/3; }
+}
 
 @media (prefers-reduced-motion:reduce) {
   .project-item-media img { transition:none; }
@@ -1082,6 +1126,54 @@ textarea:focus-visible {
   background:var(--silver); border-color:var(--silver); color:#000;
 }
 .project-item[hidden] { display:none; }
+
+/* ── PROJECT LIGHTBOX ──
+   Full-size view of the real photograph. Every control is always
+   rendered (no hover-only affordances) — close/prev/next are plain
+   buttons, always visible and keyboard-reachable while open. */
+.project-lightbox {
+  position:fixed; inset:0; z-index:100000;
+  background:rgba(0,0,0,0.94);
+  display:flex; align-items:center; justify-content:center;
+  padding:var(--space-6);
+}
+.project-lightbox[hidden] { display:none; }
+body.lightbox-open { overflow:hidden; }
+.project-lightbox-figure {
+  max-width:min(1100px, 92vw); max-height:92vh; margin:0;
+  display:flex; flex-direction:column; align-items:center; gap:var(--space-4);
+}
+.project-lightbox-img {
+  max-width:100%; max-height:72vh; width:auto; height:auto;
+  object-fit:contain; border-top:2px solid var(--silver); display:block;
+}
+.project-lightbox-figure figcaption { text-align:center; max-width:640px; }
+.project-lightbox-label { display:block; color:#fff; font-weight:600; font-size:var(--text-lg); }
+.project-lightbox-meta { display:block; color:var(--text-muted); font-size:var(--text-sm); margin-top:0.2rem; }
+.project-lightbox-desc { color:var(--text-secondary); font-size:var(--text-sm); margin:var(--space-2) 0 0; }
+.project-lightbox-close,
+.project-lightbox-prev,
+.project-lightbox-next {
+  position:fixed; background:rgba(10,10,10,0.7); border:1px solid var(--border-strong);
+  color:#fff; border-radius:50%; width:48px; height:48px; font-size:1.4rem;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:border-color 0.2s ease, background 0.2s ease;
+}
+.project-lightbox-close:hover,
+.project-lightbox-prev:hover,
+.project-lightbox-next:hover { border-color:var(--silver); background:rgba(10,10,10,0.9); }
+.project-lightbox-close { top:var(--space-6); right:var(--space-6); }
+.project-lightbox-prev { left:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-next { right:var(--space-4); top:50%; transform:translateY(-50%); }
+.project-lightbox-prev:disabled,
+.project-lightbox-next:disabled { opacity:0.3; cursor:default; }
+@media (max-width:640px) {
+  .project-lightbox { padding:var(--space-4); }
+  .project-lightbox-prev,.project-lightbox-next { width:40px; height:40px; font-size:1.1rem; }
+  .project-lightbox-close { width:40px; height:40px; top:var(--space-3); right:var(--space-3); }
+  .project-lightbox-prev { left:var(--space-2); }
+  .project-lightbox-next { right:var(--space-2); }
+}
 
 /* ── TESTIMONIALS ── */
 .testimonial-carousel { overflow:hidden; }
@@ -1572,7 +1664,11 @@ def generate_js() -> None:
 
   const projectFilters = document.querySelector('.project-filters');
   if (projectFilters) {
-    const items = document.querySelectorAll('.project-item');
+    // Scoped to the grid, not project-item-featured — a page's single
+    // editorial "featured" card (outside .projects-grid) stays visible
+    // regardless of the active filter; it's a fixed editorial choice,
+    // not part of the filterable set.
+    const items = document.querySelectorAll('.projects-grid .project-item');
     projectFilters.addEventListener('click', (event) => {
       const btn = event.target.closest('.project-filter-btn');
       if (!btn) return;
@@ -1585,6 +1681,120 @@ def generate_js() -> None:
       });
     });
   }
+
+  (function projectLightbox() {
+    const lightbox = document.getElementById('project-lightbox');
+    if (!lightbox) return;
+    const imgEl = lightbox.querySelector('.project-lightbox-img');
+    const labelEl = lightbox.querySelector('.project-lightbox-label');
+    const metaEl = lightbox.querySelector('.project-lightbox-meta');
+    const descEl = lightbox.querySelector('.project-lightbox-desc');
+    const prevBtn = lightbox.querySelector('.project-lightbox-prev');
+    const nextBtn = lightbox.querySelector('.project-lightbox-next');
+    const closeBtn = lightbox.querySelector('.project-lightbox-close');
+    const triggers = document.querySelectorAll('.project-item-media');
+    if (!triggers.length) return;
+
+    let items = [];
+    let idx = 0;
+    let lastFocused = null;
+
+    function visibleItems() {
+      return Array.from(document.querySelectorAll('.project-item')).filter((el) => !el.hidden);
+    }
+
+    function preload(item) {
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      if (!srcImg) return;
+      const pre = new Image();
+      pre.src = srcImg.currentSrc || srcImg.src;
+    }
+
+    function render() {
+      const item = items[idx];
+      if (!item) return;
+      const srcImg = item.querySelector('img');
+      imgEl.src = srcImg.currentSrc || srcImg.src;
+      imgEl.alt = srcImg.alt;
+      labelEl.textContent = item.dataset.label || '';
+      metaEl.textContent = item.dataset.location ? (item.dataset.location + ' · Essex') : '';
+      descEl.textContent = item.dataset.desc || '';
+      const multiple = items.length > 1;
+      prevBtn.hidden = !multiple;
+      nextBtn.hidden = !multiple;
+      // Lazy-load neighbours only — not all 14 photos up front.
+      preload(items[(idx - 1 + items.length) % items.length]);
+      preload(items[(idx + 1) % items.length]);
+    }
+
+    function open(item) {
+      items = visibleItems();
+      idx = items.indexOf(item);
+      if (idx === -1) idx = 0;
+      lastFocused = document.activeElement;
+      lightbox.hidden = false;
+      document.body.classList.add('lightbox-open');
+      render();
+      closeBtn.focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    function close() {
+      lightbox.hidden = true;
+      document.body.classList.remove('lightbox-open');
+      document.removeEventListener('keydown', onKeydown);
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    function show(delta) {
+      if (items.length < 2) return;
+      idx = (idx + delta + items.length) % items.length;
+      render();
+    }
+
+    function onKeydown(event) {
+      if (event.key === 'Escape') {
+        close();
+      } else if (event.key === 'ArrowRight') {
+        show(1);
+      } else if (event.key === 'ArrowLeft') {
+        show(-1);
+      } else if (event.key === 'Tab') {
+        const focusable = Array.from(lightbox.querySelectorAll('button')).filter((b) => !b.hidden);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', () => open(btn.closest('.project-item')));
+    });
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => show(-1));
+    nextBtn.addEventListener('click', () => show(1));
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    let touchStartX = null;
+    lightbox.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', (event) => {
+      if (touchStartX === null) return;
+      const dx = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) show(dx > 0 ? -1 : 1);
+      touchStartX = null;
+    }, { passive: true });
+  })();
 
   const track = document.getElementById('testimonial-track');
   const carousel = document.getElementById('testimonial-carousel');
@@ -1874,23 +2084,36 @@ def _project_srcset(slug: str, native_w: int) -> str:
     return ", ".join(f"/images/{slug}-{w}w.webp {w}w" for w in widths)
 
 
+SERVICE_NAME_BY_SLUG = {s["slug"]: s["name"] for s in SERVICES}
+
+
 def project_card(p: dict, *, featured: bool = False, eager: bool = False) -> str:
     srcset = _project_srcset(p["slug"], p["w"])
     sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" if not featured else "(max-width: 900px) 100vw, 60vw"
     area_link = f'/areas/{p["area_slug"]}'
+    service_link = f'/services/{p["service_slug"]}'
+    service_name = SERVICE_NAME_BY_SLUG.get(p["service_slug"], p["service_slug"])
     loading = "eager" if eager else "lazy"
     fetchpriority = ' fetchpriority="high"' if eager else ""
+    alt = f"{p['label']} in {p['location']}, Essex — real Axis Scaffolding project photograph"
+    # The photo itself opens the lightbox (a button, not a link — it performs
+    # an in-page action, it doesn't navigate); the service relationship gets
+    # its own explicit text link instead of overloading the image's click
+    # target with two different destinations.
     return f"""
-<figure class="project-item{' project-item-featured' if featured else ''}" data-category="{p['category']}">
-  <a href="/services/{p['service_slug']}" class="project-item-media" aria-label="{p['label']} in {p['location']} — view the related service">
+<figure class="project-item{' project-item-featured' if featured else ''}" data-category="{p['category']}"
+        data-label="{p['label']}" data-location="{p['location']}" data-desc="{p['desc']}"
+        data-service-href="{service_link}" data-service-name="{service_name}" data-area-href="{area_link}">
+  <button type="button" class="project-item-media" aria-label="View full-size photo — {p['label']} in {p['location']}">
     <img src="/images/{p['slug']}.webp" srcset="{srcset}" sizes="{sizes}"
-         alt="{p['label']} in {p['location']}, Essex — real Axis Scaffolding project photograph"
+         alt="{alt}"
          width="{p['w']}" height="{p['h']}" loading="{loading}"{fetchpriority} decoding="async">
-  </a>
+  </button>
   <figcaption>
     <span class="project-item-label">{p['label']}</span>
     <span class="project-item-meta"><a href="{area_link}">{p['location']}</a> &middot; Essex</span>
     {f'<p class="project-item-desc">{p["desc"]}</p>' if featured else ''}
+    <a class="project-item-service-link" href="{service_link}">View {service_name} &rarr;</a>
   </figcaption>
 </figure>
 """
@@ -2792,6 +3015,8 @@ def generate_pages() -> None:
   {"".join(f'<button class="project-filter-btn" data-filter="{key}" aria-pressed="false">{label}</button>' for key, label in CATEGORY_LABELS.items())}
 </div>
 """
+    gallery_featured = next(p for p in PROJECTS if p["slug"] == "project-3")
+    gallery_rest = [p for p in PROJECTS if p["slug"] != gallery_featured["slug"]]
     gallery_body = (
         inner_hero(
             [("Home", "/"), ("Projects", "/gallery")],
@@ -2799,8 +3024,11 @@ def generate_pages() -> None:
             "Every photograph below is a completed Axis Scaffolding project — no stock imagery. Browse by type or get a free quote for your own job.",
         )
         + f"""<section class="section section-dark"><div class="container">
+<p class="section-eyebrow">Featured Project</p>
+<div class="projects-feature-single">{project_card(gallery_featured, featured=True, eager=True)}</div>
+<h2 class="projects-grid-heading">The Full Portfolio</h2>
 {project_filter_tabs}
-<div class="projects-grid">{project_cards()}</div>
+<div class="projects-grid">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
 </div></section>"""
     )
     write(
