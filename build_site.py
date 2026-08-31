@@ -329,6 +329,7 @@ def nav() -> str:
     <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
       <a href="/">Home</a>
       <a href="/services">Services</a>
+      <a href="/contractors">For Builders</a>
       <a href="/gallery">Projects</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
@@ -622,6 +623,21 @@ def generate_css() -> None:
   --text-muted:       #9ca3af;
   --border-subtle:    rgba(255, 255, 255, 0.08);
   --border-glass:     rgba(255, 255, 255, 0.14);
+
+  /* V2 semantic tokens — additive aliases over the palette above.
+     Existing component CSS keeps using the names above unchanged;
+     new V2 components (hex system, parallax hero) use these. */
+  --bg:            var(--bg-base);
+  --surface:       var(--bg-depth);
+  --surface-2:     #151515;
+  --surface-3:     #1c1c1c;
+  --text:          var(--text-primary);
+  --text-secondary: var(--text-body);
+  --silver:        var(--accent);
+  --silver-dark:   var(--accent-dark);
+  --silver-light:  var(--accent-light);
+  --border:        var(--border-subtle);
+  --border-strong: var(--border-glass);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -817,6 +833,25 @@ textarea:focus-visible {
   border:1px solid rgba(255,255,255,0.22);
   color:#fff; font-size:0.82rem; font-weight:600;
   padding:0.3rem 0.8rem; border-radius:9999px;
+}
+
+/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
+   Axis's structural signature: a large, sparse hex mesh (steel-frame
+   scale, not a dense tech-grid) sitting between the photo overlay and
+   the hero content. Motion is transform-only (driven by JS setting CSS
+   custom properties), so it never triggers layout/paint of anything
+   else. Desktop pointer devices only — see generate_js(); everywhere
+   else the layers are simply static. */
+.hero-hex {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background-image:url('/assets/images/hex-grid.svg');
+  background-repeat:repeat; background-size:208px 360px;
+  opacity:0.12;
+  transform:translateY(var(--hex-parallax-y, 0px));
+}
+.hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
+@media (prefers-reduced-motion:reduce) {
+  .hero-media, .hero-hex { transform:none !important; }
 }
 
 /* ── SECTIONS ── */
@@ -1101,7 +1136,7 @@ textarea:focus-visible {
 /* ── DECISION CARDS ── */
 .decision-section { padding-bottom:3rem; }
 .decision-grid {
-  display:grid; grid-template-columns:repeat(4,1fr);
+  display:grid; grid-template-columns:repeat(5,1fr);
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
@@ -1197,7 +1232,7 @@ textarea:focus-visible {
 @media (max-width:1024px) {
   .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(2,1fr); }
+  .decision-grid { grid-template-columns:repeat(3,1fr); }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
@@ -1260,6 +1295,62 @@ def generate_js() -> None:
   }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
+
+  // ── HERO PARALLAX ──
+  // Cinematic and restrained by design: over a 500px scroll the hero photo
+  // lags the page by ~100px and the hex layer by ~50px (0.2 / 0.1 of the
+  // scroll delta). Transform-only, rAF-batched, desktop-pointer-only.
+  (function heroParallax() {
+    const hero = document.querySelector('.hero');
+    const heroMedia = hero && hero.querySelector('.hero-media');
+    const heroHex = hero && hero.querySelector('.hero-hex');
+    if (!hero || !heroMedia || !heroHex) return;
+
+    const HERO_RATIO = 0.2;
+    const HEX_RATIO = 0.1;
+    const canAnimate = () =>
+      window.matchMedia('(min-width: 769px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let active = false;
+    let ticking = false;
+
+    function reset() {
+      heroMedia.style.removeProperty('--hero-parallax-y');
+      heroHex.style.removeProperty('--hex-parallax-y');
+    }
+
+    function update() {
+      ticking = false;
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const scrolled = Math.max(0, -rect.top);
+      heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
+      heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    function sync() {
+      const should = canAnimate();
+      if (should === active) return;
+      active = should;
+      if (active) {
+        update();
+      } else {
+        reset();
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+  })();
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
@@ -1641,6 +1732,7 @@ def homepage() -> str:
        alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd"
        width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
+  <div class="hero-hex" aria-hidden="true"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
     <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
@@ -1659,8 +1751,8 @@ def homepage() -> str:
 
 <section class="section section-light decision-section" aria-labelledby="decision-heading">
   <div class="container">
-    <h2 id="decision-heading">What type of scaffolding do you need?</h2>
-    <p class="section-intro">Not sure? <a href="/contact">Tell us about your project</a> and we'll point you in the right direction.</p>
+    <h2 id="decision-heading">What are you working on?</h2>
+    <p class="section-intro">Pick the option closest to your project and we'll point you to the right place.</p>
     <div class="decision-grid">
       <a href="/services/residential-scaffolding" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
@@ -1668,23 +1760,29 @@ def homepage() -> str:
         <p>Roofing &middot; rendering &middot; extensions &middot; chimneys</p>
         <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
       </a>
-      <a href="/services/commercial-scaffolding" class="decision-card">
+      <a href="/contractors" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
         <h3>Builder / Roofer</h3>
-        <p>Access scaffold &middot; bespoke setups &middot; fast turnaround</p>
-        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+        <p>Access scaffold &middot; trade support &middot; fast turnaround</p>
+        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
       </a>
-      <a href="/services/commercial-scaffolding" class="decision-card">
+      <a href="/contractors" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg></div>
         <h3>Commercial</h3>
         <p>Sites &middot; offices &middot; retail &middot; schools &middot; developments</p>
-        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
+        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
       </a>
       <a href="/services/emergency-scaffolding" class="decision-card decision-card-urgent">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <h3>Emergency</h3>
         <p>Storm damage &middot; urgent access &middot; temporary protection</p>
         <span class="decision-link" aria-hidden="true">Call us now &rarr;</span>
+      </a>
+      <a href="/contact" class="decision-card">
+        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Not Sure</h3>
+        <p>Tell us what you're doing and we'll point you in the right direction.</p>
+        <span class="decision-link" aria-hidden="true">Get in touch &rarr;</span>
       </a>
     </div>
   </div>

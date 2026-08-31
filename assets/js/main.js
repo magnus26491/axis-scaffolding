@@ -20,6 +20,62 @@
   }
   setHeaderState();
   window.addEventListener('scroll', setHeaderState, { passive: true });
+
+  // ── HERO PARALLAX ──
+  // Cinematic and restrained by design: over a 500px scroll the hero photo
+  // lags the page by ~100px and the hex layer by ~50px (0.2 / 0.1 of the
+  // scroll delta). Transform-only, rAF-batched, desktop-pointer-only.
+  (function heroParallax() {
+    const hero = document.querySelector('.hero');
+    const heroMedia = hero && hero.querySelector('.hero-media');
+    const heroHex = hero && hero.querySelector('.hero-hex');
+    if (!hero || !heroMedia || !heroHex) return;
+
+    const HERO_RATIO = 0.2;
+    const HEX_RATIO = 0.1;
+    const canAnimate = () =>
+      window.matchMedia('(min-width: 769px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let active = false;
+    let ticking = false;
+
+    function reset() {
+      heroMedia.style.removeProperty('--hero-parallax-y');
+      heroHex.style.removeProperty('--hex-parallax-y');
+    }
+
+    function update() {
+      ticking = false;
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const scrolled = Math.max(0, -rect.top);
+      heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
+      heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    function sync() {
+      const should = canAnimate();
+      if (should === active) return;
+      active = should;
+      if (active) {
+        update();
+      } else {
+        reset();
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+  })();
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
