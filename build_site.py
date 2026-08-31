@@ -88,6 +88,8 @@ SERVICES = [
         "desc": "Residential scaffolding in Essex for extensions, roof replacements and exterior works. CISRS-qualified team based in Rayleigh. Free quotes — call 01702 820468.",
         "summary": "Safe, tidy scaffold systems for extensions, full roof replacements, rendering and exterior home improvements across South Essex.",
         "who_for": "Homeowners undertaking extensions, roof replacements, chimney repairs, rendering and other major exterior works.",
+        "audience": "Homeowners",
+        "card_blurb": "Extensions, full roof replacements and larger exterior work.",
     },
     {
         "slug": "commercial-scaffolding",
@@ -96,6 +98,8 @@ SERVICES = [
         "desc": "Commercial scaffolding in Essex for builders, developers and contractors. RAMS available. CISRS-qualified team in Rayleigh. Call 01702 820468 for a fast quote.",
         "summary": "Planned scaffold packages for builders, contractors, offices, retail units, schools and commercial developments across Essex.",
         "who_for": "Builders, developers, principal contractors, property managers and commercial premises requiring planned scaffold access.",
+        "audience": "Builders & Developers",
+        "card_blurb": "Planned scaffold packages for sites, offices, retail and schools.",
     },
     {
         "slug": "domestic-scaffolding",
@@ -104,6 +108,8 @@ SERVICES = [
         "desc": "Domestic scaffolding in Essex for occupied homes, repairs and short-term access. CISRS-qualified team in Rayleigh, South Essex. Free quotes — call 01702 820468.",
         "summary": "Short-term scaffold access for occupied homes needing repairs, painting, chimney work or maintenance across South Essex.",
         "who_for": "Homeowners requiring shorter-term scaffold access for repairs, maintenance, painting or chimney work on occupied properties.",
+        "audience": "Homeowners",
+        "card_blurb": "Short-term access for repairs, painting or chimney work.",
     },
     {
         "slug": "roof-scaffolding",
@@ -112,6 +118,8 @@ SERVICES = [
         "desc": "Roof scaffolding in Essex for roofers, chimney repairs and roofline works. CISRS-qualified. Based in Rayleigh. Free quote — call 01702 820468.",
         "summary": "Specialist roof-level scaffold systems for chimney repairs, guttering, fascias and full roof replacements across South Essex.",
         "who_for": "Homeowners and roofing contractors needing safe, compliant roof access for repairs, replacement, chimneys or guttering.",
+        "audience": "Homeowners & Roofers",
+        "card_blurb": "Roof-level access for replacement, repairs, chimneys and guttering.",
     },
     {
         "slug": "temporary-roofing",
@@ -120,6 +128,8 @@ SERVICES = [
         "desc": "Temporary roofing in Essex to protect live projects from weather. Scaffold-supported structures for ongoing roof works. Rayleigh team — call 01702 820468.",
         "summary": "Weather-protected temporary roof structures that keep projects moving year-round, protecting exposed structures during active roof works.",
         "who_for": "Builders, roofers and homeowners needing weather protection over an exposed structure during roof replacement or significant repair work.",
+        "audience": "Builders & Roofers",
+        "card_blurb": "Weather protection over an exposed roof during works.",
     },
     {
         "slug": "emergency-scaffolding",
@@ -128,6 +138,8 @@ SERVICES = [
         "desc": "Emergency scaffolding in Essex for storm damage, urgent access and safety works. Axis Scaffolding prioritises urgent enquiries — call 01702 820468 now.",
         "summary": "Rapid-response scaffold support for urgent structural issues, storm damage and emergency safety access across South Essex.",
         "who_for": "Anyone facing urgent structural access needs — storm-damaged roofs, emergency repairs, temporary protection after an incident.",
+        "audience": "Urgent — Anyone",
+        "card_blurb": "Rapid-response access for storm damage or urgent repairs.",
     },
     {
         "slug": "dismantling-scaffolding",
@@ -136,6 +148,8 @@ SERVICES = [
         "desc": "Professional scaffold dismantling in Essex. Safe, efficient removal and tidy handover once your project is complete. Rayleigh team — call 01702 820468.",
         "summary": "Safe, efficient scaffold removal and tidy site handover once works are complete — completing the full scaffold lifecycle.",
         "who_for": "Anyone who needs an existing scaffold removed safely, including scaffolds erected by other companies.",
+        "audience": "Anyone",
+        "card_blurb": "Safe removal of any scaffold, including ones we didn't erect.",
     },
     {
         "slug": "loading-bay-scaffolding",
@@ -144,6 +158,8 @@ SERVICES = [
         "desc": "Loading bay scaffolding in Essex for commercial sites and contractors. Structured material access solutions. Rayleigh team — call 01702 820468.",
         "summary": "Scaffold-integrated loading bays for safe materials delivery and handling on commercial and residential construction sites.",
         "who_for": "Builders and contractors on sites requiring safe access for materials delivery, loading and unloading at height.",
+        "audience": "Builders & Contractors",
+        "card_blurb": "Structured access for safe materials handling at height.",
     },
     {
         "slug": "scaffold-supply-erection",
@@ -152,6 +168,8 @@ SERVICES = [
         "desc": "Scaffold supply and erection in Essex. Materials and installation from a single CISRS-qualified team in Rayleigh. Free quote — call 01702 820468.",
         "summary": "Complete scaffold supply and erection from a single contractor — materials, qualified labour and site coordination in one package.",
         "who_for": "Contractors and homeowners who need a complete, managed scaffold solution from a single point of contact.",
+        "audience": "Contractors",
+        "card_blurb": "Materials and erection from a single point of contact.",
     },
 ]
 
@@ -180,19 +198,19 @@ SERVICE_GROUPS = [
     {
         "key": "home-property",
         "name": "Home & Property",
-        "intro": "Scaffolding for your own home — from a full re-roof to a short repair job.",
+        "intro": "Scaffolding for your home — from larger improvement projects to shorter repair work.",
         "slugs": ["residential-scaffolding", "domestic-scaffolding", "roof-scaffolding"],
     },
     {
         "key": "commercial-trade",
         "name": "Commercial & Trade",
-        "intro": "For builders, developers and site managers running a planned job.",
+        "intro": "Scaffolding for builders, roofers and commercial projects.",
         "slugs": ["commercial-scaffolding", "loading-bay-scaffolding", "scaffold-supply-erection"],
     },
     {
         "key": "specialist",
         "name": "Specialist",
-        "intro": "Used alongside a scaffold job — weather protection, urgent access or removal.",
+        "intro": "For temporary protection, urgent access and scaffold removal.",
         "slugs": ["temporary-roofing", "emergency-scaffolding", "dismantling-scaffolding"],
     },
 ]
@@ -1268,15 +1286,19 @@ textarea:focus-visible {
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
   margin-bottom:0.75rem;
 }
-.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.6rem; font-size:1.1rem; }
+.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.5rem; font-size:1.1rem; }
+.service-card p { margin-bottom:0.75rem; }
 .service-card a { color:#e5e7eb; font-weight:600; text-decoration:none; }
 .service-card a:hover { color:#ffffff; }
-/* "Who is this for?" — one line, distinct from the WHAT summary above
-   it, so a card answers two questions instead of one paragraph doing
-   both jobs at once. */
+/* "Who is this for?" as a quick visual cue, not a sentence to read —
+   a restrained outlined pill directly under the name, so a visitor
+   can tell who a card is for before reading anything else. Outlined,
+   not filled: a badge should be a cue, not compete with the heading. */
 .service-card-audience {
-  display:block; color:#8e949c; font-size:0.82rem; font-weight:600;
-  margin:-0.3rem 0 0.75rem; text-transform:uppercase; letter-spacing:0.02em;
+  display:inline-block; color:var(--silver, #c8cdd4);
+  border:1px solid rgba(200,205,212,0.4); border-radius:9999px;
+  font-size:0.72rem; font-weight:700; letter-spacing:0.03em;
+  text-transform:uppercase; padding:0.2rem 0.65rem; margin-bottom:0.75rem;
 }
 /* Same accent Emergency already uses on the homepage decision grid —
    reused here so the one genuinely time-critical service reads as
@@ -2716,22 +2738,23 @@ def project_cards() -> str:
 SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 
 
-def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "Learn More") -> str:
-    """One card: WHAT (summary), WHO FOR (one line), then a single CTA —
-    not a paragraph trying to answer both questions at once, and no
-    boilerplate sentence repeated across every card."""
+def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
+    """The overview card's job is recognition, not education — "is this
+    the service I need?", not the full page. Name, a visible audience
+    pill (the fast visual cue), one short sentence, one CTA. The page
+    itself (service_detail_body) does the actual explaining."""
     urgent_class = " service-card-urgent" if svc["slug"] == "emergency-scaffolding" else ""
     return f"""
 <article class="service-card{urgent_class}">
   <{heading_tag}>{svc['name']}</{heading_tag}>
-  <p>{svc['summary']}</p>
-  <span class="service-card-audience">{svc['who_for']}</span>
+  <span class="service-card-audience">{svc['audience']}</span>
+  <p>{svc['card_blurb']}</p>
   <a href="/services/{svc['slug']}">{cta} &rarr;</a>
 </article>
 """
 
 
-def services_grouped_section(*, heading_tag: str = "h3", cta: str = "Learn More", group_heading_tag: str = "h3") -> str:
+def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Service", group_heading_tag: str = "h3") -> str:
     """The three functional groups (SERVICE_GROUPS), each a self-contained
     services-grid of exactly 3 cards — used on both the homepage and the
     /services index so a visitor sees the same understandable system
@@ -3617,7 +3640,7 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd provides complete scaffolding Essex services from Rayleigh for residential, domestic and commercial projects. Get a free quote today.",
         )
         + f"""
-<section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", cta="Read More", group_heading_tag="h2")}</div></section>
+<section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
 <section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """

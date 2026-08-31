@@ -454,15 +454,19 @@ textarea:focus-visible {
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
   margin-bottom:0.75rem;
 }
-.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.6rem; font-size:1.1rem; }
+.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.5rem; font-size:1.1rem; }
+.service-card p { margin-bottom:0.75rem; }
 .service-card a { color:#e5e7eb; font-weight:600; text-decoration:none; }
 .service-card a:hover { color:#ffffff; }
-/* "Who is this for?" — one line, distinct from the WHAT summary above
-   it, so a card answers two questions instead of one paragraph doing
-   both jobs at once. */
+/* "Who is this for?" as a quick visual cue, not a sentence to read —
+   a restrained outlined pill directly under the name, so a visitor
+   can tell who a card is for before reading anything else. Outlined,
+   not filled: a badge should be a cue, not compete with the heading. */
 .service-card-audience {
-  display:block; color:#8e949c; font-size:0.82rem; font-weight:600;
-  margin:-0.3rem 0 0.75rem; text-transform:uppercase; letter-spacing:0.02em;
+  display:inline-block; color:var(--silver, #c8cdd4);
+  border:1px solid rgba(200,205,212,0.4); border-radius:9999px;
+  font-size:0.72rem; font-weight:700; letter-spacing:0.03em;
+  text-transform:uppercase; padding:0.2rem 0.65rem; margin-bottom:0.75rem;
 }
 /* Same accent Emergency already uses on the homepage decision grid —
    reused here so the one genuinely time-critical service reads as
