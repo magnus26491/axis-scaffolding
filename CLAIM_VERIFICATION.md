@@ -31,7 +31,15 @@ as standard" (vs. "available on request").
 **DO NOT USE** — confirmed fabricated, already removed, must not be
 recreated or referenced as a source: the three dated London project case
 studies (Barking/Dagenham/Romford, invented Mar–May 2026 dates and
-operational detail, zero corroborating evidence anywhere in the repository).
+operational detail, zero corroborating evidence anywhere in the repository);
+a fabricated `AggregateRating` schema block (`ratingValue: "5.0"`,
+`reviewCount: "47"`) found on `areas/london/index.html`'s `LocalBusiness`
+JSON-LD during the Phase 7 SEO/AEO/GEO audit — no review-platform
+integration or 47 reviews exist anywhere else in the repository; removed
+entirely, not replaced with any other figure. Genuine testimonials remain
+displayed as visible page content (not structured data) sitewide — see
+Phase 7's schema audit for the full `review`/`aggregateRating` scan
+confirming this was the only occurrence in the repository.
 
 ## How to read "Verified?" (detailed table below)
 
@@ -64,12 +72,18 @@ operational detail, zero corroborating evidence anywhere in the repository).
 | Company number / address / phone / email | Sitewide, schema + footer | "15050136", "Arterial Road, Rayleigh, Essex, SS6 7XT", "01702 820468", "axis-scaffolding@outlook.com" | **Established** — structurally guaranteed (same values everywhere, checked as part of every prior phase's CI validation) | No | Keep as-is |
 | "Benfleet team" (quote-page intro) | Was on `/quote` — already rewritten in PR #22 (unmerged) to "Prefer to talk? Call {phone} instead", no location claim | — | **Already resolved** | No | No action needed here; will land once PR #22 merges |
 | "Benfleet" wording on the domestic-scaffolding *service* page | Checked directly — already reads "We are based in Rayleigh and regularly provide scaffolding in Benfleet, Canvey Island..." | — | **Already correct** | No | No action needed |
+| **Fabricated `AggregateRating` schema (5.0 / 47 reviews)** | `areas/london/index.html` only, `LocalBusiness` JSON-LD block | `"aggregateRating": {"@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "47"}` | **Fabricated — confirmed, not just unverified** | N/A | **Removed in Phase 7.** No review-platform integration, no 47 reviews, no rating source anywhere else in the repository. A sitewide `grep` for `AggregateRating`/`aggregateRating`/`ratingValue`/`reviewCount`/`review` confirmed this was the only occurrence — not repeated on any other page. Genuine testimonials remain as visible page content, not structured data; Google's own guidance restricts `review`/`aggregateRating` on `LocalBusiness` markup to sites reviewing *other* local businesses, not self-serving reviews of the business itself, so no replacement figure was added |
 
-## Action taken in this PR
+## Action taken in this PR (Phase 5)
 
 - Removed the three fabricated London project case studies (see above) and replaced with an honest link to the real Projects page.
 - Did **not** alter the £5m insurance figure, TG20:21, CDM, or Section 169 claims on the London page — per instruction not to delete a claim merely because it's unverified elsewhere. They're flagged above for owner confirmation instead.
 - Did **not** propagate any of the London-page-only claims (insurance figure, TG20:21, CDM, Section 169) to any other page in this PR.
+
+## Action taken in Phase 7 (SEO/AEO/GEO architecture)
+
+- Removed the fabricated `AggregateRating` block from `areas/london/index.html` (see table above). Sitewide schema scan confirms no other `review`/`aggregateRating` structured data exists anywhere in the repository.
+- Insurance figure, TG20:21, CDM, and Section 169 claims on the London page remain untouched and still flagged below as owner-verification-required — not deleted, not propagated elsewhere.
 
 ## Owner Information Report
 
