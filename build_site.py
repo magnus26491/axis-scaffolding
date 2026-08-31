@@ -643,6 +643,22 @@ def generate_css() -> None:
   --silver-light:  var(--accent-light);
   --border:        var(--border-subtle);
   --border-strong: var(--border-glass);
+
+  /* V2.1 spacing scale — the deliberate rhythm tokens the layout/
+     alignment audit introduces. Mapped onto values already in use
+     across the stylesheet (not invented numbers), so applying them
+     doesn't shift anything visually — it just gives the repeated,
+     structural values (section rhythm, grid gaps) a shared name
+     instead of being restated as literals everywhere. */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -829,9 +845,16 @@ textarea:focus-visible {
 .hero p { color:#fff; font-size:1.1rem; }
 .hero-phone a { color:#fff; text-decoration:underline; font-weight:600; }
 
-/* Hero trust badges */
+/* Hero trust badges
+   Root cause of the "badges don't read as one balanced, centred
+   group" report: every other row in the hero (h1, p, .hero-cta-row)
+   is explicitly centred, but this flex row had no justify-content,
+   so it defaulted to flex-start — left-aligned under a centred
+   headline/CTA row above it. Fixed as a group property, not by
+   nudging individual badges. */
 .hero-trust-badges {
-  display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.5rem;
+  display:flex; flex-wrap:wrap; justify-content:center;
+  gap:var(--space-2xs); margin-top:var(--space-md);
 }
 .hero-trust-badges span {
   background:rgba(255,255,255,0.1);
@@ -860,7 +883,7 @@ textarea:focus-visible {
 }
 
 /* ── SECTIONS ── */
-.section { padding:4.5rem 0; }
+.section { padding:var(--space-2xl) 0; }
 .section-light { background:#0a0a0a !important; }
 .section-dark  { background:#000000 !important; }
 .section-dark h2,.section-dark h3,.section-dark p { color:#ffffff; }
@@ -922,9 +945,19 @@ textarea:focus-visible {
 }
 .quote-form-card:hover { transform: none !important; }
 
-/* ── SERVICES GRID ── */
+/* ── SERVICES GRID ──
+   Flex, not CSS Grid: with a fixed track count (repeat(3,1fr) →
+   repeat(2,1fr) on tablet), an item count that doesn't divide evenly
+   leaves a left-aligned last row with dead space on the right (9
+   services in 2 columns = 4 full rows + 1 orphan card). Flex with
+   justify-content:center centers that leftover row instead, and
+   flex-basis/max-width reproduce the same ~3/2/1-per-row rhythm
+   without the brittle per-breakpoint column-count overrides. */
 .services-grid, .service-listing {
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;
+}
+.services-grid .service-card, .service-listing .service-card {
+  flex:1 1 300px; max-width:360px;
 }
 .service-card { padding:1.5rem; }
 .service-icon {
@@ -958,8 +991,13 @@ textarea:focus-visible {
   padding:0.9rem; border-radius:0.75rem; color:#d1d5db;
 }
 
-/* ── PROJECTS GRID ── */
-.projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+/* ── PROJECTS GRID ──
+   Same fix as the services grid: the full gallery page has 14
+   projects, which doesn't divide evenly into 3-column rows either
+   (a 2-item orphan row). Flex + justify-content:center keeps that
+   row centred instead of stuck to the left edge. */
+.projects-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; }
+.projects-grid .project-item { flex:1 1 280px; max-width:360px; }
 .project-item { position:relative; overflow:hidden; border-radius:1rem; }
 .project-item img { width:100%; height:100%; object-fit:cover; }
 .project-item figcaption {
@@ -1140,11 +1178,18 @@ textarea:focus-visible {
 
 /* ── DECISION CARDS ── */
 .decision-section { padding-bottom:3rem; }
+/* Flex, not a fixed 5-column grid: 5 cards don't divide evenly at
+   the tablet 3-column step (a 2-card orphan row, left-stuck with
+   dead space to the right). flex-basis/max-width reflow to ~5/3/1
+   per row across breakpoints on their own, and justify-content:
+   center keeps every row — including a partial last one — centred
+   as a group instead of pinned to the grid's left track. */
 .decision-grid {
-  display:grid; grid-template-columns:repeat(5,1fr);
+  display:flex; flex-wrap:wrap; justify-content:center;
   gap:1.25rem; margin-top:1.5rem;
 }
 .decision-card {
+  flex:1 1 190px; max-width:220px;
   background:rgba(255,255,255,0.04) !important;
   border:1px solid rgba(255,255,255,0.12) !important;
   backdrop-filter:blur(20px) !important;
@@ -1235,9 +1280,7 @@ textarea:focus-visible {
 
 /* ── RESPONSIVE ── */
 @media (max-width:1024px) {
-  .services-grid,.service-listing,.projects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .split-grid,.two-col { grid-template-columns:1fr; }
-  .decision-grid { grid-template-columns:repeat(3,1fr); }
 }
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
@@ -1257,7 +1300,6 @@ textarea:focus-visible {
 }
 @media (max-width:480px) {
   .social-card { width:100%; min-width:unset; }
-  .decision-grid { grid-template-columns:1fr; }
 }
 @media (max-width:375px) {
   .container { width:calc(100% - 1rem); }
