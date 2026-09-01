@@ -114,6 +114,55 @@ CLAIM / PAGE / SOURCE / STATUS / ACTION / OWNER INPUT NEEDED format.
 | **24/7 availability** | `lp/emergency-scaffolding-essex/index.html` | Title tag "24/7 Response", H1 "Emergency Scaffolding Essex – 24/7 Response", H2 "Emergency Scaffolding – Available 24/7", H3 "24/7 Availability" / "We respond to emergencies day and night", CTA "Call 01702 820468 – We're Ready 24/7" | **Owner verification required — treated as unverified, not propagated.** Contradicts the phrasing used everywhere else on the site ("aim to attend site or arrange erection as quickly as operatives are available"), and no other page or data source establishes genuine 24-hour/day operation. | **Rewritten to neutral, non-invented language**, matching the site's established phrasing: title/H1/H2 changed to "Rapid Response", H3 changed to "Priority Response" / "We aim to attend site or arrange erection as quickly as operatives are available", CTA changed to "We Respond Fast". No new response-time promise invented. | Yes — if the business genuinely operates a 24-hour emergency line, that's a strong, usable trust signal, but it needs confirming before it goes back on any page, worded precisely (e.g. "24-hour emergency phone line" vs. "24/7 on-site attendance" are very different claims). |
 | **£5m public liability insurance (specific figure)** | All four `/lp/*` pages (previously only tracked on `areas/london/index.html`) | "£5m public liability coverage" | **Owner verification required** (existing classification, scope extended to cover all 4 LP pages) | **Not changed.** Per explicit instruction: do not propagate this claim further, but do not delete it from existing source material merely because it's unverified. Left as-is on all 4 pages. | Yes — see the original entry above. If confirmed, this becomes a strong, reusable trust signal sitewide; if not, it needs correcting on all 5 pages that now carry it (4 LP pages + London). |
 
+### Permanent QA safeguard: testimonial & rating-claim integrity check
+
+The six fabricated/altered testimonials above were found by a one-off
+manual read of the four `/lp/*` pages — nothing was automatically checking
+for this before Phase B. That's too important to leave as a manual
+discovery, so this phase added a permanent, build-blocking regression
+check: `scripts/check_testimonials.py`.
+
+**What it does**: `build_site.py` now defines `TESTIMONIALS` as a
+module-level constant — the single approved source of every real
+testimonial (previously this data lived only inside `testimonials()`'s
+function body, duplicated in spirit but never in source, on the pages that
+carried altered copies of it). `scripts/check_testimonials.py` scans every
+real HTML page — generated and hand-authored alike — for testimonial-shaped
+content and fails (non-zero exit) if it finds:
+
+1. Quoted testimonial text with no matching entry in `TESTIMONIALS`.
+2. Testimonial text that matches an approved entry but is attributed to a
+   different name.
+3. A location or descriptor appended to a name that isn't that entry's
+   approved platform label (i.e. a fabricated location, the exact pattern
+   used in 4 of the 6 fabrications above).
+4. Any "Rated X on Google" statement or `ratingValue`/`reviewCount`/
+   `AggregateRating` schema key found anywhere on the site, unless
+   `build_site.py`'s `APPROVED_RATING` constant is set (it's `None` by
+   default — no such claim is currently approved anywhere).
+
+**What it does not do**: it isn't a semantic or plagiarism detector — it's
+a lightweight, pattern-based check against the two testimonial-display
+patterns that actually exist in this codebase (the generated
+`.testimonial-card` markup, and the hand-authored `/lp/*` "glass-card"
+pattern). Verified against a synthetic fabricated-content test during
+Phase B: it correctly caught a wholly invented quote, a name
+misattribution, a fabricated location suffix, and a fake rating claim,
+with zero false positives against the real (clean) codebase. If a third
+testimonial-display pattern is ever introduced, this check needs
+extending or it will silently miss it — see the module docstring.
+
+**Wired into CI**: `.github/workflows/pages.yml` runs
+`python3 scripts/check_testimonials.py` as a required build step, right
+after the SEO post-processor. A future PR that reintroduces a fabricated
+or altered testimonial, or an unsupported rating claim, fails CI rather
+than merging silently.
+
+To add a genuine new testimonial: add it to `TESTIMONIALS` in
+`build_site.py` first (with a real source), then use it — never write
+testimonial text directly onto a page without a `TESTIMONIALS` entry
+backing it.
+
 ### Action taken in Phase B (Trust, Consistency & Customer-Journey Integration)
 
 - Removed 6 fabricated/altered customer testimonials across 3 of the 4 `/lp/*` pages (Southend ×2, Rayleigh ×2, Temporary Roofing ×2) and replaced them with genuine, verbatim entries from the real `testimonials()` data, with any location-specific framing that wasn't genuinely sourced dropped rather than carried over onto real reviews.
@@ -121,6 +170,7 @@ CLAIM / PAGE / SOURCE / STATUS / ACTION / OWNER INPUT NEEDED format.
 - Rewrote the "24/7" claim on the emergency landing page to neutral, non-invented language, matching the site's established response-time phrasing.
 - Did **not** touch the £5m insurance figure on any page — left in place per instruction, classification unchanged (owner verification required), scope of the existing table row extended to note it now appears on 5 pages, not 1.
 - Did **not** touch TG20:21, CDM, or Section 169 claims on the London page — out of this phase's named scope, already documented above, unchanged since Phase 7.
+- Added a permanent, CI-enforced regression check (`scripts/check_testimonials.py`) so a future testimonial or rating-claim fabrication fails the build instead of requiring another manual discovery — see the section above for full detail.
 
 ## Owner Information Report
 

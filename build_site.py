@@ -2863,37 +2863,64 @@ def related_guides_section(current_slug: str) -> str:
 """
 
 
+# ── APPROVED TESTIMONIAL SOURCE OF TRUTH ────────────────────────────────
+# The one and only approved list of real customer testimonials. Every
+# testimonial displayed anywhere on the site — generated pages via
+# testimonials() below, and hand-authored pages (e.g. the /lp/* landing
+# pages) alike — must reproduce an entry from this list verbatim (text,
+# name, and platform label all matching exactly). scripts/check_testimonials.py
+# validates every real HTML page against this list and fails the build on
+# any mismatch.
+#
+# This exists because, during Phase B (Trust, Consistency & Customer-Journey
+# Integration), six fabricated or altered testimonials were found on the
+# hand-authored /lp/* PPC landing pages — near-verbatim copies of entries
+# below with the customer's name and/or a location changed, plus two wholly
+# invented quotes. See CLAIM_VERIFICATION.md's Phase B section for the full
+# record. Do not add a new entry here without a genuine, sourced review.
+TESTIMONIALS = [
+    {
+        "text": "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
+        "name": "Sally M.",
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": "Ashley and his team were professional throughout: on time, polite and great value for our project.",
+        "name": "Hannah M.",
+        "badge_icon": "/images/icons/verified-badge.svg",
+        "badge_alt": "Verified review",
+        "platform": "Verified Review",
+    },
+    {
+        "text": "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
+        "name": "Jason R.",
+        "badge_icon": "/images/icons/bark-badge.svg",
+        "badge_alt": "Bark.com review",
+        "platform": "Bark.com Review",
+    },
+    {
+        "text": "Very professional setup, clear communication and tidy dismantling at the end of works.",
+        "name": "Verified Customer",
+        "badge_icon": "/images/icons/bark-badge.svg",
+        "badge_alt": "Bark.com review",
+        "platform": "Bark.com Review",
+    },
+]
+
+# No approved sitewide aggregate rating / review-count claim currently
+# exists — no review-platform integration is wired up anywhere in this
+# repository (see CLAIM_VERIFICATION.md's removed fabricated AggregateRating
+# / "Rated 5.0 on Google" findings). If one is ever genuinely confirmed,
+# set this to e.g. {"ratingValue": "4.9", "reviewCount": "12", "source":
+# "Google"} — until then, scripts/check_testimonials.py treats ANY rating
+# or review-count claim found anywhere on the site as unsupported and fails
+# the build.
+APPROVED_RATING: dict | None = None
+
+
 def testimonials() -> str:
-    entries = [
-        (
-            "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
-            "Sally M.",
-            "/images/icons/google-badge.svg",
-            "Google review",
-            "Google Review",
-        ),
-        (
-            "Ashley and his team were professional throughout: on time, polite and great value for our project.",
-            "Hannah M.",
-            "/images/icons/verified-badge.svg",
-            "Verified review",
-            "Verified Review",
-        ),
-        (
-            "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
-            "Jason R.",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-        (
-            "Very professional setup, clear communication and tidy dismantling at the end of works.",
-            "Verified Customer",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-    ]
     return "".join(
         f"""
 <div class="testimonial-card">
@@ -2901,18 +2928,18 @@ def testimonials() -> str:
     <span aria-hidden="true">★★★★★</span>
   </div>
   <blockquote class="review-text">
-    "{text}"
+    "{t['text']}"
   </blockquote>
   <div class="reviewer-info">
-    <span class="reviewer-name">{name}</span>
+    <span class="reviewer-name">{t['name']}</span>
     <span class="review-source">
-      <img src="{badge_icon}" alt="{badge_alt}" width="16" height="16">
-      {platform}
+      <img src="{t['badge_icon']}" alt="{t['badge_alt']}" width="16" height="16">
+      {t['platform']}
     </span>
   </div>
 </div>
 """
-        for text, name, badge_icon, badge_alt, platform in entries
+        for t in TESTIMONIALS
     )
 
 
