@@ -36,10 +36,20 @@ a fabricated `AggregateRating` schema block (`ratingValue: "5.0"`,
 `reviewCount: "47"`) found on `areas/london/index.html`'s `LocalBusiness`
 JSON-LD during the Phase 7 SEO/AEO/GEO audit — no review-platform
 integration or 47 reviews exist anywhere else in the repository; removed
-entirely, not replaced with any other figure. Genuine testimonials remain
-displayed as visible page content (not structured data) sitewide — see
-Phase 7's schema audit for the full `review`/`aggregateRating` scan
-confirming this was the only occurrence in the repository.
+entirely, not replaced with any other figure; six fabricated or altered
+customer testimonials found across three of the four `/lp/*` PPC landing
+pages during the Phase B claim audit ("Robert P.", "Michael T.", "James M.",
+"Sarah K." — either wholly invented or near-verbatim copies of real
+`testimonials()` reviews with the name and location changed — plus two
+unverifiable anonymous "Roofing Contractor, Basildon" / "Property Owner,
+Chelmsford" quotes with no traceable source); a matching "Rated 5.0 on
+Google" sitewide-rating claim on 2 of those pages, same fabrication class as
+the `AggregateRating` finding, no review-platform integration anywhere in
+the repository. Genuine testimonials remain displayed as visible page
+content (not structured data) sitewide — see Phase 7's schema audit for the
+full `review`/`aggregateRating` scan confirming the `AggregateRating` block
+was the only structured-data occurrence in the repository, and the Phase B
+section below for the full landing-page testimonial audit.
 
 ## How to read "Verified?" (detailed table below)
 
@@ -58,7 +68,7 @@ confirming this was the only occurrence in the repository.
 |---|---|---|---|---|---|
 | CISRS qualified team | 34 files across the whole site (homepage, every service page, contractor page, about, London page) | "CISRS Qualified" / "CISRS-qualified team" / "CISRS-certified" | **Established** | No — used consistently sitewide, treated as core fact throughout this project | Keep as-is |
 | Fully insured | Homepage, contractor page, ~11 other pages | "Fully Insured" / "fully insured" / "public liability" | **Established** (as a general claim) | No, for the general claim | Keep as-is |
-| **£5 million public liability insurance (specific figure)** | `areas/london/index.html` only (3 occurrences: FAQ schema, USP list, second FAQ) | "We are fully insured with £5 million public liability cover" | **Owner confirmation required** | **Yes — high priority.** No other page states a figure; if the real figure is different, this is a live legal/financial claim being made publicly | Do not state a specific figure anywhere else until confirmed. If confirmed accurate, extend to the general "fully insured" claim sitewide for consistency; if not, correct or remove from the London page |
+| **£5 million public liability insurance (specific figure)** | `areas/london/index.html` (3 occurrences: FAQ schema, USP list, second FAQ) **and all four `/lp/*` PPC landing pages** (1 occurrence each — scope extended in Phase B's landing-page audit; previously only the London page was tracked) | "We are fully insured with £5 million public liability cover" / "£5m public liability coverage" | **Owner confirmation required** | **Yes — high priority, now affecting 5 pages, not 1.** No other page states a figure; if the real figure is different, this is a live legal/financial claim being made publicly on all of them | Do not state a specific figure anywhere else until confirmed. If confirmed accurate, extend to the general "fully insured" claim sitewide for consistency; if not, correct or remove from all 5 pages |
 | 10+ years' experience | Homepage ("10+ Years' Experience"), About page, London page ("over 10 years") | "10+ Years' Experience" / "over a decade" / "over 10 years" | **Established** | No — consistent across pages | Keep as-is |
 | "Founder-led" / Ashley as founder | Homepage ("Founder-led local operation"), About page, one customer testimonial naming him | "Founder-led local operation", "Ashley and his team were professional throughout..." | **Established** (per explicit instruction: existing founder material is a trust asset, not a gap) | No | Keep as-is — already improved in presentation this phase, not rewritten |
 | RAMS / method statements & risk assessments | Contractor page: "RAMS on Request"; commercial-scaffolding service: "available on request"; London page: **"provided as standard for all commercial and CDM-notifiable projects"** | See above | **Established** as "available on request"; **the London page's "provided as standard" framing is stronger and inconsistent with every other page** | **Yes** — which is accurate: on-request, or standard-for-commercial? | Align London page wording to "available on request" (matching every other page) unless the owner confirms RAMS really are standard-issue for every commercial job, in which case update the wording sitewide instead |
@@ -84,6 +94,33 @@ confirming this was the only occurrence in the repository.
 
 - Removed the fabricated `AggregateRating` block from `areas/london/index.html` (see table above). Sitewide schema scan confirms no other `review`/`aggregateRating` structured data exists anywhere in the repository.
 - Insurance figure, TG20:21, CDM, and Section 169 claims on the London page remain untouched and still flagged below as owner-verification-required — not deleted, not propagated elsewhere.
+
+## Phase B — PPC landing page (`/lp/*`) claim audit
+
+Phase A's read-only audit flagged one example (the Southend testimonial) as a
+sample finding. Auditing all four `/lp/*` pages against this document in
+Phase B, as instructed, found the same fabrication pattern repeated across
+three of the four pages, not just one. Documented in full below, per the
+CLAIM / PAGE / SOURCE / STATUS / ACTION / OWNER INPUT NEEDED format.
+
+| Claim | Page(s) | Source text found | Status | Action taken | Owner input needed |
+|---|---|---|---|---|---|
+| **"Robert P., Southend" testimonial** | `lp/scaffolding-southend/index.html` | "Emergency call-out within hours when we had storm damage. Ashley was brilliant and the scaffold made everything safe." — Robert P., Southend | **Fabricated — confirmed.** No matching name, quote, or storm-damage/emergency review exists anywhere in the real `testimonials()` data or elsewhere in the repository. | **Removed.** Replaced with two genuine, verbatim entries from the real `testimonials()` list (Jason R. and Hannah M.), correctly attributed, with the fabricated Southend-specific framing dropped rather than reused for an unrelated real review. | No — do not recreate. If a real Southend/storm-damage testimonial exists, it should be added to `testimonials()` first (so it's available sitewide, verifiable, and consistent) rather than written directly onto one landing page. |
+| **"Michael T., Southend-on-Sea" testimonial** | `lp/scaffolding-southend/index.html` | "Quick, efficient and friendly... Highly recommend for any Southend project." — Michael T., Southend-on-Sea | **Fabricated — confirmed.** Near-verbatim copy of the real Jason R. review (`testimonials()`), with the name changed and a location sentence appended that doesn't appear in the source review. | **Removed**, replaced as above. | No |
+| **"James M., Rayleigh" testimonial** | `lp/scaffolding-rayleigh/index.html` | "They turned up on time... Highly recommend for any Rayleigh project." — James M., Rayleigh | **Fabricated — confirmed.** Near-verbatim copy of the real Sally M. review, name changed, location sentence appended. | **Removed.** Replaced with genuine, verbatim Sally M. and Hannah M. entries from `testimonials()`, generic framing ("What Our Customers Say", no location claim). | No |
+| **"Sarah K., Rayleigh" testimonial** | `lp/scaffolding-rayleigh/index.html` | "Ashley and his team were professional... for our Rayleigh home." — Sarah K., Rayleigh | **Fabricated — confirmed.** Altered copy of the real Hannah M. review (name changed, "our project" changed to "our Rayleigh home"). | **Removed**, replaced as above. | No |
+| **"Roofing Contractor, Basildon" / "Property Owner, Chelmsford" testimonials** | `lp/temporary-roofing-essex/index.html` | "Axis Scaffolding provided an excellent temporary roof..." / "Professional service from start to finish..." | **Unverifiable.** Anonymous personas, no name to check, no matching entry anywhere in `testimonials()` or the rest of the repository — no authoritative source could be established. | **Removed**, replaced with genuine, verbatim Jason R. and Verified Customer entries from `testimonials()`. | No — if these are real reviews from a real contractor/homeowner, add them to `testimonials()` with a real name or an honestly-labelled "Verified Customer" attribution (as the site already does for one entry) so they're traceable, rather than an anonymous persona on one page. |
+| **"Rated 5.0 on Google" (sitewide rating claim)** | `lp/scaffolding-rayleigh/index.html`, `lp/scaffolding-southend/index.html` | "⭐⭐⭐⭐⭐ Rated 5.0 on Google · CISRS Certified · Fully Insured" | **Fabricated — confirmed**, same class as the already-removed `AggregateRating` (5.0 / 47 reviews) schema finding from Phase 7. No Google review-platform integration or review count exists anywhere in the repository. | **Removed** the rating claim; kept "CISRS Certified · Fully Insured" (both established elsewhere). | If a real, current Google rating exists, add it as a genuine, sourced figure (ideally sitewide via `testimonials()`/schema, not ad hoc per landing page) rather than restoring this line as-is. |
+| **24/7 availability** | `lp/emergency-scaffolding-essex/index.html` | Title tag "24/7 Response", H1 "Emergency Scaffolding Essex – 24/7 Response", H2 "Emergency Scaffolding – Available 24/7", H3 "24/7 Availability" / "We respond to emergencies day and night", CTA "Call 01702 820468 – We're Ready 24/7" | **Owner verification required — treated as unverified, not propagated.** Contradicts the phrasing used everywhere else on the site ("aim to attend site or arrange erection as quickly as operatives are available"), and no other page or data source establishes genuine 24-hour/day operation. | **Rewritten to neutral, non-invented language**, matching the site's established phrasing: title/H1/H2 changed to "Rapid Response", H3 changed to "Priority Response" / "We aim to attend site or arrange erection as quickly as operatives are available", CTA changed to "We Respond Fast". No new response-time promise invented. | Yes — if the business genuinely operates a 24-hour emergency line, that's a strong, usable trust signal, but it needs confirming before it goes back on any page, worded precisely (e.g. "24-hour emergency phone line" vs. "24/7 on-site attendance" are very different claims). |
+| **£5m public liability insurance (specific figure)** | All four `/lp/*` pages (previously only tracked on `areas/london/index.html`) | "£5m public liability coverage" | **Owner verification required** (existing classification, scope extended to cover all 4 LP pages) | **Not changed.** Per explicit instruction: do not propagate this claim further, but do not delete it from existing source material merely because it's unverified. Left as-is on all 4 pages. | Yes — see the original entry above. If confirmed, this becomes a strong, reusable trust signal sitewide; if not, it needs correcting on all 5 pages that now carry it (4 LP pages + London). |
+
+### Action taken in Phase B (Trust, Consistency & Customer-Journey Integration)
+
+- Removed 6 fabricated/altered customer testimonials across 3 of the 4 `/lp/*` pages (Southend ×2, Rayleigh ×2, Temporary Roofing ×2) and replaced them with genuine, verbatim entries from the real `testimonials()` data, with any location-specific framing that wasn't genuinely sourced dropped rather than carried over onto real reviews.
+- Removed the unsourced "Rated 5.0 on Google" line from 2 pages (Rayleigh, Southend) — same fabrication class as the Phase 7 `AggregateRating` finding.
+- Rewrote the "24/7" claim on the emergency landing page to neutral, non-invented language, matching the site's established response-time phrasing.
+- Did **not** touch the £5m insurance figure on any page — left in place per instruction, classification unchanged (owner verification required), scope of the existing table row extended to note it now appears on 5 pages, not 1.
+- Did **not** touch TG20:21, CDM, or Section 169 claims on the London page — out of this phase's named scope, already documented above, unchanged since Phase 7.
 
 ## Owner Information Report
 
