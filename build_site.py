@@ -1423,6 +1423,24 @@ textarea:focus-visible {
    supplementary hover affordance; everything a customer actually needs
    to evaluate the project is visible without interaction. */
 .projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+/* /gallery's full portfolio only: a periodic wide tile breaks up an
+   otherwise uniform wall of identical cards. grid-auto-flow:dense means a
+   filtered-out (display:none) item is simply removed from the flow, so the
+   remaining tiles repack cleanly — the wide positions aren't reserved gaps,
+   the dense algorithm fills around whichever tiles are actually visible. */
+.projects-grid-portfolio {
+  grid-auto-flow: dense; gap:var(--space-10) var(--space-6);
+}
+.projects-grid-portfolio .project-item:nth-child(5n+1) {
+  grid-column: span 2;
+}
+.projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media {
+  aspect-ratio: 16/9;
+}
+@media (max-width:900px) {
+  .projects-grid-portfolio .project-item:nth-child(5n+1) { grid-column: span 1; }
+  .projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media { aspect-ratio: 4/5; }
+}
 .project-item { position:relative; }
 .project-item-media {
   position:relative; display:block; overflow:hidden; width:100%;
@@ -3559,9 +3577,33 @@ def service_detail_body(service: dict) -> str:
     else:
         cta_buttons = f'<a class="btn btn-light" href="tel:{NAP["phone_e164"]}">{NAP["phone"]}</a><a class="btn btn-dark" href="/quote">Request a Quote</a>'
 
-    return (
-        inner_hero(path, h1, f"{service['summary']} Free, no-obligation quotes — call {NAP['phone']} or complete the form below.")
-        + f"""
+    related = [p for p in PROJECTS if p["service_slug"] == slug][:3]
+
+    # Where a real, tagged project photo exists for this service, "Who Is
+    # This For?" becomes a split-grid with that photo — real proof reaches
+    # the visitor in the first content section, not buried after five
+    # stacked text blocks. Where no photo is tagged (4 of 9 services), the
+    # section stays plain text rather than borrowing an unrelated image.
+    proof_photo = related[0] if related else None
+    if proof_photo:
+        proof_srcset = _project_srcset(proof_photo["slug"], proof_photo["w"])
+        who_for_section = f"""
+<section class="section section-light">
+  <div class="container split-grid">
+    <div>
+      <h2>Who Is This For?</h2>
+      <p>{who_for}</p>
+    </div>
+    <div>
+      <img src="/images/{proof_photo['slug']}.webp" srcset="{proof_srcset}" sizes="(max-width: 900px) 100vw, 50vw"
+           alt="{proof_photo['label']} in {proof_photo['location']}, Essex — real Axis Scaffolding project photograph"
+           width="{proof_photo['w']}" height="{proof_photo['h']}" loading="lazy" decoding="async" class="rounded-image">
+    </div>
+  </div>
+</section>
+"""
+    else:
+        who_for_section = f"""
 <section class="section section-light">
   <div class="container">
     <h2>Who Is This For?</h2>
@@ -3569,6 +3611,10 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """
+
+    return (
+        inner_hero(path, h1, f"{service['summary']} Free, no-obligation quotes — call {NAP['phone']} or complete the form below.")
+        + who_for_section
         + (f"""
 <section class="section">
   <div class="container">
@@ -3601,16 +3647,16 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """ if faq_html else "")
-        + (lambda related=[p for p in PROJECTS if p["service_slug"] == slug][:3]: f"""
+        + (lambda more_projects=related[1:] if proof_photo else related: f"""
 <section class="section section-dark">
   <div class="container">
     <h2>Related Projects</h2>
     <p class="section-intro">Real {service['name'].lower()} completed by Axis.</p>
-    <div class="projects-grid">{"".join(project_card(p) for p in related)}</div>
+    <div class="projects-grid">{"".join(project_card(p) for p in more_projects)}</div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
 </section>
-""" if related else "")()
+""" if (related[1:] if proof_photo else related) else "")()
         + f"""
 <section class="section">
   <div class="container">
@@ -4073,8 +4119,9 @@ def generate_pages() -> None:
 <p class="section-eyebrow">Featured Project</p>
 <div class="projects-feature-single">{project_card(gallery_featured, featured=True, eager=True)}</div>
 <h2 class="projects-grid-heading">The Full Portfolio</h2>
+<p class="section-intro">Every completed job, filterable by type — no two scaffolds are the same.</p>
 {project_filter_tabs}
-<div class="projects-grid">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
+<div class="projects-grid projects-grid-portfolio">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
 </div></section>"""
     )
     write(
@@ -4106,6 +4153,13 @@ def generate_pages() -> None:
     <p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p>
     <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
   </div>
+</div></section>
+
+<section class="section section-dark"><div class="container">
+  <h2>Real Work, Not a Brochure</h2>
+  <p class="section-intro">A small sample of completed jobs — the same real photography featured across this site, no stock imagery.</p>
+  <div class="projects-grid">{"".join(project_card(p) for p in (lambda ps=["project-4", "project-11", "project-9"]: [next(x for x in PROJECTS if x["slug"] == s) for s in ps])())}</div>
+  <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
 </div></section>
 
 <section class="section section-paper"><div class="container">

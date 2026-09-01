@@ -546,6 +546,24 @@ textarea:focus-visible {
    supplementary hover affordance; everything a customer actually needs
    to evaluate the project is visible without interaction. */
 .projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+/* /gallery's full portfolio only: a periodic wide tile breaks up an
+   otherwise uniform wall of identical cards. grid-auto-flow:dense means a
+   filtered-out (display:none) item is simply removed from the flow, so the
+   remaining tiles repack cleanly — the wide positions aren't reserved gaps,
+   the dense algorithm fills around whichever tiles are actually visible. */
+.projects-grid-portfolio {
+  grid-auto-flow: dense; gap:var(--space-10) var(--space-6);
+}
+.projects-grid-portfolio .project-item:nth-child(5n+1) {
+  grid-column: span 2;
+}
+.projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media {
+  aspect-ratio: 16/9;
+}
+@media (max-width:900px) {
+  .projects-grid-portfolio .project-item:nth-child(5n+1) { grid-column: span 1; }
+  .projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media { aspect-ratio: 4/5; }
+}
 .project-item { position:relative; }
 .project-item-media {
   position:relative; display:block; overflow:hidden; width:100%;
