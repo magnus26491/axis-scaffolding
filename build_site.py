@@ -1203,6 +1203,32 @@ textarea:focus-visible {
   .hero-media, .hero-hex { transform:none !important; }
 }
 
+/* ── WHAT WE DO (homepage, immediately after hero) ──
+   A short, concrete "here is what we do" statement plus three plain
+   text links into the real service-group anchors below — deliberately
+   NOT another card grid; the decision-grid further down the page is
+   the card-based routing mechanism, this is just a pointer. */
+.what-we-do-routes {
+  display:flex; flex-wrap:wrap; gap:0.5rem 1.5rem; margin-top:1.25rem;
+  list-style:none; padding:0;
+}
+.what-we-do-routes a {
+  color:var(--silver); font-weight:600; font-size:var(--text-sm);
+  text-decoration:underline; text-underline-offset:3px;
+}
+
+/* ── SELECTIVE SPLIT-IMAGE PARALLAX ──
+   Applied to exactly one homepage section (For Builders & Roofers) per
+   explicit direction: hero gets the strong parallax, project imagery
+   stays static, and at most one other "major split-image section" gets
+   very subtle movement. Same desktop-pointer/reduced-motion/mobile
+   guards as the hero (see generate_js()), a smaller ratio (0.06) so it
+   reads as barely-there depth, not a second hero effect. */
+.parallax-split .parallax-image { transform:translateY(var(--split-parallax-y, 0px)); will-change:transform; }
+@media (prefers-reduced-motion:reduce) {
+  .parallax-split .parallax-image { transform:none !important; }
+}
+
 /* ── SECTIONS ── */
 .section { padding:var(--space-2xl) 0; }
 .section-light { background:#0a0a0a !important; }
@@ -1439,7 +1465,22 @@ textarea:focus-visible {
   align-items:start;
 }
 .projects-feature-grid .project-item-featured .project-item-media { aspect-ratio:4/3; }
+.projects-feature-grid .project-item-featured .project-item-label { font-size:var(--text-2xl); }
+.projects-feature-grid .project-item-featured .project-item-desc {
+  font-size:var(--text-lg); line-height:1.55; color:var(--text-secondary);
+  border-left:2px solid var(--border-strong); padding-left:var(--space-4); margin-top:var(--space-3);
+}
 .projects-feature-secondary { display:flex; flex-direction:column; gap:var(--space-8); }
+/* Desktop only: secondary projects read as a short editorial list (photo
+   beside caption) rather than two more stacked cards identical to the
+   featured one above. Collapses back to the normal stacked project-item at
+   1024px and below, where the existing responsive rules already apply. */
+@media (min-width:1025px) {
+  .projects-feature-secondary .project-item { display:flex; gap:var(--space-4); align-items:flex-start; }
+  .projects-feature-secondary .project-item-media { width:120px; flex:none; }
+  .projects-feature-secondary .project-item-media::after { display:none; }
+  .projects-feature-secondary .project-item figcaption { padding-top:0; }
+}
 
 /* /gallery: one large featured project ahead of the filterable grid —
    same "photography first, cards second" principle as the homepage,
@@ -1787,17 +1828,23 @@ body.lightbox-open { overflow:hidden; }
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#6b7280; font-size:0.78rem; }
 
-/* ── COOKIE BAR ── */
+/* ── COOKIE BAR ──
+   Kept deliberately compact — this is a legal/consent control, not a
+   promotional banner, so it should read and be dismissed quickly rather
+   than occupying a large band of the viewport. All three controls (accept,
+   reject, manage) and their accessible sizing are preserved unchanged;
+   only the bar's own padding/gaps and button density were tightened. */
 .cookie-bar {
   display:none; position:fixed; bottom:0; left:0; right:0; z-index:99999;
   background:var(--surface); border-top:2px solid var(--border-strong);
-  padding:var(--space-4) var(--space-8); flex-wrap:wrap;
-  align-items:center; justify-content:space-between; gap:var(--space-4);
+  padding:var(--space-3) var(--space-6); flex-wrap:wrap;
+  align-items:center; justify-content:space-between; gap:var(--space-3);
 }
-.cookie-bar p { color:var(--text-secondary); font-size:var(--text-sm); max-width:600px; margin:0; }
+.cookie-bar p { color:var(--text-secondary); font-size:var(--text-sm); max-width:600px; margin:0; line-height:1.4; }
 .cookie-bar p strong { color:#fff; }
 .cookie-bar p a { color:var(--silver); text-decoration:underline; }
-.cookie-bar-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); align-items:center; }
+.cookie-bar-actions { display:flex; flex-wrap:wrap; gap:var(--space-2); align-items:center; }
+.cookie-bar-actions .btn { padding:0.5rem 1rem; font-size:var(--text-sm); }
 .cookie-bar-actions .btn-manage {
   background:none; border:none; color:var(--text-muted);
   font-size:var(--text-sm); cursor:pointer; text-decoration:underline; padding:0.5rem 0;
@@ -1819,7 +1866,10 @@ body.lightbox-open { overflow:hidden; }
   font-weight:700; cursor:pointer;
 }
 @media (max-width:768px) {
-  .cookie-bar { padding:var(--space-4); }
+  .cookie-bar { padding:var(--space-3); gap:var(--space-2); }
+  .cookie-bar p { font-size:var(--text-xs); line-height:1.35; }
+  .cookie-bar-actions { gap:var(--space-2); }
+  .cookie-bar-actions .btn { padding:0.45rem 0.9rem; }
 }
 
 /* ── DECISION CARDS ──
@@ -2067,6 +2117,61 @@ def generate_js() -> None:
       const scrolled = Math.max(0, -rect.top);
       heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
       heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    function sync() {
+      const should = canAnimate();
+      if (should === active) return;
+      active = should;
+      if (active) {
+        update();
+      } else {
+        reset();
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+  })();
+
+  // ── SPLIT-IMAGE PARALLAX ──
+  // Same guarded pattern as the hero, applied to the one other homepage
+  // section that pairs large text with a single photo. Ratio is
+  // deliberately much smaller than the hero's (0.06 vs 0.2) so it reads as
+  // barely-there depth, not a second hero effect.
+  (function splitParallax() {
+    const images = document.querySelectorAll('.parallax-split .parallax-image');
+    if (!images.length) return;
+
+    const RATIO = 0.06;
+    const canAnimate = () =>
+      window.matchMedia('(min-width: 769px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let active = false;
+    let ticking = false;
+
+    function reset() {
+      images.forEach((img) => img.style.removeProperty('--split-parallax-y'));
+    }
+
+    function update() {
+      ticking = false;
+      images.forEach((img) => {
+        const section = img.closest('.parallax-split');
+        const rect = section.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+        const scrolled = -rect.top;
+        img.style.setProperty('--split-parallax-y', (scrolled * RATIO) + 'px');
+      });
     }
 
     function onScroll() {
@@ -2814,7 +2919,7 @@ def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Servic
     a flat list in another."""
     return "".join(
         f"""
-<div class="services-group">
+<div class="services-group" id="group-{group['name'].lower().replace(' & ', '-').replace(' ', '-')}">
   <{group_heading_tag} class="services-group-heading">{group['name']}</{group_heading_tag}>
   <p class="services-group-intro">{group['intro']}</p>
   <div class="services-grid">
@@ -2970,30 +3075,67 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" aria-labelledby="why-axis-heading">
+<section class="section what-we-do" aria-labelledby="what-we-do-heading">
+  <div class="container">
+    <h2 id="what-we-do-heading">Scaffolding for Homes, Trade and Commercial Work</h2>
+    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across South Essex — from a single chimney scaffold to a full commercial site package. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
+    <ul class="what-we-do-routes">
+      <li><a href="#group-home-property">Home &amp; Property</a></li>
+      <li><a href="#group-commercial-trade">Commercial &amp; Trade</a></li>
+      <li><a href="#group-specialist">Specialist</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section-light" aria-labelledby="services-heading">
+  <div class="container">
+    <h2 id="services-heading">Our Scaffolding Services</h2>
+    <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
+    {services_grouped_section(heading_tag="h4")}
+  </div>
+</section>
+
+<section class="section section-dark" aria-labelledby="projects-heading">
+  <div class="container">
+    <h2 id="projects-heading">Recent Projects</h2>
+    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <div class="projects-feature-grid">
+      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
+      <div class="projects-feature-secondary">
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
+        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
+      </div>
+    </div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
+  </div>
+</section>
+
+<section class="section section-dark parallax-split" aria-labelledby="builders-heading">
   <div class="container split-grid">
     <div>
-      <img src="/images/project-7.webp" alt="Domestic scaffolding structure erected beside a home in Benfleet, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
+      <h2 id="builders-heading">For Builders &amp; Roofers</h2>
+      <p>Working with a trade or principal contractor is a different job to a one-off domestic scaffold — you need a scaffolder who turns up when agreed, communicates clearly and doesn't hold up your programme.</p>
+      <ul class="usp-list">
+        <li>CISRS-qualified team, verifiable on request</li>
+        <li>Planned erection and strike dates — we work to your programme</li>
+        <li>RAMS available for sites that require documentation</li>
+        <li>Trade and repeat-business enquiries welcome</li>
+      </ul>
+      <div class="hero-cta-row" style="justify-content:flex-start;">
+        <a class="btn btn-primary" href="/contractors">For Builders &amp; Contractors</a>
+        <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+      </div>
     </div>
     <div>
-      <h2 id="why-axis-heading">Why Builders &amp; Homeowners Choose Axis</h2>
-      <p class="section-intro">Based in Rayleigh, serving South Essex and surrounding areas.</p>
-      <ul class="usp-list usp-evidence">
-        <li><strong>CISRS Qualified</strong><span>Our scaffolders hold current CISRS qualifications — the UK industry standard for trained scaffold professionals. Your installation is carried out to a recognised national standard.</span></li>
-        <li><strong>Fully Insured</strong><span>Public liability insurance in place. Added protection for your property and project.</span></li>
-        <li><strong>10+ Years' Experience</strong><span>Founder-led local operation with over a decade of scaffolding experience across residential and commercial work in South Essex.</span></li>
-        <li><strong>Same-Day Quote Response</strong><span>We aim to respond to all quote requests within the same working day. Emergency enquiries are prioritised — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</span></li>
-        <li><strong>RAMS Available</strong><span>Risk assessments and method statements available for commercial sites and principal contractors requiring documentation.</span></li>
-      </ul>
-      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <img src="/images/project-2.webp" alt="Commercial scaffolding access at a site in Canvey Island, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image parallax-image">
     </div>
   </div>
 </section>
 
 <section class="section section-light decision-section" aria-labelledby="decision-heading">
   <div class="container">
-    <h2 id="decision-heading">What are you working on?</h2>
-    <p class="section-intro">Pick the option closest to your project and we'll point you to the right place.</p>
+    <h2 id="decision-heading">Which of These Is You?</h2>
+    <p class="section-intro">Now you know what we do — pick the option closest to your project and we'll point you to the right place.</p>
     <div class="decision-grid">
       <a href="/services/residential-scaffolding" class="decision-card">
         <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
@@ -3029,21 +3171,6 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-dark" aria-labelledby="projects-heading">
-  <div class="container">
-    <h2 id="projects-heading">Recent Projects</h2>
-    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
-    <div class="projects-feature-grid">
-      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
-      <div class="projects-feature-secondary">
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
-      </div>
-    </div>
-    <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
-  </div>
-</section>
-
 <section class="section section-paper" aria-labelledby="process-heading">
   <div class="container">
     <h2 id="process-heading">How It Works</h2>
@@ -3055,36 +3182,6 @@ def homepage() -> str:
       <li class="process-step"><span class="process-num" aria-hidden="true">4</span><div><h3>We erect safely and on time</h3><p>Our CISRS-qualified team installs the agreed scaffold, working around your roofer, builder or site schedule.</p></div></li>
       <li class="process-step"><span class="process-num" aria-hidden="true">5</span><div><h3>We dismantle and leave you tidy</h3><p>Once your work is finished, we return promptly to dismantle and remove all scaffold. Tidy handover — no materials left on site.</p></div></li>
     </ol>
-  </div>
-</section>
-
-<section class="section section-dark" aria-labelledby="builders-heading">
-  <div class="container split-grid">
-    <div>
-      <h2 id="builders-heading">For Builders &amp; Roofers</h2>
-      <p>Working with a trade or principal contractor is a different job to a one-off domestic scaffold — you need a scaffolder who turns up when agreed, communicates clearly and doesn't hold up your programme.</p>
-      <ul class="usp-list">
-        <li>CISRS-qualified team, verifiable on request</li>
-        <li>Planned erection and strike dates — we work to your programme</li>
-        <li>RAMS available for sites that require documentation</li>
-        <li>Trade and repeat-business enquiries welcome</li>
-      </ul>
-      <div class="hero-cta-row" style="justify-content:flex-start;">
-        <a class="btn btn-primary" href="/contractors">For Builders &amp; Contractors</a>
-        <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
-      </div>
-    </div>
-    <div>
-      <img src="/images/project-2.webp" alt="Commercial scaffolding access at a site in Canvey Island, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image">
-    </div>
-  </div>
-</section>
-
-<section class="section section-light" aria-labelledby="services-heading">
-  <div class="container">
-    <h2 id="services-heading">Our Scaffolding Services</h2>
-    <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
-    {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
 
