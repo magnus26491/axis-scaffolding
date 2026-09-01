@@ -1441,6 +1441,16 @@ textarea:focus-visible {
   .projects-grid-portfolio .project-item:nth-child(5n+1) { grid-column: span 1; }
   .projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media { aspect-ratio: 4/5; }
 }
+/* "Recently Added" on /gallery only — genuine, founder-confirmed photos
+   not yet matched to a town/service, so no lightbox, no area/service link,
+   no category filter: just the photo (opens full-size in a new tab) and an
+   honest caption. Same flat, photography-first treatment as .project-item. */
+.untagged-photo-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
+.untagged-photo a { display:block; overflow:hidden; aspect-ratio:4/5; background:var(--surface-2); border-top:2px solid var(--border-strong); }
+.untagged-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s ease; }
+.untagged-photo a:hover img, .untagged-photo a:focus-visible img { transform:scale(1.04); }
+.untagged-photo figcaption { padding:var(--space-3) 0 0; color:var(--text-muted); font-size:var(--text-sm); }
+@media (max-width:640px) { .untagged-photo-grid { grid-template-columns:1fr; } }
 .project-item { position:relative; }
 .project-item-media {
   position:relative; display:block; overflow:hidden; width:100%;
@@ -2863,6 +2873,20 @@ PROJECTS = [
      "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
 ]
 
+# Genuine Axis Scaffolding site photography, confirmed directly by the
+# founder — but not yet carrying the specific town/service information every
+# PROJECTS entry above needs for its area/service links. Deliberately kept
+# out of PROJECTS and project_card() (which both assume that information
+# exists) rather than inventing a location or service category to force
+# them into the same shape. Shown once, on /gallery only, with no area or
+# service link and no claim beyond "this is a genuine Axis photograph" —
+# add the missing details and fold each into PROJECTS above once known.
+UNTAGGED_PHOTOS = [
+    {"slug": "project-15", "w": 1536, "h": 2048},
+    {"slug": "project-16", "w": 1536, "h": 2048},
+    {"slug": "project-17", "w": 1536, "h": 2048},
+]
+
 
 def _project_srcset(slug: str, native_w: int) -> str:
     widths = [w for w in (480, 768, 1080) if w <= native_w]
@@ -2908,6 +2932,25 @@ def project_cards() -> str:
     # First row (3-col desktop grid) is likely at or above the fold on the
     # /gallery page, so it's a plausible LCP candidate — don't lazy-load it.
     return "".join(project_card(p, eager=i < 3) for i, p in enumerate(PROJECTS))
+
+
+def untagged_photo_card(p: dict) -> str:
+    # Deliberately not a project_card(): no area link, no service link, no
+    # category filter — those all require information this photo doesn't
+    # carry yet (see UNTAGGED_PHOTOS above). A plain figure, a genuine claim
+    # ("Axis Scaffolding photograph"), nothing else. The image itself still
+    # opens full-size in a new tab — that needs no metadata to be honest.
+    srcset = _project_srcset(p["slug"], p["w"])
+    return f"""
+<figure class="untagged-photo">
+  <a href="/images/{p['slug']}.webp" target="_blank" rel="noopener noreferrer" aria-label="View full-size photo — genuine Axis Scaffolding photograph (opens in a new tab)">
+    <img src="/images/{p['slug']}.webp" srcset="{srcset}" sizes="(max-width: 640px) 100vw, 33vw"
+         alt="Genuine Axis Scaffolding site photograph"
+         width="{p['w']}" height="{p['h']}" loading="lazy" decoding="async">
+  </a>
+  <figcaption>Genuine Axis Scaffolding work &mdash; full project details to follow.</figcaption>
+</figure>
+"""
 
 
 SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
@@ -4123,6 +4166,11 @@ def generate_pages() -> None:
 {project_filter_tabs}
 <div class="projects-grid projects-grid-portfolio">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
 </div></section>"""
+        + (f"""<section class="section"><div class="container">
+<h2>Recently Added</h2>
+<p class="section-intro">More genuine Axis Scaffolding photography — these haven't been matched to a specific town or service page yet, so they're shown here on their own rather than under a guessed location.</p>
+<div class="untagged-photo-grid">{"".join(untagged_photo_card(p) for p in UNTAGGED_PHOTOS)}</div>
+</div></section>""" if UNTAGGED_PHOTOS else "")
     )
     write(
         "gallery/index.html",
