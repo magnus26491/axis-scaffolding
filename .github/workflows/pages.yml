@@ -38,6 +38,9 @@ jobs:
       - name: Post-process SEO output
         run: python3 scripts/seo_postprocess.py
 
+      - name: Testimonial & rating-claim integrity check
+        run: python3 scripts/check_testimonials.py
+
       - name: Verify no uncommitted generator drift
         run: |
           git diff --stat

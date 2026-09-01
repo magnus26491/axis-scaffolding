@@ -860,6 +860,13 @@ body.lightbox-open { overflow:hidden; }
 }
 .footer-bottom p { color:#6b7280; margin-bottom:0.65rem; }
 .footer-legal-links { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+.agency-credit { margin-top:1rem; }
+.agency-credit-link {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  color:#6b7280; font-size:0.8rem; text-decoration:none;
+}
+.agency-credit-link:hover { color:#9ca3af; }
+.agency-logo-box { display:inline-flex; width:20px; height:20px; flex-shrink:0; }
 .text-button {
   border:none; background:none; color:#d1d5db;
   text-decoration:underline; cursor:pointer; font:inherit;

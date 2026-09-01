@@ -376,6 +376,7 @@ def head_tags(
     breadcrumb_items: list[tuple[str, str]] | None = None,
     include_faq_schema: bool = False,
     preload_hero: bool = False,
+    extra_schemas: list[dict] | None = None,
 ) -> str:
     canonical = SITE + path
     schemas = [local_business_schema()]
@@ -383,6 +384,8 @@ def head_tags(
         schemas.append(breadcrumb_schema(breadcrumb_items))
     if include_faq_schema:
         schemas.append(faq_schema())
+    if extra_schemas:
+        schemas.extend(extra_schemas)
     schema_tags = "\n".join(
         f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>'
         for s in schemas
@@ -509,6 +512,14 @@ def footer() -> str:
       <a href="/cookie-policy">Cookie Policy</a>
       <a href="/privacy-policy">Privacy Policy</a>
       <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+    </div>
+    <div class="agency-credit">
+      <a href="https://mjadsystems.com" target="_blank" rel="noopener noreferrer" class="agency-credit-link" aria-label="Website by MJ AdSystems Ltd">
+        <span class="agency-logo-box">
+          <img src="https://mjadsystems.com/mj-adsystems-logo.jpg" alt="MJ AdSystems logo" width="20" height="20" loading="lazy" decoding="async" style="border-radius:3px; object-fit:contain;" onerror="this.src='https://mjadsystems.com/logo.jpg'; this.onerror=function(){{this.style.display='none'}};">
+        </span>
+        Website by MJ AdSystems Ltd
+      </a>
     </div>
   </div>
 </footer>
@@ -746,6 +757,7 @@ def quote_wizard() -> str:
     <fieldset class="quote-step" data-step="5">
       <legend>Photos <span class="quote-optional">(optional)</span></legend>
       <p class="quote-help-text">Photos of the property, roof and access can help us understand the job before we contact you.</p>
+      <label for="qw-photos">Upload photos</label>
       <input type="file" id="qw-photos" name="photos" multiple accept="image/*">
       <ul class="quote-photo-list" aria-live="polite"></ul>
       <p class="quote-photo-status" aria-live="polite"></p>
@@ -779,10 +791,11 @@ def render_page(
     breadcrumb_items: list[tuple[str, str]] | None = None,
     include_faq_schema: bool = False,
     preload_hero: bool = False,
+    extra_schemas: list[dict] | None = None,
 ) -> str:
     return f"""<!doctype html>
 <html lang="en-GB">
-{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero)}
+{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero, extra_schemas=extra_schemas)}
 <body>
   <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
@@ -1724,6 +1737,13 @@ body.lightbox-open { overflow:hidden; }
 }
 .footer-bottom p { color:#6b7280; margin-bottom:0.65rem; }
 .footer-legal-links { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+.agency-credit { margin-top:1rem; }
+.agency-credit-link {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  color:#6b7280; font-size:0.8rem; text-decoration:none;
+}
+.agency-credit-link:hover { color:#9ca3af; }
+.agency-logo-box { display:inline-flex; width:20px; height:20px; flex-shrink:0; }
 .text-button {
   border:none; background:none; color:#d1d5db;
   text-decoration:underline; cursor:pointer; font:inherit;
@@ -2813,6 +2833,13 @@ def area_pills() -> str:
     )
 
 
+def expansion_area_pills() -> str:
+    return "".join(
+        f'<li><a class="area-pill-link" href="/areas/{data["slug"]}">{name}</a></li>'
+        for name, data in EXPANSION_AREA_DATA.items()
+    )
+
+
 def related_guides_section(current_slug: str) -> str:
     others = [g for g in GUIDES if g["slug"] != current_slug]
     cards = "".join(
@@ -2836,37 +2863,64 @@ def related_guides_section(current_slug: str) -> str:
 """
 
 
+# ── APPROVED TESTIMONIAL SOURCE OF TRUTH ────────────────────────────────
+# The one and only approved list of real customer testimonials. Every
+# testimonial displayed anywhere on the site — generated pages via
+# testimonials() below, and hand-authored pages (e.g. the /lp/* landing
+# pages) alike — must reproduce an entry from this list verbatim (text,
+# name, and platform label all matching exactly). scripts/check_testimonials.py
+# validates every real HTML page against this list and fails the build on
+# any mismatch.
+#
+# This exists because, during Phase B (Trust, Consistency & Customer-Journey
+# Integration), six fabricated or altered testimonials were found on the
+# hand-authored /lp/* PPC landing pages — near-verbatim copies of entries
+# below with the customer's name and/or a location changed, plus two wholly
+# invented quotes. See CLAIM_VERIFICATION.md's Phase B section for the full
+# record. Do not add a new entry here without a genuine, sourced review.
+TESTIMONIALS = [
+    {
+        "text": "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
+        "name": "Sally M.",
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": "Ashley and his team were professional throughout: on time, polite and great value for our project.",
+        "name": "Hannah M.",
+        "badge_icon": "/images/icons/verified-badge.svg",
+        "badge_alt": "Verified review",
+        "platform": "Verified Review",
+    },
+    {
+        "text": "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
+        "name": "Jason R.",
+        "badge_icon": "/images/icons/bark-badge.svg",
+        "badge_alt": "Bark.com review",
+        "platform": "Bark.com Review",
+    },
+    {
+        "text": "Very professional setup, clear communication and tidy dismantling at the end of works.",
+        "name": "Verified Customer",
+        "badge_icon": "/images/icons/bark-badge.svg",
+        "badge_alt": "Bark.com review",
+        "platform": "Bark.com Review",
+    },
+]
+
+# No approved sitewide aggregate rating / review-count claim currently
+# exists — no review-platform integration is wired up anywhere in this
+# repository (see CLAIM_VERIFICATION.md's removed fabricated AggregateRating
+# / "Rated 5.0 on Google" findings). If one is ever genuinely confirmed,
+# set this to e.g. {"ratingValue": "4.9", "reviewCount": "12", "source":
+# "Google"} — until then, scripts/check_testimonials.py treats ANY rating
+# or review-count claim found anywhere on the site as unsupported and fails
+# the build.
+APPROVED_RATING: dict | None = None
+
+
 def testimonials() -> str:
-    entries = [
-        (
-            "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
-            "Sally M.",
-            "/images/icons/google-badge.svg",
-            "Google review",
-            "Google Review",
-        ),
-        (
-            "Ashley and his team were professional throughout: on time, polite and great value for our project.",
-            "Hannah M.",
-            "/images/icons/verified-badge.svg",
-            "Verified review",
-            "Verified Review",
-        ),
-        (
-            "Quick, efficient and friendly. Great communication throughout and they met every requirement we had.",
-            "Jason R.",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-        (
-            "Very professional setup, clear communication and tidy dismantling at the end of works.",
-            "Verified Customer",
-            "/images/icons/bark-badge.svg",
-            "Bark.com review",
-            "Bark.com Review",
-        ),
-    ]
     return "".join(
         f"""
 <div class="testimonial-card">
@@ -2874,18 +2928,18 @@ def testimonials() -> str:
     <span aria-hidden="true">★★★★★</span>
   </div>
   <blockquote class="review-text">
-    "{text}"
+    "{t['text']}"
   </blockquote>
   <div class="reviewer-info">
-    <span class="reviewer-name">{name}</span>
+    <span class="reviewer-name">{t['name']}</span>
     <span class="review-source">
-      <img src="{badge_icon}" alt="{badge_alt}" width="16" height="16">
-      {platform}
+      <img src="{t['badge_icon']}" alt="{t['badge_alt']}" width="16" height="16">
+      {t['platform']}
     </span>
   </div>
 </div>
 """
-        for text, name, badge_icon, badge_alt, platform in entries
+        for t in TESTIMONIALS
     )
 
 
@@ -3607,6 +3661,88 @@ AREA_DATA: dict[str, dict] = {
 }
 
 
+# Expansion-tier area pages: genuine coverage beyond the 12 core South Essex
+# towns above, but with no tagged real projects (PROJECTS/AREA_DATA) and no
+# hyper-local housing-stock narrative we can honestly write (unlike the core
+# towns, we have no established basis for "Housing and Properties in X"
+# claims about London boroughs). Content here is the genuine, existing
+# copy these pages already carried as hand-authored files — restructured
+# onto the current V2 template, not rewritten or expanded. See
+# CLAIM_VERIFICATION.md for the claims embedded in this content (TG20:21,
+# CDM, Section 169, £5m insurance on London) that are left unchanged here,
+# per instruction not to delete or propagate them.
+EXPANSION_AREA_DATA: dict[str, dict] = {
+    "London": {
+        "slug": "london",
+        "coverage_label": "East & North-East London",
+        "desc": "CISRS-certified scaffolding across East and North-East London — Barking, Dagenham, Havering, Redbridge, Waltham Forest & Newham. Free quotes, Rayleigh-based.",
+        "intro": "Axis Scaffolding Essex provides fully certified scaffolding services across East and North-East London, working from our Rayleigh base in South Essex. We cover Barking, Dagenham, Havering, Redbridge, Waltham Forest and Newham. Whether you need domestic scaffolding for a roof repair or a full commercial scaffold for a development project, we deliver safe, reliable access — on time and within budget.",
+        "services_intro": "Axis Scaffolding Essex has been providing professional scaffolding to residential and commercial clients across South Essex and East London for over 10 years. Our fully qualified, CISRS-certified scaffolding teams regularly travel into East and North-East London, bringing the same standards of safety, communication and workmanship that our Essex clients rely on.",
+        "service_blocks": [
+            ("Residential Scaffolding in East London", "East London's housing stock — Victorian terraces, Edwardian semis, post-war estates and modern new builds — all require specialist scaffolding approaches. Our residential scaffolding service across East London covers roof replacements, chimney repairs, loft conversions, full-house extensions, rendering and exterior painting. We design each scaffold system around your specific property, considering party wall access, highway licensing where required, and neighbour notification. Every installation is compliant with current HSE guidance and TG20:21 standards."),
+            ("Commercial Scaffolding in London", "For commercial and industrial clients in East London, we provide comprehensive scaffolding packages to support building refurbishments, cladding programmes, warehouse maintenance, office building works and new construction. Our commercial scaffolding service includes full method statements and risk assessments, co-ordination with principal contractors, and experienced teams accustomed to working under CDM regulations."),
+            ("Emergency Scaffolding in London", "When urgent scaffolding is needed in East London — following a storm, structural incident, fire or flood — our emergency team mobilises rapidly to help make your property safe. We erect make-safe scaffold structures as promptly as we can, protecting both the building and the public while permanent repairs are arranged."),
+            ("Temporary Roofing in East London", "For major roof replacement projects or properties that have suffered sudden weather damage, our temporary roofing service provides full weatherproof protection. We erect a fully enclosed scaffold roof structure over your property using industrial-grade sheeting, keeping rain, wind and debris out while works proceed below."),
+        ],
+        "coverage": [
+            ("Barking and Dagenham", "RM8, RM9, RM10, IG11"),
+            ("Havering", "Romford (RM1–RM7), Hornchurch, Upminster, Rainham"),
+            ("Redbridge", "Ilford, Gants Hill, Woodford, Wanstead (IG1–IG8)"),
+            ("Waltham Forest", "Walthamstow, Chingford, Leyton, Leytonstone (E4, E10, E11, E17)"),
+            ("Newham", "Stratford, West Ham, East Ham, Plaistow (E6, E7, E13, E15, E16)"),
+            ("Tower Hamlets borders", "enquire for coverage confirmation"),
+        ],
+        "faqs": [
+            ("Do you provide scaffolding in East London?", "Yes. We regularly provide scaffolding across East and NE London including Barking, Dagenham, Havering (Romford, Hornchurch, Upminster), Redbridge, Waltham Forest and Newham. Call 01702 820468 to confirm coverage for your postcode."),
+            ("How much does scaffolding cost in London?", "Scaffolding costs in London depend on property size, access, hire duration and the type of work being carried out. Residential scaffolds start from around £500–£800 for smaller properties. Standard 2–3 bed houses typically cost £800–£1,400 depending on complexity. Commercial projects are priced individually. Call 01702 820468 for a free quote after a site visit."),
+            ("Are you CISRS certified for London scaffolding work?", "Yes. Every scaffolder on London jobs holds a current CISRS card, confirming competence to TG20:21 standards. We are fully insured with £5 million public liability cover and can provide method statements and risk assessments for all London commercial projects."),
+            ("Do you need a licence to erect scaffolding on London streets?", "Yes. Scaffolding that overhangs or sits on a public highway in London requires a Section 169 Highways Act licence from the relevant London borough council. Processing times vary by borough (typically 5–15 working days). We advise clients on the application process as part of our service."),
+        ],
+        "nearby": ["Brentwood", "Loughton", "Rayleigh", "Basildon"],
+    },
+    "Brentwood": {
+        "slug": "brentwood",
+        "coverage_label": "Brentwood and the CM postcode area",
+        "desc": "CISRS-certified scaffolding in Brentwood, Essex. Axis Scaffolding covers the CM13-CM15 postcode area. Fast response, free quotes. Call 01702 820468.",
+        "intro": "Axis Scaffolding Essex provides fully certified scaffolding services across Brentwood and the surrounding CM postcode areas. Based in nearby Rayleigh, our team covers Brentwood town centre, Shenfield, Hutton, Pilgrims Hatch and Warley. Whether you need domestic scaffolding for a roof repair or a full commercial scaffold for a development project, we deliver safe, reliable access structures — on time and within budget.",
+        "services_intro": "Axis Scaffolding Essex provides design, erection, inspection and dismantling support for domestic and commercial clients in Brentwood, delivered by CISRS-certified scaffolders with full insurance.",
+        "service_blocks": [],
+        "coverage": [
+            ("Brentwood town centre", "CM14"),
+            ("Shenfield", "CM15"),
+            ("Hutton", "CM13"),
+            ("Pilgrims Hatch and Warley", "CM15"),
+        ],
+        "faqs": [
+            ("How quickly can you erect scaffolding in Brentwood?", "We typically respond to Brentwood enquiries within the same working day and can have scaffolding erected within 2-5 days of quote approval. For emergencies, call 01702 820468 directly."),
+            ("Do you cover Shenfield and Hutton?", "Yes. Our Rayleigh base means we cover the full CM13, CM14 and CM15 postcode areas including Shenfield, Hutton, Warley and Pilgrims Hatch. Call 01702 820468 for availability."),
+            ("Are you CISRS certified for Brentwood scaffolding work?", "Yes. All Axis Scaffolding scaffolders hold current CISRS cards. We are a registered limited company (No. 15050136) and are fully insured for all residential and commercial work in Brentwood."),
+        ],
+        "nearby": ["Chelmsford", "Basildon", "Rayleigh", "London"],
+    },
+    "Loughton": {
+        "slug": "loughton",
+        "coverage_label": "Loughton and the IG postcode area",
+        "desc": "CISRS-certified scaffolding in Loughton, Essex. Axis Scaffolding covers IG10 and surrounding areas. Fast response, free quotes. Call 01702 820468.",
+        "intro": "Axis Scaffolding Essex delivers professional scaffolding services across Loughton, Buckhurst Hill, Debden and the wider IG10 postcode area. Operating from our Rayleigh base in South Essex, we provide CISRS-certified scaffolders for residential roof work, loft conversions, extensions and commercial projects throughout the Epping Forest district.",
+        "services_intro": "Axis Scaffolding Essex provides design, erection, inspection and dismantling support for domestic and commercial clients in Loughton, delivered by CISRS-certified scaffolders with full insurance.",
+        "service_blocks": [],
+        "coverage": [
+            ("Loughton", "IG10"),
+            ("Buckhurst Hill", "IG9"),
+            ("Debden", "IG10"),
+            ("Chigwell", "IG7"),
+        ],
+        "faqs": [
+            ("Do you cover Loughton and Buckhurst Hill?", "Yes. We cover Loughton, Buckhurst Hill, Debden and Chigwell across the IG10 and IG7 postcodes. Call 01702 820468 to check availability in your specific area."),
+            ("How far is Rayleigh from Loughton?", "Our Rayleigh base is approximately 30 minutes from Loughton via the A127. We regularly work throughout west Essex and can provide same-day site visits for urgent scaffolding requirements."),
+            ("Can you provide scaffolding for Loughton loft conversions?", "Yes. Loft conversions are one of our most common residential jobs. We design the scaffold to your builder's exact specification and can accommodate party wall requirements in terraced and semi-detached properties common to the Loughton area."),
+        ],
+        "nearby": ["Chelmsford", "London", "Basildon"],
+    },
+}
+
+
 AREA_NAME_ALIASES = {"South Benfleet": "Benfleet"}
 
 
@@ -3669,6 +3805,103 @@ def area_page_body(area_name: str, data: dict) -> str:
     <div class="hero-cta-row">
       <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="btn btn-outline" href="/quote">Request a Quote</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+
+
+def _expansion_nearby_slug(name: str) -> str | None:
+    if name in EXPANSION_AREA_DATA:
+        return EXPANSION_AREA_DATA[name]["slug"]
+    target = AREA_DATA.get(AREA_NAME_ALIASES.get(name, name))
+    return target["slug"] if target else None
+
+
+def expansion_area_page_body(area_name: str, data: dict) -> str:
+    # Structurally matches area_page_body (same hero/quote-form/CTA-banner
+    # components, current nav/footer via render_page) but swaps the core
+    # towns' "Housing and Properties"/"Typical Scaffolding Projects"/"Site
+    # Access" narrative — which we have no genuine basis to write for London
+    # boroughs — for each page's own existing genuine content: real per-
+    # service copy (London only), a real postcode/borough coverage
+    # breakdown, and the real page-specific FAQs it already had. No new
+    # local-SEO paragraphs invented.
+    nearby_links = " &bull; ".join(
+        (lambda slug=_expansion_nearby_slug(n): f'<a href="/areas/{slug}">{n}</a>' if slug else f'<a href="/contact">{n}</a>')()
+        for n in data.get("nearby", [])
+    )
+    service_blocks_html = "".join(
+        f"<h3>{heading}</h3>\n<p>{body}</p>\n" for heading, body in data["service_blocks"]
+    )
+    coverage_html = "".join(
+        f"<li><strong>{place}</strong> &mdash; {areas}</li>" for place, areas in data["coverage"]
+    )
+    return (
+        inner_hero(
+            [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
+            f"Scaffolding in {area_name}, Essex",
+            data["intro"],
+        )
+        + f"""
+<section class="section section-dark">
+  <div class="container">
+    <h2>Our Scaffolding Services in {area_name}</h2>
+    <p>{data['services_intro']}</p>
+    {service_blocks_html}
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <h2>Our Scaffolding Services</h2>
+    {services_grouped_section(heading_tag="h4")}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Areas of {area_name} We Cover</h2>
+    <p>From our Rayleigh base, we regularly provide scaffolding services across:</p>
+    <ul class="usp-list">{coverage_html}</ul>
+    <h2>Nearby Areas We Also Cover</h2>
+    <p>{nearby_links}</p>
+    <p>We cover all of South Essex. <a href="/contact">Contact us</a> to confirm coverage for your specific location.</p>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <h2>Our Scaffolding Work</h2>
+    <p>See real, recently completed Axis Scaffolding projects across our South Essex base.</p>
+    <p><a class="btn btn-primary" href="/gallery">View Our Projects &rarr;</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Get a Free Quote in {area_name}</h2>
+    {quote_form(f'area-{data["slug"]}', f'Request a Free Quote — {area_name}')}
+  </div>
+</section>
+
+<section class="section section-light faq-wrap">
+  <div class="container">
+    <h2>FAQs &mdash; Scaffolding in {area_name}</h2>
+    {faq_accordion(data["faqs"], id_prefix=f'faq-{data["slug"]}')}
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container cta-banner-inner">
+    <div>
+      <h2>Need Scaffolding in {area_name}?</h2>
+      <p>Call our team for a free no-obligation quote.</p>
+    </div>
+    <div class="hero-cta-row">
+      <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
     </div>
   </div>
 </section>
@@ -3751,7 +3984,7 @@ def generate_pages() -> None:
         "gallery/index.html",
         render_page(
             title="Real Scaffolding Projects Across Essex | Axis Scaffolding",
-            desc="Browse real Axis Scaffolding projects across South Essex — residential, roofing and commercial work, each with its location and project type. Get a free quote today.",
+            desc="Browse real Axis Scaffolding projects across South Essex — residential, roofing and commercial work, each with its location. Free quotes today.",
             path="/gallery",
             body=gallery_body,
             breadcrumb_items=[("Home", "/"), ("Projects", "/gallery")],
@@ -3960,7 +4193,7 @@ def generate_pages() -> None:
         "guides/scaffolding-cost-essex/index.html",
         render_page(
             title="How Much Does Scaffolding Cost in Essex? | Axis Scaffolding",
-            desc="Scaffolding cost guide for Essex homeowners and contractors. Typical price ranges for domestic, roof, chimney and commercial scaffolding — with a free quote from Axis Scaffolding.",
+            desc="Scaffolding cost guide for Essex homeowners and contractors — typical price ranges for domestic, roof, chimney and commercial jobs. Free quotes.",
             path="/guides/scaffolding-cost-essex",
             body=cost_guide_body,
             breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
@@ -4063,7 +4296,7 @@ def generate_pages() -> None:
         "guides/highway-licence-scaffolding/index.html",
         render_page(
             title="Scaffolding Highway Licence Essex | Section 169 Guide",
-            desc="Do you need a licence to erect scaffolding on a pavement in Essex? Plain-English guide to Section 169 highway licences — when required, how to apply, and typical costs.",
+            desc="Do you need a licence for scaffolding on a pavement in Essex? Plain-English guide to Section 169 highway licences — when required, how to apply.",
             path="/guides/highway-licence-scaffolding",
             body=licence_guide_body,
             breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Highway Licence", "/guides/highway-licence-scaffolding")],
@@ -4093,6 +4326,7 @@ def generate_pages() -> None:
         + f"""
 <section class="section section-light">
   <div class="container">
+    <h2>Our Guides</h2>
     <div class="services-grid">{guides_cards}</div>
   </div>
 </section>
@@ -4211,6 +4445,14 @@ def generate_pages() -> None:
 
 <section class="section">
   <div class="container">
+    <h2>Also Serving</h2>
+    <p class="section-intro">Beyond our core South Essex coverage above, we also regularly take on work in these areas.</p>
+    <ul class="area-pills">{expansion_area_pills()}</ul>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
     <h2>Not Sure Which Service You Need?</h2>
     <p class="section-intro">See the full range of scaffolding services we provide across these areas.</p>
     <p class="centered"><a class="btn btn-outline-orange" href="/services">View All Services &rarr;</a></p>
@@ -4235,7 +4477,7 @@ def generate_pages() -> None:
         "areas/index.html",
         render_page(
             title="Areas We Cover | Axis Scaffolding Essex",
-            desc="Axis Scaffolding Ltd provides scaffolding across Benfleet, Canvey Island, Rayleigh, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford.",
+            desc="Axis Scaffolding Ltd provides residential, commercial and roof scaffolding across South Essex from our Rayleigh base. Free quotes — call 01702 820468.",
             path="/areas",
             body=areas_index_body,
             breadcrumb_items=[("Home", "/"), ("Areas", "/areas")],
@@ -4251,6 +4493,36 @@ def generate_pages() -> None:
                 path=f"/areas/{area_data['slug']}",
                 body=area_page_body(area_name, area_data),
                 breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
+            ),
+        )
+
+    # Expansion-tier area pages — previously hand-authored, frozen-in-time
+    # files using an outdated nav/footer/cookie-bar template (see
+    # PHASE_A_WEBSITE_AUDIT.md §2). Migrated into the generator so they
+    # share the same current header/footer/canonical/quote-form/visual
+    # system as every other page, same single-source-of-truth principle as
+    # the /areas hub migration above.
+    for area_name, area_data in EXPANSION_AREA_DATA.items():
+        # A custom FAQPage schema built from this page's own real FAQs, not
+        # the sitewide generic FAQS list (include_faq_schema=True would
+        # render schema that doesn't match this page's visible FAQ content).
+        area_faq_schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+                for q, a in area_data["faqs"]
+            ],
+        }
+        write(
+            f"areas/{area_data['slug']}/index.html",
+            render_page(
+                title=f"Scaffolding in {area_name} | Axis Scaffolding Essex",
+                desc=area_data["desc"],
+                path=f"/areas/{area_data['slug']}",
+                body=expansion_area_page_body(area_name, area_data),
+                breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
+                extra_schemas=[area_faq_schema],
             ),
         )
 
@@ -4376,7 +4648,9 @@ def generate_robots_sitemap() -> None:
         ("/guides/scaffolding-cost-essex", "0.7", "monthly"),
         ("/guides/do-i-need-scaffolding", "0.7", "monthly"),
         ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
-    ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()]
+    ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
+        (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
+    ]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for path, priority, changefreq in pages:
         lines.append(
