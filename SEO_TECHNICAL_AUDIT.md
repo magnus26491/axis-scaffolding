@@ -511,3 +511,177 @@ next" to the pages this round's fixes touched most:
   the existing design system with no new visual components, consistent
   header/footer, and no console errors beyond the known sandbox
   font-CDN noise.
+
+---
+
+## Round 3 — hub-integration audit (approved architecture, final check before stopping)
+
+Re-verified the /areas and /guides hubs end-to-end rather than assuming
+round 2's implementation was already perfect. Found and fixed one real
+remaining defect; everything else checked out.
+
+### 23. /areas hub verification
+
+- `/areas` → all 12 real area pages: **12 links, zero duplicates**, all
+  no-trailing-slash, verified by direct extraction.
+- Every one of the 12 generator-built area pages' breadcrumb links back
+  to `/areas` correctly. `areas/london/index.html`'s breadcrumb did
+  not: `<a href="/areas/"> Areas Served</a>` — trailing slash plus a
+  stray leading space inside the link text, missed by round 1's fix
+  (which only touched the page's canonical/og/hreflang/schema URLs, not
+  this separate relative link in the visible breadcrumb markup). **Fixed**
+  this round: `<a href="/areas">Areas Served</a>`.
+- No nearby-area links pointing to `/contact` as a substitute (the
+  `/contact` matches found are legitimate nav/footer "Contact"/"Contact
+  us" links, verified by inspecting each match, not area-name
+  substitutions — the PR #25 fix holds).
+- No stray anchor fragments beyond the standard `#main-content`
+  skip-link (accessibility feature, present on every page, not a defect).
+- No inconsistent URL forms remain: a sweep for any internal
+  `href="/.../"` (trailing slash) across every area and guide page
+  returned zero matches after the fix above.
+- Area pages → services: full `services_grouped_section()` present on
+  every generator-built area page (verified on Rayleigh: 10 service
+  links). Area pages → quote: present (verified: 2 quote links each).
+- **Area pages → real projects: genuinely missing.** `PROJECTS` already
+  carries `area_slug` tagging 14 real projects across 11 of the 12
+  areas (only Hockley has none) — the same kind of relationship PR #25
+  already surfaced on service pages ("Related Projects" filtered by
+  `service_slug`). No area page currently renders any project evidence
+  at all. This is a real, data-backed gap, not a fabrication risk (the
+  data already exists) — **flagged, not implemented**, per the
+  instruction to stop technical implementation after this audit.
+
+### 24. /guides hub verification
+
+- `/guides` → all 3 real guides: verified, matches `GUIDES`.
+- Every guide's breadcrumb links back to `/guides` — verified on all 3.
+- Related-guide links: exactly 2 per guide (the other 2), verified —
+  not a forced block, genuinely the full relevant set since there are
+  only 3 guides total.
+- Guide → quote CTA: present on all 3 (2–3 buttons each, existing CTA
+  pattern).
+- **Guide → service: currently only the generic footer's full 9-service
+  list, not a deliberate, contextual link to the one or two services
+  each guide is actually about** (e.g. the licence guide could
+  reasonably link to `/services/residential-scaffolding` and
+  `/services/roof-scaffolding` specifically, where highway licences
+  come up most). Not a broken relationship — the footer link technically
+  exists — but not the "genuinely relevant" targeted relationship the
+  brief asked for either. **Flagged, not implemented** — the guide body
+  copy would need a considered, specific edit per guide, not a
+  mechanical addition.
+
+### 25. Page-purpose roles (added to the classification)
+
+Extending §20's table with explicit hub/child roles, as requested:
+
+| Page | Role |
+|---|---|
+| `/areas` | **LOCAL NAVIGATION HUB** — lets a visitor or crawler discover every genuine service area from one place |
+| `/areas/[area]` (12 pages) | **LOCAL SERVICE / LOCATION PAGE** — answers "does Axis cover my town, and what would a job here look like" |
+| `/guides` | **KNOWLEDGE HUB** — the entry point for pre-purchase questions, not a sales page |
+| `/guides/[guide]` (3 pages) | **INFORMATION / AEO RESOURCE** — a single, extractable answer to one real question |
+
+`/areas/london`, `/areas/brentwood`, `/areas/loughton` remain classified
+as SUPPORTING INDEXABLE local/location pages (§20) — real content, but a
+different evidence tier, deliberately outside the LOCAL NAVIGATION HUB
+role until their unresolved claims are confirmed.
+
+### 26. Navigation — confirmed unchanged
+
+Verified `nav()` still reads exactly Home / Services / For Builders /
+Projects / About / Contact / phone / Get a Free Quote — **Guides was not
+added to primary navigation**, per instruction. Discoverability for both
+hubs comes from: `/areas` via the sitewide footer (all 12 areas, fixed
+this phase) and the homepage's own area-pills section; `/guides` via the
+homepage FAQ section, the `/services` FAQ section, and each guide's own
+cross-links — contextual placement, not header real estate.
+
+### 27. Human UX test
+
+- **Can a homeowner find their local area easily?** Yes — from the
+  footer (every page, all 12 real areas, now linked) or the homepage's
+  dedicated area-pills section, in one click either way.
+- **Can a customer find answers before contacting Axis?** Yes — `/guides`
+  is reachable from the homepage FAQ and `/services` FAQ, and each
+  guide cross-links the other two, so a visitor who lands on one finds
+  the rest without hunting.
+- **Can they move naturally from answer → service → location → real
+  project → quote?** Answer → service: yes (guide body links to all
+  services via the footer, though not the specific one — see §24).
+  Service → location: yes (every service page has an "Areas We Cover"
+  section, from PR #25). Location → real project: **no** — this is the
+  one missing link in the chain (§23's finding). Location → quote: yes
+  (every area page has a CTA). **Specific missing relationship
+  identified**: area → project. Everything else in the chain holds.
+
+### 28. Final technical audit — status
+
+| Item | Status |
+|---|---|
+| Full URL inventory | Complete (§1) |
+| Canonical audit | Complete (§2, §17, §23) |
+| Sitemap audit | Complete (§6, §17–18) |
+| Robots audit | Complete (§5) |
+| Schema audit | Complete (§4, §23–24) — `/areas` and `/guides` carry only `LocalBusiness` + `BreadcrumbList`, matching every other generated page, no unnecessary types added |
+| Breadcrumb audit | Complete (§7, §17, §23–24) — one remaining defect (London's `/areas/` breadcrumb link) found and fixed this round |
+| Indexability audit | Complete (§5, §20) |
+| Page-purpose classification | Complete (§20, §25) |
+| Internal-link graph | Complete (§7, §22) — re-run this round: zero broken links, only expected orphans remain (404, 4 PPC pages, thank-you) |
+| Service/area/project/guide relationship graph | Complete — one confirmed real gap (area→project, §23), one confirmed weak relationship (guide→specific-service, §24), both flagged not implemented |
+| Fabricated-content scan | Complete (§4, §12) — one fabrication found and removed (AggregateRating), nothing else found |
+| Unsupported-claim scan | Complete — see `CLAIM_VERIFICATION.md`, unchanged in scope this phase beyond the AggregateRating entry |
+
+## 29. Final report — divided per instruction
+
+**A. FIXED** (this phase, all committed and pushed to PR #26):
+Fabricated `AggregateRating` removed; canonical/og/hreflang/breadcrumb-
+schema trailing-slash consistency on 4 hand-authored area pages (round 1)
+plus London's remaining breadcrumb link (round 3); `/areas` and `/guides`
+added to sitemap; Twitter card copy-paste bug; broken `/guides`
+breadcrumb link; legacy-redirect-stub generator consolidation (11 of 22
+stubs gained missing `noindex,follow`); sitewide footer area list (8
+unlinked names → 12 real links); `/areas` migrated from a stale
+hand-authored file into the generator; `/guides` hub built from scratch;
+cookie-policy footer link added.
+
+**B. VERIFIED** (checked, found correct, no change needed):
+Primary navigation unchanged, Guides correctly kept out of it; `/areas`
+and `/guides` schema matches visible breadcrumbs exactly; no duplicate
+or dead links in either hub; no inconsistent trailing-slash URLs remain
+anywhere in the area/guide family; sitemap URLs all canonical, WWW,
+correct trailing-slash convention, no redirects included; CI validation,
+deterministic rebuild, `node -c`, duplicate-ID checks all pass.
+
+**C. OWNER VERIFICATION REQUIRED** (unchanged from `CLAIM_VERIFICATION.md`,
+not touched this phase): £5m insurance figure, TG20:21 compliance,
+CDM regulations experience, Section 169 citation specificity — all
+confined to the London page, all flagged before this phase began.
+
+**D. GSC DATA REQUIRED**: query-level Search Console export (3 months,
+`Query, Page, Clicks, Impressions, CTR, Position`) — not yet supplied.
+
+**E. ADS DATA REQUIRED**: Google Ads Search Terms export (~30 days
+matching the £316.36 spend reference, `Search term, Campaign, Ad group,
+Impressions, Clicks, CTR, Cost, Conversions, Cost/conv, Conversion
+value`) — not yet supplied.
+
+**F. DEFERRED TO NEXT PHASE** (real, evidence-based, deliberately not
+implemented — decisions or content work beyond this audit's scope):
+- Area pages → real project evidence (§23) — 14 real `area_slug`-tagged
+  projects exist and are unused on area pages.
+- Guide → specific-service contextual links (§24) — currently only the
+  generic footer list.
+- Whether/how London/Brentwood/Loughton should relate to the `/areas`
+  hub (§17).
+- `areas/index.html`'s `ScaffoldingContractor` schema type vs.
+  `LocalBusiness`/`HomeAndConstructionBusiness` used elsewhere.
+- London page's missing Twitter card.
+- All GSC/Ads-dependent work: query→page→intent mapping, CTR diagnosis,
+  homepage-cannibalisation analysis, service/location prioritisation,
+  Ads search-term classification.
+
+**Phase 7 technical implementation stops here**, per instruction. No
+further speculative SEO changes will be made against this audit; the
+next work is the GSC/Ads-informed matrix once the two exports arrive.
