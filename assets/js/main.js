@@ -76,6 +76,61 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', sync, { passive: true });
   })();
+
+  // ── SPLIT-IMAGE PARALLAX ──
+  // Same guarded pattern as the hero, applied to the one other homepage
+  // section that pairs large text with a single photo. Ratio is
+  // deliberately much smaller than the hero's (0.06 vs 0.2) so it reads as
+  // barely-there depth, not a second hero effect.
+  (function splitParallax() {
+    const images = document.querySelectorAll('.parallax-split .parallax-image');
+    if (!images.length) return;
+
+    const RATIO = 0.06;
+    const canAnimate = () =>
+      window.matchMedia('(min-width: 769px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let active = false;
+    let ticking = false;
+
+    function reset() {
+      images.forEach((img) => img.style.removeProperty('--split-parallax-y'));
+    }
+
+    function update() {
+      ticking = false;
+      images.forEach((img) => {
+        const section = img.closest('.parallax-split');
+        const rect = section.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+        const scrolled = -rect.top;
+        img.style.setProperty('--split-parallax-y', (scrolled * RATIO) + 'px');
+      });
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    function sync() {
+      const should = canAnimate();
+      if (should === active) return;
+      active = should;
+      if (active) {
+        update();
+      } else {
+        reset();
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+  })();
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
