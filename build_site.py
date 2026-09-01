@@ -37,38 +37,48 @@ NAP = {
 
 FAQS = [
     (
+        "cost",
         "How much does scaffolding cost in Essex?",
         "Residential scaffolding in Essex typically starts from around £300–£500 for smaller access jobs, rising to £1,500 or more for full roof scaffolds on larger properties. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
     ),
     (
+        "speed",
         "How quickly can scaffolding be erected?",
         "Most standard South Essex domestic and commercial jobs are scheduled within 2–5 working days once a quote is approved. Emergency scaffolding for urgent structural or storm-damage situations is prioritised — call 01702 820468 directly for urgent access requirements.",
     ),
     (
+        "cisrs",
         "Are you CISRS certified scaffolders?",
         "Yes. Axis Scaffolding Ltd is a fully qualified, CISRS-certified scaffolding company. CISRS (Construction Industry Scaffolders Record Scheme) is the industry standard qualification for scaffolders in the UK, demonstrating that our operatives are trained and assessed to national standards.",
     ),
     (
+        "licence",
         "Do you need a licence to erect scaffolding on a pavement or road?",
         "Yes. Scaffolding that overhangs or occupies a public highway — including pavements — requires a licence under Section 169 of the Highways Act 1980. Axis Scaffolding can advise on the licence process and coordinate with the local authority on your behalf. Licence fees and timescales vary by area.",
     ),
     (
+        "coverage",
         "Do you cover residential and commercial scaffolding in Essex?",
         "Yes. We provide domestic and residential scaffolding for homeowners, roof scaffolding for roofers and contractors, and commercial scaffolding for builders, developers and property managers. We also provide temporary roofing and emergency access across South Essex.",
     ),
     (
+        "difference-residential-domestic",
         "What is the difference between residential and domestic scaffolding?",
         "At Axis Scaffolding, residential scaffolding typically refers to larger home projects — extensions, full roof replacements, multi-storey properties — while domestic scaffolding covers shorter-term access for occupied homes undertaking repairs, painting or chimney work. Both are handled by the same CISRS-qualified team. If you're unsure which applies, just describe your job and we'll advise.",
     ),
     (
+        "driveway",
         "Will scaffolding damage my driveway or garden?",
         "We take care to protect driveways, gardens and render when erecting scaffold. Base plates and boards are used to spread load and minimise ground contact. If you have a particular concern about your driveway surface or a specific access constraint, mention it when you request your quote so we can plan accordingly.",
     ),
     (
+        "areas",
         "What areas do you cover in Essex?",
         "We are based in Rayleigh and regularly provide scaffolding in Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.",
     ),
 ]
+
+FAQS_BY_SLUG = {slug: (q, a) for slug, q, a in FAQS}
 
 SERVICES = [
     {
@@ -78,6 +88,8 @@ SERVICES = [
         "desc": "Residential scaffolding in Essex for extensions, roof replacements and exterior works. CISRS-qualified team based in Rayleigh. Free quotes — call 01702 820468.",
         "summary": "Safe, tidy scaffold systems for extensions, full roof replacements, rendering and exterior home improvements across South Essex.",
         "who_for": "Homeowners undertaking extensions, roof replacements, chimney repairs, rendering and other major exterior works.",
+        "audience": "Homeowners",
+        "card_blurb": "Extensions, full roof replacements and larger exterior work.",
     },
     {
         "slug": "commercial-scaffolding",
@@ -86,6 +98,8 @@ SERVICES = [
         "desc": "Commercial scaffolding in Essex for builders, developers and contractors. RAMS available. CISRS-qualified team in Rayleigh. Call 01702 820468 for a fast quote.",
         "summary": "Planned scaffold packages for builders, contractors, offices, retail units, schools and commercial developments across Essex.",
         "who_for": "Builders, developers, principal contractors, property managers and commercial premises requiring planned scaffold access.",
+        "audience": "Builders & Developers",
+        "card_blurb": "Planned scaffold packages for sites, offices, retail and schools.",
     },
     {
         "slug": "domestic-scaffolding",
@@ -94,6 +108,8 @@ SERVICES = [
         "desc": "Domestic scaffolding in Essex for occupied homes, repairs and short-term access. CISRS-qualified team in Rayleigh, South Essex. Free quotes — call 01702 820468.",
         "summary": "Short-term scaffold access for occupied homes needing repairs, painting, chimney work or maintenance across South Essex.",
         "who_for": "Homeowners requiring shorter-term scaffold access for repairs, maintenance, painting or chimney work on occupied properties.",
+        "audience": "Homeowners",
+        "card_blurb": "Short-term access for repairs, painting or chimney work.",
     },
     {
         "slug": "roof-scaffolding",
@@ -102,6 +118,8 @@ SERVICES = [
         "desc": "Roof scaffolding in Essex for roofers, chimney repairs and roofline works. CISRS-qualified. Based in Rayleigh. Free quote — call 01702 820468.",
         "summary": "Specialist roof-level scaffold systems for chimney repairs, guttering, fascias and full roof replacements across South Essex.",
         "who_for": "Homeowners and roofing contractors needing safe, compliant roof access for repairs, replacement, chimneys or guttering.",
+        "audience": "Homeowners & Roofers",
+        "card_blurb": "Roof-level access for replacement, repairs, chimneys and guttering.",
     },
     {
         "slug": "temporary-roofing",
@@ -110,6 +128,8 @@ SERVICES = [
         "desc": "Temporary roofing in Essex to protect live projects from weather. Scaffold-supported structures for ongoing roof works. Rayleigh team — call 01702 820468.",
         "summary": "Weather-protected temporary roof structures that keep projects moving year-round, protecting exposed structures during active roof works.",
         "who_for": "Builders, roofers and homeowners needing weather protection over an exposed structure during roof replacement or significant repair work.",
+        "audience": "Builders & Roofers",
+        "card_blurb": "Weather protection over an exposed roof during works.",
     },
     {
         "slug": "emergency-scaffolding",
@@ -118,6 +138,8 @@ SERVICES = [
         "desc": "Emergency scaffolding in Essex for storm damage, urgent access and safety works. Axis Scaffolding prioritises urgent enquiries — call 01702 820468 now.",
         "summary": "Rapid-response scaffold support for urgent structural issues, storm damage and emergency safety access across South Essex.",
         "who_for": "Anyone facing urgent structural access needs — storm-damaged roofs, emergency repairs, temporary protection after an incident.",
+        "audience": "Urgent — Anyone",
+        "card_blurb": "Rapid-response access for storm damage or urgent repairs.",
     },
     {
         "slug": "dismantling-scaffolding",
@@ -126,6 +148,8 @@ SERVICES = [
         "desc": "Professional scaffold dismantling in Essex. Safe, efficient removal and tidy handover once your project is complete. Rayleigh team — call 01702 820468.",
         "summary": "Safe, efficient scaffold removal and tidy site handover once works are complete — completing the full scaffold lifecycle.",
         "who_for": "Anyone who needs an existing scaffold removed safely, including scaffolds erected by other companies.",
+        "audience": "Anyone",
+        "card_blurb": "Safe removal of any scaffold, including ones we didn't erect.",
     },
     {
         "slug": "loading-bay-scaffolding",
@@ -134,6 +158,8 @@ SERVICES = [
         "desc": "Loading bay scaffolding in Essex for commercial sites and contractors. Structured material access solutions. Rayleigh team — call 01702 820468.",
         "summary": "Scaffold-integrated loading bays for safe materials delivery and handling on commercial and residential construction sites.",
         "who_for": "Builders and contractors on sites requiring safe access for materials delivery, loading and unloading at height.",
+        "audience": "Builders & Contractors",
+        "card_blurb": "Structured access for safe materials handling at height.",
     },
     {
         "slug": "scaffold-supply-erection",
@@ -142,8 +168,68 @@ SERVICES = [
         "desc": "Scaffold supply and erection in Essex. Materials and installation from a single CISRS-qualified team in Rayleigh. Free quote — call 01702 820468.",
         "summary": "Complete scaffold supply and erection from a single contractor — materials, qualified labour and site coordination in one package.",
         "who_for": "Contractors and homeowners who need a complete, managed scaffold solution from a single point of contact.",
+        "audience": "Contractors",
+        "card_blurb": "Materials and erection from a single point of contact.",
     },
 ]
+
+# Phase 6 — customer-facing service groups. This is a navigation/UX
+# layer only: it does not rename services, change URLs, or alter
+# SERVICES/SERVICE_DETAIL. It groups the same 9 pages so a visitor can
+# recognise which third is theirs before reading a single card.
+#
+# Tested against the actual data above, not assumed:
+# - Residential, Domestic and Roof are all who_for'd primarily at
+#   homeowners (Roof also serves roofing contractors, but its who_for
+#   leads with "Homeowners and roofing contractors" — homeowner-first).
+# - Commercial and Loading Bay are who_for'd at builders/contractors/
+#   developers outright. Scaffold Supply & Erection's who_for spans
+#   "Contractors and homeowners" — genuinely mixed — but its own
+#   description ("complete, managed scaffold solution from a single
+#   point of contact") is a trade/programme concern more than a
+#   typical single-homeowner ask, so it sits in Commercial & Trade;
+#   flagged here rather than silently forced.
+# - Temporary Roofing, Emergency and Dismantling are each services used
+#   *alongside* another scaffold job (weather protection during a roof
+#   job, urgent access, end-of-job removal) rather than a standalone
+#   primary search — Specialist groups them as "the add-on/urgent
+#   layer", not a dumping ground for what's left over.
+SERVICE_GROUPS = [
+    {
+        "key": "home-property",
+        "name": "Home & Property",
+        "intro": "Scaffolding for your home — from larger improvement projects to shorter repair work.",
+        "slugs": ["residential-scaffolding", "domestic-scaffolding", "roof-scaffolding"],
+    },
+    {
+        "key": "commercial-trade",
+        "name": "Commercial & Trade",
+        "intro": "Scaffolding for builders, roofers and commercial projects.",
+        "slugs": ["commercial-scaffolding", "loading-bay-scaffolding", "scaffold-supply-erection"],
+    },
+    {
+        "key": "specialist",
+        "name": "Specialist",
+        "intro": "For temporary protection, urgent access and scaffold removal.",
+        "slugs": ["temporary-roofing", "emergency-scaffolding", "dismantling-scaffolding"],
+    },
+]
+
+# Curated, per-service selection from the general FAQs (see FAQS below)
+# — a service page should answer questions relevant to that service,
+# not the entire FAQ database. Every question referenced here already
+# exists verbatim in FAQS; nothing new is written for this.
+SERVICE_GENERAL_FAQ_SLUGS = {
+    "residential-scaffolding": ["difference-residential-domestic", "cost", "licence"],
+    "domestic-scaffolding": ["difference-residential-domestic", "cost"],
+    "roof-scaffolding": ["cost", "speed"],
+    "commercial-scaffolding": ["cisrs", "coverage"],
+    "temporary-roofing": ["speed"],
+    "emergency-scaffolding": ["speed"],
+    "dismantling-scaffolding": ["coverage"],
+    "loading-bay-scaffolding": ["cisrs"],
+    "scaffold-supply-erection": ["cost", "cisrs"],
+}
 
 AREAS = [
     "Benfleet",
@@ -252,7 +338,7 @@ def faq_schema() -> dict:
                 "name": q,
                 "acceptedAnswer": {"@type": "Answer", "text": a},
             }
-            for q, a in FAQS
+            for _slug, q, a in FAQS
         ],
     }
 
@@ -446,14 +532,20 @@ def moved_site_banner() -> str:
 """
 
 
-def faq_accordion() -> str:
+def faq_accordion(entries: list[tuple[str, str]] | None = None, id_prefix: str = "faq") -> str:
+    """Renders an accordion for the given (question, answer) pairs.
+    Defaults to the full sitewide FAQS list; pass a curated subset
+    (e.g. via FAQS_BY_SLUG) for a page that should only answer the
+    questions relevant to it, not the entire FAQ database."""
+    if entries is None:
+        entries = [(q, a) for _slug, q, a in FAQS]
     parts = []
-    for idx, (q, a) in enumerate(FAQS):
+    for idx, (q, a) in enumerate(entries):
         parts.append(
             f"""
 <div class="faq-item">
-  <button class="faq-question" id="faq-button-{idx}" aria-expanded="{'true' if idx == 0 else 'false'}" aria-controls="faq-panel-{idx}">{q}</button>
-  <div class="faq-answer" id="faq-panel-{idx}" role="region" aria-labelledby="faq-button-{idx}" {'style="display:block;"' if idx == 0 else ''}>
+  <button class="faq-question" id="{id_prefix}-button-{idx}" aria-expanded="{'true' if idx == 0 else 'false'}" aria-controls="{id_prefix}-panel-{idx}">{q}</button>
+  <div class="faq-answer" id="{id_prefix}-panel-{idx}" role="region" aria-labelledby="{id_prefix}-button-{idx}" {'style="display:block;"' if idx == 0 else ''}>
     <p>{a}</p>
   </div>
 </div>
@@ -1194,9 +1286,40 @@ textarea:focus-visible {
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
   margin-bottom:0.75rem;
 }
-.service-card h3, .service-card h2 { margin-bottom:0.6rem; }
+.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.5rem; font-size:1.1rem; }
+.service-card p { margin-bottom:0.75rem; }
 .service-card a { color:#e5e7eb; font-weight:600; text-decoration:none; }
 .service-card a:hover { color:#ffffff; }
+/* "Who is this for?" as a quick visual cue, not a sentence to read —
+   a restrained outlined pill directly under the name, so a visitor
+   can tell who a card is for before reading anything else. Outlined,
+   not filled: a badge should be a cue, not compete with the heading. */
+.service-card-audience {
+  display:inline-block; color:var(--silver, #c8cdd4);
+  border:1px solid rgba(200,205,212,0.4); border-radius:9999px;
+  font-size:0.72rem; font-weight:700; letter-spacing:0.03em;
+  text-transform:uppercase; padding:0.2rem 0.65rem; margin-bottom:0.75rem;
+}
+/* Same accent Emergency already uses on the homepage decision grid —
+   reused here so the one genuinely time-critical service reads as
+   different wherever it appears, not just on that one card. */
+.service-card-urgent {
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
+  background:rgba(255,50,50,0.06) !important;
+}
+.service-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
+
+/* ── SERVICE GROUPS ──
+   Three functional groups instead of nine equally-weighted cards —
+   the product-design fix, not just a visual one: a visitor should
+   recognise which third of the page is theirs before reading a single
+   card. Each group is a self-contained services-grid with exactly 3
+   cards, so the flex composition system above always renders one full,
+   flush row per group — never an orphan. */
+.services-group + .services-group { margin-top:2.5rem; }
+.services-group-heading { margin-bottom:0.35rem; }
+.services-group-intro { color:#9ca3af; font-size:0.95rem; margin:0 0 1.25rem; }
 
 /* ── SPLIT GRID ── */
 .split-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
@@ -2612,30 +2735,42 @@ def project_cards() -> str:
     return "".join(project_card(p, eager=i < 3) for i, p in enumerate(PROJECTS))
 
 
-def service_cards() -> str:
-    return "".join(
-        f"""
-<article class="service-card">
-  <div class="service-icon" aria-hidden="true"></div>
-  <h3>{svc['name']}</h3>
-  <p>{svc['summary']}</p>
-  <a href="/services/{svc['slug']}">Learn More →</a>
-</article>
-"""
-        for svc in SERVICES
-    )
+SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 
 
-def service_list_cards() -> str:
-    return "".join(
-        f"""
-<article class="service-card">
-  <h2>{svc['name']}</h2>
-  <p>{svc['summary']} We provide scaffolding Essex coverage from Benfleet and nearby towns. Get a free quote today.</p>
-  <a href="/services/{svc['slug']}">Read more about {svc['name'].lower()}</a>
+def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
+    """The overview card's job is recognition, not education — "is this
+    the service I need?", not the full page. Name, a visible audience
+    pill (the fast visual cue), one short sentence, one CTA. The page
+    itself (service_detail_body) does the actual explaining."""
+    urgent_class = " service-card-urgent" if svc["slug"] == "emergency-scaffolding" else ""
+    return f"""
+<article class="service-card{urgent_class}">
+  <{heading_tag}>{svc['name']}</{heading_tag}>
+  <span class="service-card-audience">{svc['audience']}</span>
+  <p>{svc['card_blurb']}</p>
+  <a href="/services/{svc['slug']}">{cta} &rarr;</a>
 </article>
 """
-        for svc in SERVICES
+
+
+def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Service", group_heading_tag: str = "h3") -> str:
+    """The three functional groups (SERVICE_GROUPS), each a self-contained
+    services-grid of exactly 3 cards — used on both the homepage and the
+    /services index so a visitor sees the same understandable system
+    wherever they land, not nine equally-weighted cards in one place and
+    a flat list in another."""
+    return "".join(
+        f"""
+<div class="services-group">
+  <{group_heading_tag} class="services-group-heading">{group['name']}</{group_heading_tag}>
+  <p class="services-group-intro">{group['intro']}</p>
+  <div class="services-grid">
+    {"".join(_service_card(SERVICES_BY_SLUG[slug], heading_tag=heading_tag, cta=cta) for slug in group['slugs'])}
+  </div>
+</div>
+"""
+        for group in SERVICE_GROUPS
     )
 
 
@@ -2839,7 +2974,8 @@ def homepage() -> str:
 <section class="section section-light" aria-labelledby="services-heading">
   <div class="container">
     <h2 id="services-heading">Our Scaffolding Services</h2>
-    <div class="services-grid">{service_cards()}</div>
+    <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
+    {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
 
@@ -3194,7 +3330,10 @@ def service_detail_body(service: dict) -> str:
     whats_included = detail.get("whats_included", [])
     pricing_text = detail.get("pricing", "")
     process_steps = detail.get("process_steps", [])
-    faqs = detail.get("faqs", [])
+    # Service-specific FAQs plus a small, curated selection from the
+    # general FAQ set (see SERVICE_GENERAL_FAQ_SLUGS) — one relevant
+    # accordion, not the whole FAQ database dumped on every page.
+    faqs = list(detail.get("faqs", [])) + [FAQS_BY_SLUG[s] for s in SERVICE_GENERAL_FAQ_SLUGS.get(slug, [])]
     cta_label = detail.get("cta_label", f"Need {service['name'].lower()}?")
     cta_is_phone = detail.get("cta_is_phone", False)
 
@@ -3267,11 +3406,14 @@ def service_detail_body(service: dict) -> str:
 """ if related else "")()
         + f"""
 <section class="section">
-  <div class="container faq-wrap">
-    <h2>General FAQs</h2>
-    {faq_accordion()}
+  <div class="container">
+    <h2>Areas We Cover</h2>
+    <p class="section-intro">Based in Rayleigh, providing {service['name'].lower()} across South Essex.</p>
+    <ul class="area-pills">{area_pills()}</ul>
   </div>
 </section>
+"""
+        + f"""
 <section class="cta-banner">
   <div class="container cta-banner-inner">
     <div>
@@ -3409,9 +3551,18 @@ AREA_DATA: dict[str, dict] = {
 }
 
 
+AREA_NAME_ALIASES = {"South Benfleet": "Benfleet"}
+
+
 def area_page_body(area_name: str, data: dict) -> str:
+    # Link to the real area page, not /contact — every "nearby" name here
+    # is a genuine AREA_DATA entry (or a known alias of one, e.g. "South
+    # Benfleet" for "Benfleet"); falling back to /contact only if a name
+    # genuinely has no area page rather than breaking the build.
     nearby_links = " &bull; ".join(
-        f'<a href="/contact">{n}</a>' for n in data.get("nearby", [])
+        (lambda target=AREA_DATA.get(AREA_NAME_ALIASES.get(n, n)):
+         f'<a href="/areas/{target["slug"]}">{n}</a>' if target else f'<a href="/contact">{n}</a>')()
+        for n in data.get("nearby", [])
     )
     return (
         inner_hero(
@@ -3442,9 +3593,7 @@ def area_page_body(area_name: str, data: dict) -> str:
 <section class="section section-light">
   <div class="container">
     <h2>Our Services in {area_name}</h2>
-    <div class="services-grid">
-      {"".join(f'<article class="service-card"><h3>{s["name"]}</h3><p>{s["summary"]}</p><a href="/services/{s["slug"]}">Learn more</a></article>' for s in SERVICES[:6])}
-    </div>
+    {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
 
@@ -3491,7 +3640,7 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd provides complete scaffolding Essex services from Rayleigh for residential, domestic and commercial projects. Get a free quote today.",
         )
         + f"""
-<section class="section section-light"><div class="container service-listing">{service_list_cards()}</div></section>
+<section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}</div></section>
 <section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
@@ -3894,8 +4043,12 @@ def generate_pages() -> None:
 <section class="section section-light">
   <div class="container">
     <h2>Services Available to Contractors</h2>
+    <p class="section-intro">The services builders, roofers and developers use most. Full list, including homeowner-facing services, on our <a href="/services">Services</a> page.</p>
     <div class="services-grid">
-      {"".join(f'<article class="service-card"><h3>{s["name"]}</h3><p>{s["summary"]}</p><a href="/services/{s["slug"]}">Read more</a></article>' for s in SERVICES)}
+      {"".join(_service_card(SERVICES_BY_SLUG[slug]) for slug in [
+          "commercial-scaffolding", "loading-bay-scaffolding", "scaffold-supply-erection",
+          "roof-scaffolding", "temporary-roofing", "dismantling-scaffolding", "emergency-scaffolding",
+      ])}
     </div>
   </div>
 </section>
@@ -3985,7 +4138,7 @@ def generate_pages() -> None:
   <div class="container">
     <h2>Our Scaffolding Services</h2>
     <div class="services-grid">
-      {"".join(f'<article class="service-card"><h3>{s["name"]}</h3><p>{s["summary"]}</p><a href="/services/{s["slug"]}">Learn more &rarr;</a></article>' for s in SERVICES[:6])}
+      {"".join(_service_card(s) for s in SERVICES[:6])}
     </div>
     <p style="margin-top:2rem;"><a href="/services" class="btn btn-outline">View All Services</a></p>
   </div>

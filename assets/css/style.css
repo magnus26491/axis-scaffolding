@@ -454,9 +454,40 @@ textarea:focus-visible {
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
   margin-bottom:0.75rem;
 }
-.service-card h3, .service-card h2 { margin-bottom:0.6rem; }
+.service-card h2, .service-card h3, .service-card h4 { margin-bottom:0.5rem; font-size:1.1rem; }
+.service-card p { margin-bottom:0.75rem; }
 .service-card a { color:#e5e7eb; font-weight:600; text-decoration:none; }
 .service-card a:hover { color:#ffffff; }
+/* "Who is this for?" as a quick visual cue, not a sentence to read —
+   a restrained outlined pill directly under the name, so a visitor
+   can tell who a card is for before reading anything else. Outlined,
+   not filled: a badge should be a cue, not compete with the heading. */
+.service-card-audience {
+  display:inline-block; color:var(--silver, #c8cdd4);
+  border:1px solid rgba(200,205,212,0.4); border-radius:9999px;
+  font-size:0.72rem; font-weight:700; letter-spacing:0.03em;
+  text-transform:uppercase; padding:0.2rem 0.65rem; margin-bottom:0.75rem;
+}
+/* Same accent Emergency already uses on the homepage decision grid —
+   reused here so the one genuinely time-critical service reads as
+   different wherever it appears, not just on that one card. */
+.service-card-urgent {
+  border-color:rgba(255,100,100,0.35) !important;
+  border-top-color:rgba(255,120,120,0.6) !important;
+  background:rgba(255,50,50,0.06) !important;
+}
+.service-card-urgent:hover { border-color:rgba(255,120,120,0.55) !important; }
+
+/* ── SERVICE GROUPS ──
+   Three functional groups instead of nine equally-weighted cards —
+   the product-design fix, not just a visual one: a visitor should
+   recognise which third of the page is theirs before reading a single
+   card. Each group is a self-contained services-grid with exactly 3
+   cards, so the flex composition system above always renders one full,
+   flush row per group — never an orphan. */
+.services-group + .services-group { margin-top:2.5rem; }
+.services-group-heading { margin-bottom:0.35rem; }
+.services-group-intro { color:#9ca3af; font-size:0.95rem; margin:0 0 1.25rem; }
 
 /* ── SPLIT GRID ── */
 .split-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
