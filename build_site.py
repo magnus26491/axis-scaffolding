@@ -1795,8 +1795,8 @@ body.lightbox-open { overflow:hidden; }
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:url('/assets/images/hex-grid.svg');
   background-repeat:repeat; background-size:52px 90px;
-  opacity:0.03;
-  animation:hex-breathe 16s ease-in-out infinite;
+  opacity:0.02;
+  animation:hex-breathe 20s ease-in-out infinite;
 }
 .section-dark:not(.section-clean) > *,
 .section-light:not(.section-clean) > *,
@@ -1805,17 +1805,17 @@ body.lightbox-open { overflow:hidden; }
   position:relative; z-index:1;
 }
 @keyframes hex-breathe {
-  0%, 100% { opacity:0.03; }
-  50% { opacity:0.08; }
+  0%, 100% { opacity:0.02; }
+  50% { opacity:0.05; }
 }
 @media (max-width:768px) {
   .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
-    animation:none; opacity:0.03;
+    animation:none; opacity:0.02;
   }
 }
 @media (prefers-reduced-motion:reduce) {
   .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
-    animation:none !important; opacity:0.03;
+    animation:none !important; opacity:0.02;
   }
 }
 
