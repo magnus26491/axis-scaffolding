@@ -1184,23 +1184,17 @@ textarea:focus-visible {
 }
 .hero-trust-badges span:first-child { border-left:none; }
 
-/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
-   Axis's structural signature: a large, sparse hex mesh (steel-frame
-   scale, not a dense tech-grid) sitting between the photo overlay and
-   the hero content. Motion is transform-only (driven by JS setting CSS
-   custom properties), so it never triggers layout/paint of anything
+/* ── HERO PARALLAX ──
+   Photo-only. An earlier version also carried a hex mesh layer directly
+   over the hero photograph — visually wrong (photography must stay
+   clean; see .hex-texture below for where the structural signature
+   actually belongs). Motion is transform-only (driven by JS setting a
+   CSS custom property), so it never triggers layout/paint of anything
    else. Desktop pointer devices only — see generate_js(); everywhere
-   else the layers are simply static. */
-.hero-hex {
-  position:absolute; inset:0; z-index:2; pointer-events:none;
-  background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.12;
-  transform:translateY(var(--hex-parallax-y, 0px));
-}
+   else the layer is simply static. */
 .hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
 @media (prefers-reduced-motion:reduce) {
-  .hero-media, .hero-hex { transform:none !important; }
+  .hero-media { transform:none !important; }
 }
 
 /* ── WHAT WE DO (homepage, immediately after hero) ──
@@ -1767,40 +1761,62 @@ body.lightbox-open { overflow:hidden; }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
 .cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 
-/* ── STRUCTURAL HEX TEXTURE (reusable, selective) ──
-   Axis's structural signature (see .hero-hex) extended beyond the hero
-   as a standalone slow-breathing utility that any dark/editorial/
-   photo-free "signature" component can opt into — the same tiled
-   hex-grid.svg tile as the hero, a slow breathing opacity, no JS, no
-   canvas, no per-frame redraw. Deliberately NOT wired to .section-dark
-   (used for generic content throughout the site — applying it there
-   would be wallpaper, not a signature). Applied to: .cta-banner (the
-   closing band reused across the homepage, every service page, every
-   area page, the guides, contractors and the PPC landing pages) and
-   .inner-hero (the identity band opening every non-homepage,
-   non-PPC-hero page) — at most two bookending instances per page,
-   never stacked on generic content. Not on the footer (dense link
-   columns), not over photography, not on light/paper sections or the
-   quote form. See PHASE_E4 doc for why this replaces the old
-   full-viewport canvas animation from PR #8. */
-.hex-texture { position:relative; overflow:hidden; }
+/* ── STRUCTURAL HEX TEXTURE (site-wide black-background system) ──
+   Axis's structural signature: a fine aluminium mesh — the hex-grid.svg
+   tile at its own native ~52x90px scale (no upscaling), so it reads as
+   architectural mesh rather than honeycomb. Part of the black-background
+   system itself: any genuinely black/near-black section (.section-dark,
+   .section-light — both near-black — and bare .section, which inherits
+   the black <body>) carries it automatically. .section-paper (the
+   genuine light/white surface) never does. .hex-texture is the explicit
+   opt-in for markup that isn't part of the .section family — .cta-banner,
+   .inner-hero, and the hand-authored PPC landing pages' closing bands.
+   .section-clean is the explicit, evidence-based opt-out on the .section
+   family — applied only where hex would sit over photography, a form,
+   or dense/busy content where the pattern would read as noise rather
+   than structure (project/photo grids, the quote wizard and other lead
+   forms, FAQ accordions). NEVER placed over photography — see .hero for
+   why the hero's own hex layer was retired instead of being tucked
+   behind the photo. At most one hex layer per section; never stacked,
+   never full-viewport. Opacity stays low enough that the breathing
+   should barely register as motion, not a visible pulse. See PHASE_E4
+   doc for why this replaces the old full-viewport canvas animation
+   from PR #8. */
+.section-dark:not(.section-clean),
+.section-light:not(.section-clean),
+.section:not(.section-paper):not(.section-clean),
+.hex-texture {
+  position:relative; overflow:hidden;
+}
+.section-dark:not(.section-clean)::before,
+.section-light:not(.section-clean)::before,
+.section:not(.section-paper):not(.section-clean)::before,
 .hex-texture::before {
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.04;
-  animation:hex-breathe 11s ease-in-out infinite;
+  background-repeat:repeat; background-size:52px 90px;
+  opacity:0.03;
+  animation:hex-breathe 16s ease-in-out infinite;
 }
-.hex-texture > * { position:relative; z-index:1; }
+.section-dark:not(.section-clean) > *,
+.section-light:not(.section-clean) > *,
+.section:not(.section-paper):not(.section-clean) > *,
+.hex-texture > * {
+  position:relative; z-index:1;
+}
 @keyframes hex-breathe {
-  0%, 100% { opacity:0.04; }
-  50% { opacity:0.11; }
+  0%, 100% { opacity:0.03; }
+  50% { opacity:0.08; }
 }
 @media (max-width:768px) {
-  .hex-texture::before { animation:none; opacity:0.05; }
+  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+    animation:none; opacity:0.03;
+  }
 }
 @media (prefers-reduced-motion:reduce) {
-  .hex-texture::before { animation:none !important; opacity:0.05; }
+  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+    animation:none !important; opacity:0.03;
+  }
 }
 
 /* ── INNER PAGES ── */
@@ -2152,16 +2168,15 @@ def generate_js() -> None:
 
   // ── HERO PARALLAX ──
   // Cinematic and restrained by design: over a 500px scroll the hero photo
-  // lags the page by ~100px and the hex layer by ~50px (0.2 / 0.1 of the
-  // scroll delta). Transform-only, rAF-batched, desktop-pointer-only.
+  // lags the page by ~100px (0.2 of the scroll delta). Transform-only,
+  // rAF-batched, desktop-pointer-only. Photo-only — no hex layer here,
+  // see .hex-texture in generate_css() for the structural signature.
   (function heroParallax() {
     const hero = document.querySelector('.hero');
     const heroMedia = hero && hero.querySelector('.hero-media');
-    const heroHex = hero && hero.querySelector('.hero-hex');
-    if (!hero || !heroMedia || !heroHex) return;
+    if (!hero || !heroMedia) return;
 
     const HERO_RATIO = 0.2;
-    const HEX_RATIO = 0.1;
     const canAnimate = () =>
       window.matchMedia('(min-width: 769px)').matches &&
       window.matchMedia('(hover: hover)').matches &&
@@ -2172,7 +2187,6 @@ def generate_js() -> None:
 
     function reset() {
       heroMedia.style.removeProperty('--hero-parallax-y');
-      heroHex.style.removeProperty('--hex-parallax-y');
     }
 
     function update() {
@@ -2181,7 +2195,6 @@ def generate_js() -> None:
       if (rect.bottom < 0 || rect.top > window.innerHeight) return;
       const scrolled = Math.max(0, -rect.top);
       heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
-      heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
     }
 
     function onScroll() {
@@ -3156,7 +3169,6 @@ def homepage() -> str:
        alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd"
        width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
-  <div class="hero-hex" aria-hidden="true"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
     <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
@@ -3193,7 +3205,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-dark" aria-labelledby="projects-heading">
+<section class="section section-dark section-clean" aria-labelledby="projects-heading">
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
     <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
@@ -3208,7 +3220,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-dark parallax-split" aria-labelledby="builders-heading">
+<section class="section section-dark parallax-split section-clean" aria-labelledby="builders-heading">
   <div class="container split-grid">
     <div>
       <h2 id="builders-heading">For Builders &amp; Roofers</h2>
@@ -3319,7 +3331,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" aria-labelledby="faq-heading">
+<section class="section section-clean" aria-labelledby="faq-heading">
   <div class="container faq-wrap">
     <h2 id="faq-heading">Frequently Asked Questions</h2>
     {faq_accordion()}
@@ -3668,7 +3680,7 @@ def service_detail_body(service: dict) -> str:
     if proof_photo:
         proof_srcset = _project_srcset(proof_photo["slug"], proof_photo["w"])
         who_for_section = f"""
-<section class="section section-light">
+<section class="section section-light section-clean">
   <div class="container split-grid">
     <div>
       <h2>Who Is This For?</h2>
@@ -3720,7 +3732,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """ if steps_html else "")
         + (f"""
-<section class="section section-light">
+<section class="section section-light section-clean">
   <div class="container faq-wrap">
     <h2>Frequently Asked Questions</h2>
     {faq_html}
@@ -3728,7 +3740,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """ if faq_html else "")
         + (lambda more_projects=related[1:] if proof_photo else related: f"""
-<section class="section section-dark">
+<section class="section section-dark section-clean">
   <div class="container">
     <h2>Related Projects</h2>
     <p class="section-intro">Real {service['name'].lower()} completed by Axis.</p>
@@ -4012,7 +4024,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section">
+<section class="section section-clean">
   <div class="container">
     <h2>Get a Free Quote in {area_name}</h2>
     {quote_form(f'area-{data["slug"]}', f'Request a Free Quote — {area_name}')}
@@ -4102,14 +4114,14 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section">
+<section class="section section-clean">
   <div class="container">
     <h2>Get a Free Quote in {area_name}</h2>
     {quote_form(f'area-{data["slug"]}', f'Request a Free Quote — {area_name}')}
   </div>
 </section>
 
-<section class="section section-light faq-wrap">
+<section class="section section-light faq-wrap section-clean">
   <div class="container">
     <h2>FAQs &mdash; Scaffolding in {area_name}</h2>
     {faq_accordion(data["faqs"], id_prefix=f'faq-{data["slug"]}')}
@@ -4153,7 +4165,7 @@ def generate_pages() -> None:
         )
         + f"""
 <section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
-<section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}<p class="centered" style="margin-top:1.5rem;">Not sure what you need? Read our <a href="/guides">scaffolding guides</a> for plain-English answers.</p></div></section>
+<section class="section section-light section-clean"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}<p class="centered" style="margin-top:1.5rem;">Not sure what you need? Read our <a href="/guides">scaffolding guides</a> for plain-English answers.</p></div></section>
 <section class="cta-banner hex-texture"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
@@ -4195,7 +4207,7 @@ def generate_pages() -> None:
             "Real Projects Across South Essex",
             "Every photograph below is a completed Axis Scaffolding project — no stock imagery. Browse by type or get a free quote for your own job.",
         )
-        + f"""<section class="section section-dark"><div class="container">
+        + f"""<section class="section section-dark section-clean"><div class="container">
 <p class="section-eyebrow">Featured Project</p>
 <div class="projects-feature-single">{project_card(gallery_featured, featured=True, eager=True)}</div>
 <h2 class="projects-grid-heading">The Full Portfolio</h2>
@@ -4203,7 +4215,7 @@ def generate_pages() -> None:
 {project_filter_tabs}
 <div class="projects-grid projects-grid-portfolio">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
 </div></section>"""
-        + (f"""<section class="section"><div class="container">
+        + (f"""<section class="section section-clean"><div class="container">
 <h2>Recently Added</h2>
 <p class="section-intro">More genuine Axis Scaffolding photography — these haven't been matched to a specific town or service page yet, so they're shown here on their own rather than under a guessed location.</p>
 <div class="untagged-photo-grid">{"".join(untagged_photo_card(p) for p in UNTAGGED_PHOTOS)}</div>
@@ -4227,7 +4239,7 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd delivers scaffolding Essex services from Rayleigh with certified standards and practical project support. Contact us and get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container split-grid">
+<section class="section section-clean"><div class="container split-grid">
   <div>
     <img src="/images/ashley-founder.jpg" alt="Ashley, founder of Axis Scaffolding Ltd" width="560" height="560" loading="lazy" decoding="async" class="rounded-image">
   </div>
@@ -4240,7 +4252,7 @@ def generate_pages() -> None:
   </div>
 </div></section>
 
-<section class="section section-dark"><div class="container">
+<section class="section section-dark section-clean"><div class="container">
   <h2>Real Work, Not a Brochure</h2>
   <p class="section-intro">A small sample of completed jobs — the same real photography featured across this site, no stock imagery.</p>
   <div class="projects-grid">{"".join(project_card(p) for p in (lambda ps=["project-4", "project-11", "project-9"]: [next(x for x in PROJECTS if x["slug"] == s) for s in ps])())}</div>
@@ -4272,7 +4284,7 @@ def generate_pages() -> None:
             "Need scaffolding Essex support from Rayleigh? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#c8cdd4;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section section-clean"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#c8cdd4;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
 """
     )
     write(
@@ -4292,7 +4304,7 @@ def generate_pages() -> None:
             "Get a Free Scaffolding Quote",
             "Tell us about your project in a few short steps — domestic, commercial or emergency access. Prefer to talk? Call " + NAP["phone"] + " instead.",
         )
-        + f"""<section class="section section-light"><div class="container">{quote_wizard()}</div></section>"""
+        + f"""<section class="section section-light section-clean"><div class="container">{quote_wizard()}</div></section>"""
     )
     write(
         "quote/index.html",

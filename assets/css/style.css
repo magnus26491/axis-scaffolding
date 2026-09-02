@@ -307,23 +307,17 @@ textarea:focus-visible {
 }
 .hero-trust-badges span:first-child { border-left:none; }
 
-/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
-   Axis's structural signature: a large, sparse hex mesh (steel-frame
-   scale, not a dense tech-grid) sitting between the photo overlay and
-   the hero content. Motion is transform-only (driven by JS setting CSS
-   custom properties), so it never triggers layout/paint of anything
+/* ── HERO PARALLAX ──
+   Photo-only. An earlier version also carried a hex mesh layer directly
+   over the hero photograph — visually wrong (photography must stay
+   clean; see .hex-texture below for where the structural signature
+   actually belongs). Motion is transform-only (driven by JS setting a
+   CSS custom property), so it never triggers layout/paint of anything
    else. Desktop pointer devices only — see generate_js(); everywhere
-   else the layers are simply static. */
-.hero-hex {
-  position:absolute; inset:0; z-index:2; pointer-events:none;
-  background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.12;
-  transform:translateY(var(--hex-parallax-y, 0px));
-}
+   else the layer is simply static. */
 .hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
 @media (prefers-reduced-motion:reduce) {
-  .hero-media, .hero-hex { transform:none !important; }
+  .hero-media { transform:none !important; }
 }
 
 /* ── WHAT WE DO (homepage, immediately after hero) ──
@@ -890,40 +884,62 @@ body.lightbox-open { overflow:hidden; }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
 .cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 
-/* ── STRUCTURAL HEX TEXTURE (reusable, selective) ──
-   Axis's structural signature (see .hero-hex) extended beyond the hero
-   as a standalone slow-breathing utility that any dark/editorial/
-   photo-free "signature" component can opt into — the same tiled
-   hex-grid.svg tile as the hero, a slow breathing opacity, no JS, no
-   canvas, no per-frame redraw. Deliberately NOT wired to .section-dark
-   (used for generic content throughout the site — applying it there
-   would be wallpaper, not a signature). Applied to: .cta-banner (the
-   closing band reused across the homepage, every service page, every
-   area page, the guides, contractors and the PPC landing pages) and
-   .inner-hero (the identity band opening every non-homepage,
-   non-PPC-hero page) — at most two bookending instances per page,
-   never stacked on generic content. Not on the footer (dense link
-   columns), not over photography, not on light/paper sections or the
-   quote form. See PHASE_E4 doc for why this replaces the old
-   full-viewport canvas animation from PR #8. */
-.hex-texture { position:relative; overflow:hidden; }
+/* ── STRUCTURAL HEX TEXTURE (site-wide black-background system) ──
+   Axis's structural signature: a fine aluminium mesh — the hex-grid.svg
+   tile at its own native ~52x90px scale (no upscaling), so it reads as
+   architectural mesh rather than honeycomb. Part of the black-background
+   system itself: any genuinely black/near-black section (.section-dark,
+   .section-light — both near-black — and bare .section, which inherits
+   the black <body>) carries it automatically. .section-paper (the
+   genuine light/white surface) never does. .hex-texture is the explicit
+   opt-in for markup that isn't part of the .section family — .cta-banner,
+   .inner-hero, and the hand-authored PPC landing pages' closing bands.
+   .section-clean is the explicit, evidence-based opt-out on the .section
+   family — applied only where hex would sit over photography, a form,
+   or dense/busy content where the pattern would read as noise rather
+   than structure (project/photo grids, the quote wizard and other lead
+   forms, FAQ accordions). NEVER placed over photography — see .hero for
+   why the hero's own hex layer was retired instead of being tucked
+   behind the photo. At most one hex layer per section; never stacked,
+   never full-viewport. Opacity stays low enough that the breathing
+   should barely register as motion, not a visible pulse. See PHASE_E4
+   doc for why this replaces the old full-viewport canvas animation
+   from PR #8. */
+.section-dark:not(.section-clean),
+.section-light:not(.section-clean),
+.section:not(.section-paper):not(.section-clean),
+.hex-texture {
+  position:relative; overflow:hidden;
+}
+.section-dark:not(.section-clean)::before,
+.section-light:not(.section-clean)::before,
+.section:not(.section-paper):not(.section-clean)::before,
 .hex-texture::before {
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.04;
-  animation:hex-breathe 11s ease-in-out infinite;
+  background-repeat:repeat; background-size:52px 90px;
+  opacity:0.03;
+  animation:hex-breathe 16s ease-in-out infinite;
 }
-.hex-texture > * { position:relative; z-index:1; }
+.section-dark:not(.section-clean) > *,
+.section-light:not(.section-clean) > *,
+.section:not(.section-paper):not(.section-clean) > *,
+.hex-texture > * {
+  position:relative; z-index:1;
+}
 @keyframes hex-breathe {
-  0%, 100% { opacity:0.04; }
-  50% { opacity:0.11; }
+  0%, 100% { opacity:0.03; }
+  50% { opacity:0.08; }
 }
 @media (max-width:768px) {
-  .hex-texture::before { animation:none; opacity:0.05; }
+  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+    animation:none; opacity:0.03;
+  }
 }
 @media (prefers-reduced-motion:reduce) {
-  .hex-texture::before { animation:none !important; opacity:0.05; }
+  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+    animation:none !important; opacity:0.03;
+  }
 }
 
 /* ── INNER PAGES ── */
