@@ -884,36 +884,36 @@ body.lightbox-open { overflow:hidden; }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
 .cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 
-/* ── STRUCTURAL HEX TEXTURE (site-wide black-background system) ──
+/* ── STRUCTURAL HEX TEXTURE (explicit opt-in) ──
    Axis's structural signature: a fine aluminium mesh — the hex-grid.svg
    tile at its own native ~52x90px scale (no upscaling), so it reads as
-   architectural mesh rather than honeycomb. Part of the black-background
-   system itself: any genuinely black/near-black section (.section-dark,
-   .section-light — both near-black — and bare .section, which inherits
-   the black <body>) carries it automatically. .section-paper (the
-   genuine light/white surface) never does. .hex-texture is the explicit
-   opt-in for markup that isn't part of the .section family — .cta-banner,
-   .inner-hero, and the hand-authored PPC landing pages' closing bands.
-   .section-clean is the explicit, evidence-based opt-out on the .section
-   family — applied only where hex would sit over photography, a form,
-   or dense/busy content where the pattern would read as noise rather
-   than structure (project/photo grids, the quote wizard and other lead
-   forms, FAQ accordions). NEVER placed over photography — see .hero for
-   why the hero's own hex layer was retired instead of being tucked
-   behind the photo. At most one hex layer per section; never stacked,
-   never full-viewport. Opacity stays low enough that the breathing
-   should barely register as motion, not a visible pulse. See PHASE_E4
-   doc for why this replaces the old full-viewport canvas animation
-   from PR #8. */
-.section-dark:not(.section-clean),
-.section-light:not(.section-clean),
-.section:not(.section-paper):not(.section-clean),
+   architectural mesh rather than honeycomb. Deliberately explicit
+   opt-in, not a default-on-black-background behaviour: .hex-texture is
+   hand-applied, one section at a time, to markup that has been
+   individually judged to be an intentional dark structural surface —
+   never inferred from "this element happens to have a black
+   background." A generic .section-dark/.section-light/.section
+   element carries NO hex unless it also carries .hex-texture; a new
+   section added later gets hex only if someone deliberately decides
+   it should, which is the point — it removes the failure mode where a
+   section is one missed exclusion away from getting the texture by
+   accident (a real bug this replaced: the homepage's own quote form
+   briefly inherited hex under an earlier "default on, opt out" version
+   of this rule). Applied to: CTA banners, inner-hero identity bands,
+   and the specific content sections in build_site.py individually
+   marked hex-texture (decision grids, service/area/guide content
+   blocks, testimonials, area-pill lists) — never to photography, forms
+   (quote wizard, contact, all lead-gen sections), or dense/busy content
+   (FAQ accordions) — those simply never receive the class. NEVER
+   placed over photography — see .hero for why the hero's own hex layer
+   was retired instead of being tucked behind the photo. At most one
+   hex layer per section; never stacked, never full-viewport. Opacity
+   stays low enough that the breathing should barely register as
+   motion, not a visible pulse. See PHASE_E4 doc for why this replaces
+   the old full-viewport canvas animation from PR #8. */
 .hex-texture {
   position:relative; overflow:hidden;
 }
-.section-dark:not(.section-clean)::before,
-.section-light:not(.section-clean)::before,
-.section:not(.section-paper):not(.section-clean)::before,
 .hex-texture::before {
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:url('/assets/images/hex-grid.svg');
@@ -921,9 +921,6 @@ body.lightbox-open { overflow:hidden; }
   opacity:0.02;
   animation:hex-breathe 20s ease-in-out infinite;
 }
-.section-dark:not(.section-clean) > *,
-.section-light:not(.section-clean) > *,
-.section:not(.section-paper):not(.section-clean) > *,
 .hex-texture > * {
   position:relative; z-index:1;
 }
@@ -932,12 +929,12 @@ body.lightbox-open { overflow:hidden; }
   50% { opacity:0.05; }
 }
 @media (max-width:768px) {
-  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+  .hex-texture::before {
     animation:none; opacity:0.02;
   }
 }
 @media (prefers-reduced-motion:reduce) {
-  .section-dark::before, .section-light::before, .section::before, .hex-texture::before {
+  .hex-texture::before {
     animation:none !important; opacity:0.02;
   }
 }
