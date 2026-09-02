@@ -1758,13 +1758,50 @@ body.lightbox-open { overflow:hidden; }
 
 /* ── CTA BANNER ── */
 .cta-banner {
+  position:relative; overflow:hidden;
   background:linear-gradient(135deg, #111314 0%, #1e2124 50%, #111314 100%) !important;
   border-top:1px solid rgba(200,205,212,0.2) !important;
   border-bottom:1px solid rgba(200,205,212,0.2) !important;
   padding:2.4rem 0;
 }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
-.cta-banner-inner { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+
+/* ── STRUCTURAL HEX TEXTURE (reusable, selective) ──
+   Axis's structural signature (see .hero-hex) extended beyond the hero
+   as a standalone slow-breathing utility that any dark/editorial/
+   photo-free "signature" component can opt into — the same tiled
+   hex-grid.svg tile as the hero, a slow breathing opacity, no JS, no
+   canvas, no per-frame redraw. Deliberately NOT wired to .section-dark
+   (used for generic content throughout the site — applying it there
+   would be wallpaper, not a signature). Applied to: .cta-banner (the
+   closing band reused across the homepage, every service page, every
+   area page, the guides, contractors and the PPC landing pages) and
+   .inner-hero (the identity band opening every non-homepage,
+   non-PPC-hero page) — at most two bookending instances per page,
+   never stacked on generic content. Not on the footer (dense link
+   columns), not over photography, not on light/paper sections or the
+   quote form. See PHASE_E4 doc for why this replaces the old
+   full-viewport canvas animation from PR #8. */
+.hex-texture { position:relative; overflow:hidden; }
+.hex-texture::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:url('/assets/images/hex-grid.svg');
+  background-repeat:repeat; background-size:208px 360px;
+  opacity:0.04;
+  animation:hex-breathe 11s ease-in-out infinite;
+}
+.hex-texture > * { position:relative; z-index:1; }
+@keyframes hex-breathe {
+  0%, 100% { opacity:0.04; }
+  50% { opacity:0.11; }
+}
+@media (max-width:768px) {
+  .hex-texture::before { animation:none; opacity:0.05; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hex-texture::before { animation:none !important; opacity:0.05; }
+}
 
 /* ── INNER PAGES ── */
 .inner-hero { background:#0a0a0a !important; padding:8rem 0 3rem; }
@@ -3297,7 +3334,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Need Scaffolding in Essex?</h2>
@@ -3338,7 +3375,7 @@ def homepage() -> str:
 
 def inner_hero(path_items: list[tuple[str, str]], h1: str, intro: str) -> str:
     return f"""
-<section class="inner-hero">
+<section class="inner-hero hex-texture">
   <div class="container">
     {breadcrumb_nav(path_items)}
     <h1>{h1}</h1>
@@ -3710,7 +3747,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """
         + f"""
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>{cta_label}</h2>
@@ -3982,7 +4019,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Scaffolding in {area_name}?</h2>
@@ -4079,7 +4116,7 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Need Scaffolding in {area_name}?</h2>
@@ -4117,7 +4154,7 @@ def generate_pages() -> None:
         + f"""
 <section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}<p class="centered" style="margin-top:1.5rem;">Not sure what you need? Read our <a href="/guides">scaffolding guides</a> for plain-English answers.</p></div></section>
-<section class="cta-banner"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
+<section class="cta-banner hex-texture"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
     )
     write(
@@ -4530,7 +4567,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Still not sure what you need?</h2>
@@ -4597,7 +4634,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Trade Enquiries Welcome</h2>
@@ -4658,7 +4695,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="cta-banner">
+<section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
       <h2>Need Scaffolding in Your Area?</h2>
@@ -4726,7 +4763,7 @@ def generate_pages() -> None:
         )
 
     thank_you_body = """
-<section class="inner-hero"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:+441702820468">01702 820468</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
+<section class="inner-hero hex-texture"><div class="container"><h1>Thank You — We'll Be In Touch!</h1><p>Your enquiry has been received. A member of the Axis Scaffolding team will contact you within 24 hours.</p><p>In the meantime, call us on <a href="tel:+441702820468">01702 820468</a> for urgent enquiries.</p><div class="hero-cta-row"><a class="btn btn-primary" href="/">Back to Home</a><a class="btn btn-outline-orange" href="/services">View Our Services</a></div></div></section>
 """
     write(
         "thank-you/index.html",
@@ -4757,7 +4794,7 @@ def generate_pages() -> None:
     )
 
     notfound_body = f"""
-<section class="inner-hero">
+<section class="inner-hero hex-texture">
   <div class="container">
     <p class="breadcrumb-nav"><a href="/">Home</a> &rsaquo; Page Not Found</p>
     <h1>Page Not Found</h1>
