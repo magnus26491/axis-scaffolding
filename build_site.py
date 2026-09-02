@@ -1758,13 +1758,43 @@ body.lightbox-open { overflow:hidden; }
 
 /* ── CTA BANNER ── */
 .cta-banner {
+  position:relative; overflow:hidden;
   background:linear-gradient(135deg, #111314 0%, #1e2124 50%, #111314 100%) !important;
   border-top:1px solid rgba(200,205,212,0.2) !important;
   border-bottom:1px solid rgba(200,205,212,0.2) !important;
   padding:2.4rem 0;
 }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
-.cta-banner-inner { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+
+/* ── STRUCTURAL HEX, SITE-WIDE (selective) ──
+   Axis's structural signature (see .hero-hex) extended beyond the hero
+   to exactly one place: the CTA banner, the single dark/editorial/
+   photo-free component reused across the homepage, every service page,
+   every area page and the guides — a genuinely "site-wide" placement
+   without wallpapering every black section. Deliberately not on the
+   footer (dense link columns), not over photography, not on light/paper
+   sections or the quote form. Pure CSS: the same tiled hex-grid.svg
+   tile as the hero, a slow breathing opacity, no JS, no canvas, no
+   per-frame redraw — see PHASE_E4 doc for why this replaces the old
+   full-viewport canvas animation from PR #8. */
+.cta-banner::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:url('/assets/images/hex-grid.svg');
+  background-repeat:repeat; background-size:208px 360px;
+  opacity:0.04;
+  animation:hex-breathe 11s ease-in-out infinite;
+}
+@keyframes hex-breathe {
+  0%, 100% { opacity:0.04; }
+  50% { opacity:0.11; }
+}
+@media (max-width:768px) {
+  .cta-banner::before { animation:none; opacity:0.05; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cta-banner::before { animation:none !important; opacity:0.05; }
+}
 
 /* ── INNER PAGES ── */
 .inner-hero { background:#0a0a0a !important; padding:8rem 0 3rem; }
