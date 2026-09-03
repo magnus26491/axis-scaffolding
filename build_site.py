@@ -1184,23 +1184,17 @@ textarea:focus-visible {
 }
 .hero-trust-badges span:first-child { border-left:none; }
 
-/* ── HERO STRUCTURAL HEX LAYER + PARALLAX ──
-   Axis's structural signature: a large, sparse hex mesh (steel-frame
-   scale, not a dense tech-grid) sitting between the photo overlay and
-   the hero content. Motion is transform-only (driven by JS setting CSS
-   custom properties), so it never triggers layout/paint of anything
+/* ── HERO PARALLAX ──
+   Photo-only. An earlier version also carried a hex mesh layer directly
+   over the hero photograph — visually wrong (photography must stay
+   clean; see .hex-texture below for where the structural signature
+   actually belongs). Motion is transform-only (driven by JS setting a
+   CSS custom property), so it never triggers layout/paint of anything
    else. Desktop pointer devices only — see generate_js(); everywhere
-   else the layers are simply static. */
-.hero-hex {
-  position:absolute; inset:0; z-index:2; pointer-events:none;
-  background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.12;
-  transform:translateY(var(--hex-parallax-y, 0px));
-}
+   else the layer is simply static. */
 .hero-media { transform:translateY(var(--hero-parallax-y, 0px)); }
 @media (prefers-reduced-motion:reduce) {
-  .hero-media, .hero-hex { transform:none !important; }
+  .hero-media { transform:none !important; }
 }
 
 /* ── WHAT WE DO (homepage, immediately after hero) ──
@@ -1767,40 +1761,59 @@ body.lightbox-open { overflow:hidden; }
 .cta-banner h2, .cta-banner p { color:#ffffff !important; }
 .cta-banner-inner { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 
-/* ── STRUCTURAL HEX TEXTURE (reusable, selective) ──
-   Axis's structural signature (see .hero-hex) extended beyond the hero
-   as a standalone slow-breathing utility that any dark/editorial/
-   photo-free "signature" component can opt into — the same tiled
-   hex-grid.svg tile as the hero, a slow breathing opacity, no JS, no
-   canvas, no per-frame redraw. Deliberately NOT wired to .section-dark
-   (used for generic content throughout the site — applying it there
-   would be wallpaper, not a signature). Applied to: .cta-banner (the
-   closing band reused across the homepage, every service page, every
-   area page, the guides, contractors and the PPC landing pages) and
-   .inner-hero (the identity band opening every non-homepage,
-   non-PPC-hero page) — at most two bookending instances per page,
-   never stacked on generic content. Not on the footer (dense link
-   columns), not over photography, not on light/paper sections or the
-   quote form. See PHASE_E4 doc for why this replaces the old
-   full-viewport canvas animation from PR #8. */
-.hex-texture { position:relative; overflow:hidden; }
+/* ── STRUCTURAL HEX TEXTURE (explicit opt-in) ──
+   Axis's structural signature: a fine aluminium mesh — the hex-grid.svg
+   tile at its own native ~52x90px scale (no upscaling), so it reads as
+   architectural mesh rather than honeycomb. Deliberately explicit
+   opt-in, not a default-on-black-background behaviour: .hex-texture is
+   hand-applied, one section at a time, to markup that has been
+   individually judged to be an intentional dark structural surface —
+   never inferred from "this element happens to have a black
+   background." A generic .section-dark/.section-light/.section
+   element carries NO hex unless it also carries .hex-texture; a new
+   section added later gets hex only if someone deliberately decides
+   it should, which is the point — it removes the failure mode where a
+   section is one missed exclusion away from getting the texture by
+   accident (a real bug this replaced: the homepage's own quote form
+   briefly inherited hex under an earlier "default on, opt out" version
+   of this rule). Applied to: CTA banners, inner-hero identity bands,
+   and the specific content sections in build_site.py individually
+   marked hex-texture (decision grids, service/area/guide content
+   blocks, testimonials, area-pill lists) — never to photography, forms
+   (quote wizard, contact, all lead-gen sections), or dense/busy content
+   (FAQ accordions) — those simply never receive the class. NEVER
+   placed over photography — see .hero for why the hero's own hex layer
+   was retired instead of being tucked behind the photo. At most one
+   hex layer per section; never stacked, never full-viewport. Opacity
+   stays low enough that the breathing should barely register as
+   motion, not a visible pulse. See PHASE_E4 doc for why this replaces
+   the old full-viewport canvas animation from PR #8. */
+.hex-texture {
+  position:relative; overflow:hidden;
+}
 .hex-texture::before {
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
   background-image:url('/assets/images/hex-grid.svg');
-  background-repeat:repeat; background-size:208px 360px;
-  opacity:0.04;
-  animation:hex-breathe 11s ease-in-out infinite;
+  background-repeat:repeat; background-size:52px 90px;
+  opacity:0.02;
+  animation:hex-breathe 20s ease-in-out infinite;
 }
-.hex-texture > * { position:relative; z-index:1; }
+.hex-texture > * {
+  position:relative; z-index:1;
+}
 @keyframes hex-breathe {
-  0%, 100% { opacity:0.04; }
-  50% { opacity:0.11; }
+  0%, 100% { opacity:0.02; }
+  50% { opacity:0.05; }
 }
 @media (max-width:768px) {
-  .hex-texture::before { animation:none; opacity:0.05; }
+  .hex-texture::before {
+    animation:none; opacity:0.02;
+  }
 }
 @media (prefers-reduced-motion:reduce) {
-  .hex-texture::before { animation:none !important; opacity:0.05; }
+  .hex-texture::before {
+    animation:none !important; opacity:0.02;
+  }
 }
 
 /* ── INNER PAGES ── */
@@ -2152,16 +2165,15 @@ def generate_js() -> None:
 
   // ── HERO PARALLAX ──
   // Cinematic and restrained by design: over a 500px scroll the hero photo
-  // lags the page by ~100px and the hex layer by ~50px (0.2 / 0.1 of the
-  // scroll delta). Transform-only, rAF-batched, desktop-pointer-only.
+  // lags the page by ~100px (0.2 of the scroll delta). Transform-only,
+  // rAF-batched, desktop-pointer-only. Photo-only — no hex layer here,
+  // see .hex-texture in generate_css() for the structural signature.
   (function heroParallax() {
     const hero = document.querySelector('.hero');
     const heroMedia = hero && hero.querySelector('.hero-media');
-    const heroHex = hero && hero.querySelector('.hero-hex');
-    if (!hero || !heroMedia || !heroHex) return;
+    if (!hero || !heroMedia) return;
 
     const HERO_RATIO = 0.2;
-    const HEX_RATIO = 0.1;
     const canAnimate = () =>
       window.matchMedia('(min-width: 769px)').matches &&
       window.matchMedia('(hover: hover)').matches &&
@@ -2172,7 +2184,6 @@ def generate_js() -> None:
 
     function reset() {
       heroMedia.style.removeProperty('--hero-parallax-y');
-      heroHex.style.removeProperty('--hex-parallax-y');
     }
 
     function update() {
@@ -2181,7 +2192,6 @@ def generate_js() -> None:
       if (rect.bottom < 0 || rect.top > window.innerHeight) return;
       const scrolled = Math.max(0, -rect.top);
       heroMedia.style.setProperty('--hero-parallax-y', (scrolled * HERO_RATIO) + 'px');
-      heroHex.style.setProperty('--hex-parallax-y', (scrolled * HEX_RATIO) + 'px');
     }
 
     function onScroll() {
@@ -3056,7 +3066,7 @@ def related_guides_section(current_slug: str) -> str:
         for g in others
     )
     return f"""
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>Related Guides</h2>
     <div class="services-grid">{cards}</div>
@@ -3156,7 +3166,6 @@ def homepage() -> str:
        alt="Scaffolding erected on a residential property in South Essex by Axis Scaffolding Ltd"
        width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async">
   <div class="hero-overlay"></div>
-  <div class="hero-hex" aria-hidden="true"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
     <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
@@ -3173,7 +3182,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section what-we-do" aria-labelledby="what-we-do-heading">
+<section class="section what-we-do hex-texture" aria-labelledby="what-we-do-heading">
   <div class="container">
     <h2 id="what-we-do-heading">Scaffolding for Homes, Trade and Commercial Work</h2>
     <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across South Essex — from a single chimney scaffold to a full commercial site package. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
@@ -3185,7 +3194,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-light" aria-labelledby="services-heading">
+<section class="section section-light hex-texture" aria-labelledby="services-heading">
   <div class="container">
     <h2 id="services-heading">Our Scaffolding Services</h2>
     <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
@@ -3230,7 +3239,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-light decision-section" aria-labelledby="decision-heading">
+<section class="section section-light decision-section hex-texture" aria-labelledby="decision-heading">
   <div class="container">
     <h2 id="decision-heading">Which of These Is You?</h2>
     <p class="section-intro">Now you know what we do — pick the option closest to your project and we'll point you to the right place.</p>
@@ -3283,7 +3292,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section" id="areas-covered" aria-labelledby="areas-heading">
+<section class="section hex-texture" id="areas-covered" aria-labelledby="areas-heading">
   <div class="container">
     <h2 id="areas-heading">Areas We Cover in Essex</h2>
     <p>Based in Rayleigh, Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding across Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.</p>
@@ -3309,7 +3318,7 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section section-light" aria-labelledby="reviews-heading">
+<section class="section section-light hex-texture" aria-labelledby="reviews-heading">
   <div class="container">
     <h2 id="reviews-heading">What Our Customers Say</h2>
     <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
@@ -3684,7 +3693,7 @@ def service_detail_body(service: dict) -> str:
 """
     else:
         who_for_section = f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Who Is This For?</h2>
     <p>{who_for}</p>
@@ -3696,7 +3705,7 @@ def service_detail_body(service: dict) -> str:
         inner_hero(path, h1, f"{service['summary']} Free, no-obligation quotes — call {NAP['phone']} or complete the form below.")
         + who_for_section
         + (f"""
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>What&rsquo;s Included</h2>
     <ul class="usp-list">{included_html}</ul>
@@ -3704,7 +3713,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """ if included_html else "")
         + (f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Pricing</h2>
     <p class="direct-answer">{pricing_text}</p>
@@ -3712,7 +3721,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """ if pricing_text else "")
         + (f"""
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>How It Works</h2>
     <ol class="process-steps">{steps_html}</ol>
@@ -3738,7 +3747,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """ if (related[1:] if proof_photo else related) else "")()
         + f"""
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>Areas We Cover</h2>
     <p class="section-intro">Based in Rayleigh, providing {service['name'].lower()} across South Essex.</p>
@@ -3986,7 +3995,7 @@ def area_page_body(area_name: str, data: dict) -> str:
             data["intro"],
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Housing and Properties in {area_name}</h2>
     <p>{data['housing']}</p>
@@ -3995,7 +4004,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>Site Access in {area_name}</h2>
     <p>{data['access']}</p>
@@ -4005,7 +4014,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Services in {area_name}</h2>
     {services_grouped_section(heading_tag="h4")}
@@ -4068,7 +4077,7 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
             data["intro"],
         )
         + f"""
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>Our Scaffolding Services in {area_name}</h2>
     <p>{data['services_intro']}</p>
@@ -4076,14 +4085,14 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Scaffolding Services</h2>
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
 
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>Areas of {area_name} We Cover</h2>
     <p>From our Rayleigh base, we regularly provide scaffolding services across:</p>
@@ -4094,7 +4103,7 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Scaffolding Work</h2>
     <p>See real, recently completed Axis Scaffolding projects across our South Essex base.</p>
@@ -4152,7 +4161,7 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd provides complete scaffolding Essex services from Rayleigh for residential, domestic and commercial projects. Get a free quote today.",
         )
         + f"""
-<section class="section section-light"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
+<section class="section section-light hex-texture"><div class="container">{services_grouped_section(heading_tag="h3", group_heading_tag="h2")}</div></section>
 <section class="section section-light"><div class="container faq-wrap"><h2>Frequently Asked Questions</h2>{faq_accordion()}<p class="centered" style="margin-top:1.5rem;">Not sure what you need? Read our <a href="/guides">scaffolding guides</a> for plain-English answers.</p></div></section>
 <section class="cta-banner hex-texture"><div class="container cta-banner-inner"><div><h2>Need Scaffolding in Essex?</h2><p>Call us today for a free, no-obligation quote.</p></div><div class="hero-cta-row"><a class="btn btn-light" href="tel:{NAP['phone']}">{NAP['phone']}</a><a class="btn btn-dark" href="/quote">Request a Quote</a></div></div></section>
 """
@@ -4328,7 +4337,7 @@ def generate_pages() -> None:
     for slug, title, desc, heading in policy_defs:
         body = (
             inner_hero([("Home", "/"), (heading, f"/{slug}")], heading, f"Axis Scaffolding Ltd provides transparent legal and privacy information for Benfleet and scaffolding Essex customers.")
-            + f"""<section class="section"><div class="container"><h2>Policy Information</h2><p>This page explains our {heading.lower()} for Axis Scaffolding Ltd services delivered from Rayleigh across Essex. If you need clarification, please contact our team directly by phone or email.</p></div></section>"""
+            + f"""<section class="section hex-texture"><div class="container"><h2>Policy Information</h2><p>This page explains our {heading.lower()} for Axis Scaffolding Ltd services delivered from Rayleigh across Essex. If you need clarification, please contact our team directly by phone or email.</p></div></section>"""
         )
         write(
             f"{slug}/index.html",
@@ -4350,7 +4359,7 @@ def generate_pages() -> None:
             "A straightforward guide to scaffolding prices in Essex — what affects the cost, typical price ranges for common jobs, and how to get an accurate quote from Axis Scaffolding Ltd.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>The Short Answer</h2>
     <p>Residential scaffolding in Essex typically costs <strong>£350–£600</strong> for smaller single-elevation domestic jobs and <strong>£800–£2,500+</strong> for full roof scaffolding on larger properties. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
@@ -4361,7 +4370,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>What Affects the Cost of Scaffolding?</h2>
     <div class="decision-grid">
@@ -4393,7 +4402,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Typical Scaffolding Prices — Essex Guide</h2>
     <p style="color:var(--text-muted); margin-bottom:1.5rem;">These are indicative ranges only. Your quote may differ depending on the factors above.</p>
@@ -4408,7 +4417,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>How to Get an Accurate Quote</h2>
     <div class="process-steps">
@@ -4443,14 +4452,14 @@ def generate_pages() -> None:
             "A practical guide to help you work out whether your building or repair project requires scaffold access — and what the alternatives are.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>The Short Answer</h2>
     <p>You almost certainly need scaffolding if trades need to work at height for more than a brief task, if they need both hands free to work safely, or if the job requires materials to be positioned at roof level. A ladder may be sufficient for a single inspection or brief one-handed task. If in doubt, a CISRS-qualified scaffolder can advise — call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> for a no-obligation discussion.</p>
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>Jobs That Typically Require Scaffolding</h2>
     <div class="decision-grid">
@@ -4464,7 +4473,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>When a Ladder May Be Sufficient</h2>
     <p>For a licensed tradesperson carrying out a brief task — cleaning a single gutter section, inspecting a roof, replacing a single tile — a ladder used with the correct technique may be appropriate under a risk assessment. This is the roofer's or contractor's decision, not the homeowner's. Where work involves sustained activity, both hands being needed, or working near a roof edge, scaffold is the appropriate solution.</p>
@@ -4497,14 +4506,14 @@ def generate_pages() -> None:
             "A plain-English guide to Section 169 highway licences for scaffolding over pavements and roads in Essex — when you need one, how to get one, and what it costs.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>Yes — a Licence Is Required</h2>
     <p>If scaffolding overhangs or occupies any part of a public highway — including the pavement in front of your property — a licence under <strong>Section 169 of the Highways Act 1980</strong> is required before erection begins. Working without a licence can result in enforcement action by the local authority and invalidate your insurance. Axis Scaffolding can advise on the licence process and liaise with Essex Highways on your behalf.</p>
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>What Is a Section 169 Licence?</h2>
     <p>A Section 169 licence (also called a "scaffolding licence" or "highway licence") is a formal permission granted by the highway authority — in most of Essex this is Essex County Council Highways — to occupy or overhang the public highway with a scaffold structure. It specifies conditions including the scaffold footprint, lighting and signing requirements, and the permitted duration.</p>
@@ -4560,7 +4569,7 @@ def generate_pages() -> None:
             "Plain-English answers to the questions people ask before booking scaffolding in Essex — whether you need it, what it costs, and whether a licence is required.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Guides</h2>
     <div class="services-grid">{guides_cards}</div>
@@ -4600,14 +4609,14 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd works directly with builders, developers and principal contractors across South Essex. RAMS available. CISRS qualified. Trade enquiries welcome.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>A Reliable Scaffolding Partner for Essex Contractors</h2>
     <p>We work with builders, roofing contractors, developers and property managers across South Essex. Our CISRS-qualified team provides planned scaffold packages with clear communication, RAMS documentation when required, and a commitment to erection and strike timescales that keep your programme on track. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> to discuss a trade account or one-off project.</p>
   </div>
 </section>
 
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>What We Offer Contractors</h2>
     <div class="decision-grid">
@@ -4621,7 +4630,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Services Available to Contractors</h2>
     <p class="section-intro">The services builders, roofers and developers use most. Full list, including homeowner-facing services, on our <a href="/services">Services</a> page.</p>
@@ -4673,13 +4682,13 @@ def generate_pages() -> None:
             "Axis Scaffolding Ltd is based in Rayleigh and provides residential, domestic and commercial scaffolding across South Essex. Find your area below for local details, real projects and a free quote.",
         )
         + f"""
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <ul class="area-pills">{area_pills()}</ul>
   </div>
 </section>
 
-<section class="section">
+<section class="section hex-texture">
   <div class="container">
     <h2>Also Serving</h2>
     <p class="section-intro">Beyond our core South Essex coverage above, we also regularly take on work in these areas.</p>
@@ -4687,7 +4696,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
-<section class="section section-light">
+<section class="section section-light hex-texture">
   <div class="container">
     <h2>Not Sure Which Service You Need?</h2>
     <p class="section-intro">See the full range of scaffolding services we provide across these areas.</p>
@@ -4806,7 +4815,7 @@ def generate_pages() -> None:
     </div>
   </div>
 </section>
-<section class="section section-dark">
+<section class="section section-dark hex-texture">
   <div class="container">
     <h2>Our Scaffolding Services</h2>
     <div class="services-grid">
