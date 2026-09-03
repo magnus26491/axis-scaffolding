@@ -639,8 +639,12 @@
       // No webhook is configured: allow the form's native FormSubmit action to run.
       // The previous code prevented the native POST and then displayed a false success
       // message, which could silently discard every quote enquiry.
+      // transport_type: 'beacon' asks gtag to send this hit via navigator.sendBeacon
+      // rather than a regular XHR/image ping, so the browser queues and flushes it
+      // even though a same-tab navigation to formsubmit.co starts immediately after
+      // this handler returns (no preventDefault here — see comment above).
       if (!webhook) {
-        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form', transport_type: 'beacon' });
         return;
       }
 
