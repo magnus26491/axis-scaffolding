@@ -21,10 +21,10 @@ TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://www.axisscaffoldingessex.co.uk/thank-you'
-# No verified GA4 property exists for this site yet. Leave unset (None) until a real
-# measurement ID is provided — do not hard-code a placeholder or invented ID here.
-# When set (e.g. "G-XXXXXXX"), analytics load only after the visitor grants consent.
-GA4_MEASUREMENT_ID: str | None = None
+# Verified GA4 property for this site (confirmed by the business, Phase E5A).
+# Analytics load only after the visitor grants consent via the cookie bar —
+# see loadGA4()/restoreConsent() in generate_js() below.
+GA4_MEASUREMENT_ID: str | None = "G-J9VHTYEYNW"
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
@@ -2781,8 +2781,12 @@ def generate_js() -> None:
       // No webhook is configured: allow the form's native FormSubmit action to run.
       // The previous code prevented the native POST and then displayed a false success
       // message, which could silently discard every quote enquiry.
+      // transport_type: 'beacon' asks gtag to send this hit via navigator.sendBeacon
+      // rather than a regular XHR/image ping, so the browser queues and flushes it
+      // even though a same-tab navigation to formsubmit.co starts immediately after
+      // this handler returns (no preventDefault here — see comment above).
       if (!webhook) {
-        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form' });
+        trackEvent('generate_lead', { event_category: 'Lead', event_label: form.dataset.formName || 'quote_form', transport_type: 'beacon' });
         return;
       }
 
@@ -4843,7 +4847,8 @@ def generate_pages() -> None:
   """ + nav() + """
   <main id="main-content">""" + notfound_body + """</main>
   """ + footer() + """
-  """ + cookie_ui() + """
+  """ + cookie_ui() + f"""
+  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

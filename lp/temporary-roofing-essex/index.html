@@ -103,7 +103,7 @@
       <p style="text-align:center;color:#9ca3af;margin-bottom:1.5rem;">Free quote &middot; Same-day response &middot; No obligation</p>
       <div class="quote-form-card glass-card" style="padding:2rem;">
         <form action="https://formsubmit.co/axis-scaffolding@outlook.com" method="POST"
-          onsubmit="if(typeof gtag !== 'undefined'){ gtag('event', 'generate_lead', { 'event_category': 'Quote Form', 'event_label': 'Temp Roofing LP', 'value': 350 }); }">
+          onsubmit="if(typeof gtag !== 'undefined'){ gtag('event', 'generate_lead', { 'event_category': 'Quote Form', 'event_label': 'Temp Roofing LP', 'value': 350, 'transport_type': 'beacon' }); }">
           <input type="hidden" name="_subject" value="New Quote Request — Temporary Roofing">
           <input type="hidden" name="_next" value="https://www.axisscaffoldingessex.co.uk/thank-you">
           <input type="hidden" name="_captcha" value="false">
@@ -170,6 +170,21 @@
   </div>
 </div>
 
+<div id="axis-cookie-bar" class="cookie-bar">
+  <p>
+    We use cookies to improve your experience and analyse site traffic.
+    By clicking <strong>Accept All</strong> you consent
+    to our use of cookies.
+    <a href="/privacy-policy">Read our Privacy Policy</a>
+  </p>
+  <div class="cookie-bar-actions">
+    <button id="axis-cookie-accept" class="btn btn-primary">Accept All</button>
+    <button id="axis-cookie-reject" class="btn btn-outline">Reject Non-Essential</button>
+    <button id="axis-cookie-manage" class="btn-manage">Manage Preferences</button>
+  </div>
+</div>
+
+<script>window.AXIS_GA4_ID = "G-J9VHTYEYNW";</script>
 <script src="/assets/js/main.js?v=4" defer></script>
 </body>
 </html>
