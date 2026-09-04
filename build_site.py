@@ -603,7 +603,6 @@ def quote_form(prefix: str, title: str) -> str:
   <h3>{title}</h3>
   <form class="axis-quote-form" data-form-name="{prefix}" action="{FORM_ACTION}" method="POST">
     <input type="hidden" name="_subject" value="New Scaffolding Quote Request — Axis Scaffolding Ltd">
-    <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
     <input type="hidden" name="_next" value="{FORM_NEXT}">
     <input type="hidden" name="_captcha" value="false">
     <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
@@ -696,7 +695,6 @@ def quote_wizard() -> str:
   <form class="axis-quote-form quote-wizard-form" data-form-name="quote-wizard"
         action="{FORM_ACTION}" method="POST" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="_subject" value="New Scaffolding Quote Request — Axis Scaffolding Ltd">
-    <input type="hidden" name="_replyto" value="{CONTACT_EMAIL}">
     <input type="hidden" name="_next" value="{FORM_NEXT}">
     <input type="hidden" name="_captcha" value="false">
     <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
@@ -2504,22 +2502,27 @@ def generate_js() -> None:
     } catch (_err) { /* storage unavailable — attribution is best-effort, never blocking */ }
   })();
 
-  // ── QUOTE WIZARD ──
-  (function quoteWizard() {
-    const form = document.querySelector('.quote-wizard-form');
-    if (!form) return;
-
-    // Populate hidden attribution fields from what's been captured
-    // sitewide (see captureAttribution above), not just this page.
+  // ── ATTRIBUTION FIELD POPULATION (any form, not just the wizard) ──
+  // Fills in .quote-attr-field[data-attr] hidden inputs from what
+  // captureAttribution() stored above. Runs page-wide so any form that
+  // carries these hidden fields gets them populated — originally only
+  // the /quote wizard had them; the PPC landing pages now do too.
+  (function populateAttributionFields() {
     try {
       const attribution = JSON.parse(localStorage.getItem('axis_attribution') || '{}');
-      form.querySelectorAll('.quote-attr-field[data-attr]').forEach((field) => {
+      document.querySelectorAll('.quote-attr-field[data-attr]').forEach((field) => {
         const key = field.dataset.attr;
         if (key === 'referrer') field.value = sessionStorage.getItem('axis_referrer') || '';
         else if (key === 'landingPage') field.value = sessionStorage.getItem('axis_landing_page') || window.location.pathname;
         else if (attribution[key]) field.value = attribution[key];
       });
-    } catch (_err) { /* best-effort only */ }
+    } catch (_err) { /* best-effort only — never blocks form submission */ }
+  })();
+
+  // ── QUOTE WIZARD ──
+  (function quoteWizard() {
+    const form = document.querySelector('.quote-wizard-form');
+    if (!form) return;
 
     const steps = Array.from(form.querySelectorAll('.quote-step'));
     const progress = document.querySelector('.quote-progress');
