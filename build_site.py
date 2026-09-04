@@ -2889,9 +2889,6 @@ PROJECTS = [
     {"slug": "project-3", "label": "Shopfront Access Scaffold", "location": "Rayleigh", "area_slug": "rayleigh",
      "desc": "Single-elevation scaffold for shopfront rendering and signage work.",
      "category": "commercial", "service_slug": "commercial-scaffolding", "w": 1080, "h": 1350},
-    {"slug": "project-4", "label": "Temporary Roofing Scaffold", "location": "Southend-on-Sea", "area_slug": "southend",
-     "desc": "Scaffold with temporary roof cover to protect during roof replacement.",
-     "category": "roofing", "service_slug": "temporary-roofing", "w": 640, "h": 800},
     {"slug": "project-5", "label": "Roof Scaffolding", "location": "Basildon", "area_slug": "basildon",
      "desc": "Roof-level scaffold for chimney repointing and ridge tile replacement.",
      "category": "roofing", "service_slug": "roof-scaffolding", "w": 1080, "h": 1440},
@@ -2932,7 +2929,15 @@ PROJECTS = [
 # them into the same shape. Shown once, on /gallery only, with no area or
 # service link and no claim beyond "this is a genuine Axis photograph" —
 # add the missing details and fold each into PROJECTS above once known.
+#
+# project-4 moved here from PROJECTS: it was tagged "Temporary Roofing
+# Scaffold, Southend-on-Sea" but the actual photo shows an indoor scaffold
+# tower around a large vehicle/aircraft body inside a hangar-type building —
+# nothing matching that label or a temporary weatherproof roof. Flagged
+# during live-site review; genuine Axis work, but its real job/location
+# needs confirming before it can carry a specific claim again.
 UNTAGGED_PHOTOS = [
+    {"slug": "project-4", "w": 640, "h": 800},
     {"slug": "project-15", "w": 1536, "h": 2048},
     {"slug": "project-16", "w": 1536, "h": 2048},
     {"slug": "project-17", "w": 1536, "h": 2048},
@@ -4256,7 +4261,7 @@ def generate_pages() -> None:
 <section class="section section-dark"><div class="container">
   <h2>Real Work, Not a Brochure</h2>
   <p class="section-intro">A small sample of completed jobs — the same real photography featured across this site, no stock imagery.</p>
-  <div class="projects-grid">{"".join(project_card(p) for p in (lambda ps=["project-4", "project-11", "project-9"]: [next(x for x in PROJECTS if x["slug"] == s) for s in ps])())}</div>
+  <div class="projects-grid">{"".join(project_card(p) for p in (lambda ps=["project-1", "project-11", "project-9"]: [next(x for x in PROJECTS if x["slug"] == s) for s in ps])())}</div>
   <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
 </div></section>
 
