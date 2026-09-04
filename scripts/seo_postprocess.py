@@ -23,18 +23,18 @@ AREA_LINKS = {
 
 OLD_SITE = "https://axisscaffolding.co.uk"
 
+# Only slugs whose legacy flat filename DIFFERS from the canonical folder
+# slug belong here. GitHub Pages resolves a request for "/areas/X" by
+# checking for a sibling "areas/X.html" file *before* "areas/X/index.html" —
+# so a legacy stub named identically to its own target creates a same-URL
+# redirect loop that permanently shadows the real page (confirmed live:
+# brentwood/loughton/london/basildon/canvey-island/chelmsford/rayleigh/
+# southend were all stuck redirecting to themselves until this was fixed).
+# clacton/bromley are safe because they redirect to a different path (the
+# /areas hub — there is no areas/clacton/ or areas/bromley/ folder).
 LEGACY_AREA_TARGETS = {
-    "brentwood": "/areas/brentwood",
-    "loughton": "/areas/loughton",
-    "london": "/areas/london",
     "clacton": "/areas",
     "bromley": "/areas",
-    # Stale flat area pages superseded by the canonical /areas/{slug} pages.
-    "basildon": "/areas/basildon",
-    "canvey-island": "/areas/canvey-island",
-    "chelmsford": "/areas/chelmsford",
-    "rayleigh": "/areas/rayleigh",
-    "southend": "/areas/southend",
 }
 
 LEGACY_SERVICE_TARGETS = {
@@ -53,10 +53,14 @@ LEGACY_SERVICE_TARGETS = {
 # (no noindex meta) that this script's normalise_legacy_redirect_page()
 # only partially overwrote, silently leaving some stubs without the
 # noindex directive. build_site.py no longer writes them at all.
+#
+# about.html/gallery.html/contact.html are deliberately NOT here (see the
+# LEGACY_AREA_TARGETS comment above for why): their legacy filename is
+# identical to their own canonical target, which on GitHub Pages creates a
+# same-URL redirect loop that permanently shadows /about, /gallery and
+# /contact — confirmed broken live. privacy.html/terms.html/cookies.html
+# are safe because their legacy filename differs from the canonical slug.
 LEGACY_TOP_TARGETS = {
-    "about.html": "/about",
-    "gallery.html": "/gallery",
-    "contact.html": "/contact",
     "privacy.html": "/privacy-policy",
     "terms.html": "/terms-and-conditions",
     "cookies.html": "/cookie-policy",
