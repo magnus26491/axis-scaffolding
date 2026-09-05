@@ -395,9 +395,9 @@ Explicitly frozen pending the external-data-informed decision phase, or pending 
 
 ---
 
-## N. Final Reconciliation — Campaigns-by-Type Pass
+## N. Final Reconciliation — Campaigns-by-Type Pass — CLOSED
 
-**Status: this pass narrows the account-level discrepancy and yields one new, decision-relevant conclusion (on `scaffolding hire`), but does not fully close the original gap. PR #43 remains in draft. No implementation follows from this section.**
+**Status: this pass is now closed by the account owner's decision, not because the gap is explained. It narrowed the account-level discrepancy and yielded one new, decision-relevant conclusion (on `scaffolding hire`), but did not fully close the original gap, and the account owner has chosen not to pursue the one remaining check (Ad state → Removed) further at this time. PR #43 remains in draft. No implementation follows from this section.**
 
 ### Source and scope
 
@@ -486,9 +486,10 @@ This is the core discrepancy this pass was commissioned to close. **It is not cl
 
 ### What remains unknown, stated exactly (per instruction, not smoothed over)
 
-- The **date range is now confirmed as All time** (account owner, this section) — no longer an open question.
+- The **date range is confirmed as All time** (account owner, this section) — no longer an open question.
 - A **small, separately unexplained gap (49 clicks / £73.45 / 1 conversion)** exists between this all-time Campaigns total and the Search Terms export's own all-time "Total: Search" row. Minor, not investigated further, not affecting any conclusion.
-- The **£1,253.30 / 55-conversion gap between the Campaigns-view total and "Total: Account"** is not closed, and is no longer explainable by date-range scope. The leading hypothesis (a removed/deleted historical campaign) is plausible and consistent with the evidence, but unproven.
-- **What additional check would close it:** the same Campaigns view (All time already confirmed), re-pulled with the Ad state filter expanded to include Removed. If that still does not reconcile, a request to Google Ads support or an MCC-level account history review would be the next step — beyond what any further CSV export or UI view can resolve alone.
+- The **£1,253.30 / 55-conversion gap between the Campaigns-view total and "Total: Account"** is **not closed and is not being pursued further at this time** — the account owner has chosen to stop this reconciliation pass here rather than run the one remaining check (Ad state → Removed). It is documented as genuinely unresolved, not as resolved-by-inference and not as dismissed.
+- **What additional check would close it, if revisited later:** the same Campaigns view (All time already confirmed), re-pulled with the Ad state filter expanded to include Removed. If that still does not reconcile, a request to Google Ads support or an MCC-level account history review would be the next step — beyond what any further CSV export or UI view can resolve alone.
+- **Conversion value / revenue tracking (£0 across both campaigns, and £0.00 in the GA4 screenshots):** noted as a fact in this section, explicitly **not investigated further at the account owner's direction.** This is not evidence that revenue tracking is broken, misconfigured, or unimportant — it is simply out of scope for this forensic pass. It is not added to Section K's opportunity roadmap and should not be treated as prioritised or de-prioritised by its absence there.
 
-**No conclusion in Sections A–M is withdrawn as a result of this pass, apart from the specific "other campaign type" phrasing in A.7, which is corrected above.** PR #43 remains in draft.
+**No conclusion in Sections A–M is withdrawn as a result of this pass, apart from the specific "other campaign type" phrasing in A.7, which is corrected above. This reconciliation pass is now closed.** PR #43 remains in draft; the audit (Sections A–N) is complete and ready for review as one evidence package, per the account owner's stated plan. No decision or implementation phase has begun.
