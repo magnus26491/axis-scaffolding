@@ -340,25 +340,26 @@ Classified per the requested taxonomy — **no page is proposed to be created, d
 
 **No implementation is proposed here — this ranks where the next decision-phase should look first, by evidence weight, not by search volume.**
 
+**Scope note (per the account owner's explicit final-scope decision — see Section N):** the account-vs-Search accounting discrepancy (£1,253.30 / 55 conversions) and the associated £0 conversion-value/revenue finding are **excluded from this roadmap entirely.** They remain documented as historical forensic evidence in Section N, but are not ranked, tiered, or used as an input below or in any future prioritisation. The evidence categories driving this roadmap are, by the account owner's direction: search demand, search visibility, search-term intent, clicks/impressions/CTR/position, actual advertising spend, actual recorded conversions where attribution is sufficiently trustworthy, location performance, landing-page alignment, service/area demand, internal-link architecture, existing proof/project evidence, commercial intent, conversion-path quality, and evidence confidence — not revenue, ROAS, CPA, or profitability, which are out of scope until reliable, directly attributable revenue data exists as a separate project.
+
 ### Tier 1 — strong evidence, high commercial value, ready for a decision-phase review
 1. **`scaffolding hire` keyword's Quality Score / "Limited" status.** It is over half the account's conversions and is being throttled. Directly evidenced, unambiguous, highest leverage in the whole dataset.
 2. **`domestic` broad-match negative keyword.** Directly evidenced conflict against a real, named service with confirmed organic demand. Cheap to verify, potentially meaningful to fix.
 3. **London internal linking vs. proven paid value.** Direct evidence on both sides (repo: 1 inbound link; Ads: top-spending location, second-largest keyword). One of the clearest evidence-to-action lines in this whole audit.
 4. **Guides' total lack of distribution.** Now confirmed externally (2–37 impressions per guide in 12 months) as well as structurally (repo). Low page count, low implementation complexity, previously-established high plausible value.
-5. **The account-level £1,179.85 / 54-conversion blind spot (Section G).** Not a website or SEO question at all — it's a "what campaign type is this and why isn't it in any export we have" question, and it's more than half the account's conversions. Should be resolved before any other Ads decision is made, because it may change every percentage in this report's Ads sections.
 
 ### Tier 2 — promising, needs validation before acting
-6. Kent as a potential coverage/page candidate — real and efficient, but one geography and a thin sample.
-7. Out-of-footprint converting terms (Norwich, Coventry, Tunbridge Wells, Witham, Grantham, Erith) — real conversions, unclear whether coincidence, referral, or a genuine adjacent-market signal.
-8. Price/cost triple-block — plausibly intentional (low historical quality), plausibly an accident; needs a decision-maker's judgement call, not more data.
-9. Rayleigh's position-1 / zero-click pattern — worth a live rank-check and a look at whether these impressions are landing on the homepage instead of the area page, before concluding anything about CTR or content.
-10. The out-of-area and residual-competitor paid leakage identified in Section F (~£150 combined) — small in isolation, mechanical to fix, low risk.
+5. Kent as a potential coverage/page candidate — real and efficient, but one geography and a thin sample.
+6. Out-of-footprint converting terms (Norwich, Coventry, Tunbridge Wells, Witham, Grantham, Erith) — real conversions, unclear whether coincidence, referral, or a genuine adjacent-market signal.
+7. Price/cost triple-block — plausibly intentional (low historical quality), plausibly an accident; needs a decision-maker's judgement call, not more data.
+8. Rayleigh's position-1 / zero-click pattern — worth a live rank-check and a look at whether these impressions are landing on the homepage instead of the area page, before concluding anything about CTR or content.
+9. The out-of-area and residual-competitor paid leakage identified in Section F (~£150 combined) — small in isolation, mechanical to fix, low risk.
 
 ### Tier 3 — speculative, do not act yet
-11. Emergency organic weakness — real but built on a single query row; needs its own dedicated pull.
-12. Contractor/commercial intent — 0 clicks/0 spend on real volume; too undiagnosed to prioritise yet.
-13. The long tail of 108 scattered UK-postcode location rows — a pattern, not yet an actionable list of candidates.
-14. Service-specific long-tail queries (chimney, render, extension) — negligible volume in this export; not enough signal.
+10. Emergency organic weakness — real but built on a single query row; needs its own dedicated pull.
+11. Contractor/commercial intent — 0 clicks/0 spend on real volume; too undiagnosed to prioritise yet.
+12. The long tail of 108 scattered UK-postcode location rows — a pattern, not yet an actionable list of candidates.
+13. Service-specific long-tail queries (chimney, render, extension) — negligible volume in this export; not enough signal.
 
 ---
 
@@ -368,7 +369,7 @@ This section is not a footnote — several items here materially limit what can 
 
 1. **GSC query-level anonymisation:** 58% of the 12-month click total is not attributable to any named query (Chart total 100 clicks vs. Queries-export total 42). This is Google's standard behaviour for low-volume/potentially-identifying queries, not a configuration error, but it means the entire intent-cluster table in Section B is built on well under half the real click volume.
 2. **Ads search-term anonymisation, the same pattern on the paid side:** 38% of "Total: Search" cost (£1,121.69 of £3,002.21) sits in "Other search terms," undisclosed by text.
-3. **The account-type blind spot:** £1,179.85 and 54 conversions exist in "Total: Account" with no corresponding campaign-type breakdown available in any export provided. This is the single largest unresolved gap in this report.
+3. **The account-type blind spot:** £1,253.30 and 55 conversions (Section N's refined figures) exist between the Campaigns-view total and "Total: Account," with no corresponding explanation available in any export or view provided. This is the single largest unresolved gap in this report — **and, per the account owner's final-scope decision (Section N), it is retained here as a documented data-quality limitation only. It is explicitly excluded from Section K's roadmap and from any future decision-making, SEO, Ads, landing-page, or budget prioritisation.**
 4. **Two campaigns, one "All time" export, no per-period breakdown:** the Search Terms and Keywords exports blend an active campaign and a paused one under a single "All time" label with no way to separate by date in the files provided. Any earlier reference to "the campaign" without naming which of the two is now ambiguous and should be re-stated precisely going forward.
 5. **Trailing-slash dual-indexation (Section C)** inflates apparent page-count and dilutes per-page metrics for 72% of pages; a query×page cross-tab (not available as a single GSC UI export) would be needed to fully unwind it.
 6. **No "matched keyword" column in the Search Terms export** — the Section D/E keyword-to-term reconciliation gap (`scaffolding hire` £1,466 vs. text-matched "Hire/rental" £109) cannot be closed without a differently-configured pull.
@@ -384,12 +385,12 @@ This section is not a footnote — several items here materially limit what can 
 
 Explicitly frozen pending the external-data-informed decision phase, or pending information this audit could not obtain:
 
-- **Do not touch the `scaffolding hire` keyword, its bid, or its Quality Score inputs** until the account-level blind spot (L.3) and the keyword↔search-term reconciliation gap (L.6) are resolved — changing the account's best performer without knowing what else is happening in the other 54 conversions is premature.
+- **Do not touch the `scaffolding hire` keyword, its bid, or its Quality Score inputs** until the keyword↔search-term reconciliation gap (L.6) is resolved — Section N's exact 39=39 conversion match between campaign- and keyword-level totals meaningfully de-risks the conversion-share finding, but the spend-attribution mechanism (why its cost doesn't match the text-classified "Hire/rental" search-term category) is still unresolved, and that alone is reason enough to hold.
 - **Do not remove or edit the `domestic` (or `home`/`free`) negative keywords** — flagged as a likely-unintended conflict, but "likely" is not "confirmed intent," and a decision-maker should confirm before any negative list is touched.
 - **Do not build a Kent page, or any page for the scattered long-tail locations in Section G**, on the strength of this data alone — real but thin.
 - **Do not conclude the Rayleigh position-1/zero-click pattern is a CTR or content problem** — the property-scope, canonical, and reporting-artifact explanations were not fully separable from this export set.
 - **Do not resolve the Price/Cost triple-block either way** (leave the `cost`/`price` negatives, the guide page, and its lack of paid targeting exactly as they are) until a decision-maker confirms whether the original exclusion was deliberate.
-- **Do not act on the account-vs-Search conversion gap by assumption** — the Campaigns-by-type pull (Section N) has narrowed but not closed it; one further read-only check (re-pulling with Removed campaigns included) is identified and should happen before any budget or attribution conclusion is drawn from it.
+- **The account-vs-Search accounting gap and the £0 conversion-value/revenue finding are CLOSED — OUT OF SCOPE FOR DECISION-MAKING**, per the account owner's explicit final-scope decision (Section N). They remain documented as historical forensic evidence only. Do not investigate, reconcile, infer, estimate, model, or optimise around these figures further; do not let them influence SEO, Ads, landing-page, or budget priorities; do not use them as evidence for revenue, ROAS, CPA, profitability, or commercial performance. This line supersedes the account-level caution previously attached to the `scaffolding hire` item above.
 - **Do not change the site's cookie-consent/GA4-loading architecture** on the basis of the low GA4 session count — that count is expected under the current, deliberate consent design, not a bug.
 - **No code, content, schema, redirects, internal links, Google Ads settings, GSC settings, or GA4 configuration were changed in the process of producing this report**, consistent with the stop condition this phase was scoped to.
 
@@ -493,3 +494,19 @@ This is the core discrepancy this pass was commissioned to close. **It is not cl
 - **Conversion value / revenue tracking (£0 across both campaigns, and £0.00 in the GA4 screenshots):** noted as a fact in this section, explicitly **not investigated further at the account owner's direction.** This is not evidence that revenue tracking is broken, misconfigured, or unimportant — it is simply out of scope for this forensic pass. It is not added to Section K's opportunity roadmap and should not be treated as prioritised or de-prioritised by its absence there.
 
 **No conclusion in Sections A–M is withdrawn as a result of this pass, apart from the specific "other campaign type" phrasing in A.7, which is corrected above. This reconciliation pass is now closed.** PR #43 remains in draft; the audit (Sections A–N) is complete and ready for review as one evidence package, per the account owner's stated plan. No decision or implementation phase has begun.
+
+### FINAL SCOPE DECISION (account owner)
+
+**STATUS: CLOSED — OUT OF SCOPE FOR DECISION-MAKING**
+
+The unresolved account-vs-Search discrepancy (£1,253.30 / 55 conversions) and the associated £0 conversion-value/revenue finding are considered closed for the purposes of any future decision-making. This is a deliberate scoping decision, not a technical resolution, and the distinction is preserved intentionally:
+
+- They **remain documented** above as historical forensic evidence, so the audit stays intellectually honest and complete.
+- They **must not** be treated as an input into the Tier 1 / Tier 2 / Tier 3 roadmap (Section K, updated accordingly).
+- They **must not** influence SEO priorities, Google Ads priorities, landing-page priorities, or budget recommendations.
+- They **must not** be used as evidence for revenue, ROAS, CPA, profitability, or commercial performance.
+- No further investigation, reconciliation, inference, estimation, modelling, or optimisation should be attempted around these figures, and no further audit time should be spent searching for the removed-campaign evidence discussed above.
+
+From this point forward, revenue/conversion-value data is treated as **out of scope for this programme** unless reliable, directly attributable revenue data is introduced later as a separate project. The decision framework going forward instead draws on: search demand, search visibility, search-term intent, clicks/impressions/CTR/position, actual advertising spend, actual recorded conversions where attribution is sufficiently trustworthy, location performance, landing-page alignment, service/area demand, internal-link architecture, existing proof/project evidence, commercial intent, conversion-path quality, and evidence confidence.
+
+**The evidence package is complete.** No code, SEO, website, Google Ads, GA4, schema, content, internal-linking, or campaign changes have been made in this phase. The decision/recommendation phase remains separate and has not begun.
