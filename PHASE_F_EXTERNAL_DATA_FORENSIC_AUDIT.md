@@ -24,7 +24,7 @@ The raw exports used are internally inconsistent with each other in ways that ma
 4. **(A)** The previously-reported **"cost" negative-keyword finding is now directly confirmed**: a broad-match, campaign-level negative keyword literally `cost` exists on "Phone calls Campaign - Axis High Intent," alongside 8 further price/cost variants (`price`, `prices`, `cheap`, `cheapest`, `price list`, `scaffolding hire cost`, `scaffolding hire prices`, `cost of scaffolding london`). This is no longer an inference.
 5. **(B)** A new conflict was found while testing negatives against the site's own service architecture: **`domestic` is a broad-match, campaign-level negative** on the same active campaign — colliding directly with the real "Domestic Scaffolding" service and with organic queries like "domestic scaffolding rayleigh" that rank at position 7.2. This looks like an unintended block of a real service line, not a deliberate exclusion — flagged, not changed.
 6. **(A)** GSC's Pages export shows **21 of 29 canonical pages (72%) are being tracked as two separate rows** — trailing-slash and non-trailing-slash — covering 93.5% of all indexed impressions. **(B)** Live verification (direct HTTP requests, not a guess) shows the *current* site correctly 301-redirects the non-slash variant to the slash variant on every URL tested, and the build produces no page that exists as both a flat file and a directory index. **(C)** This is very likely index-consolidation lag from Google, not a live duplicate-content bug today — but it means every raw per-page number in the export understates true page performance by roughly 2× for most of the site, and this cannot be fully resolved without knowing exactly when the redirect was fixed relative to GSC's crawl history.
-7. **(D)** "Total: Account" (£4,182.06, 94 conversions) exceeds "Total: Search" (£3,002.21, 40 conversions) by £1,179.85 and **54 conversions**. More than half the account's recorded conversions come from a campaign type not represented anywhere in the Search Terms, Keywords, Negative Keywords or Location exports provided. This is a genuine blind spot, not resolved here.
+7. **(D → partially corrected, see Section N)** "Total: Account" (£4,182.06, 94 conversions) exceeds "Total: Search" (£3,002.21, 40 conversions) by £1,179.85 and **54 conversions**. **A live Campaigns-view pull (Section N) confirms the account has exactly two campaigns and both are Campaign type "Search"** — this rules out Performance Max, Display, Demand Gen, Video, and Shopping as the explanation. The gap itself is not closed; see Section N for the full reconciliation and what remains unresolved.
 8. **(A)** London is, on the paid side, the single highest-spending location in the account (£826.60 combined across its two bid-adjustment rows, 216 clicks, 12 conversions) and the keyword `scaffolding london` is the second-largest keyword by spend (£681.95, 10 conversions). **(B)** Yet London receives exactly one inbound internal link on the entire site (from the `/areas` hub only) and is absent from the footer. Paid is already proving commercial demand for a page the site itself treats as an afterthought.
 9. **(A)** Kent generates real, efficiently-converting paid demand (£134.23 spend, 3 conversions, ~£44.74 CPA across Maidstone/Chatham/ME-postcode rows) despite having **no page anywhere in the site's architecture** (not in `AREA_DATA`, not in `EXPANSION_AREA_DATA`).
 10. **(A)** Dozens of hyper-specific town+service organic queries rank at position 1–4 (e.g. "industrial scaffolding companies rayleigh" pos 1.0/173 impr, "commercial scaffolding rayleigh" pos 1.4/546 impr, "specialist scaffolding rayleigh" pos 1.66/399 impr) yet return **zero clicks**. **(D)** Whether this is a genuine CTR failure, a snippet problem, or a GSC position-averaging artifact from a low, noisy sample cannot be determined from this export alone.
@@ -389,6 +389,105 @@ Explicitly frozen pending the external-data-informed decision phase, or pending 
 - **Do not build a Kent page, or any page for the scattered long-tail locations in Section G**, on the strength of this data alone — real but thin.
 - **Do not conclude the Rayleigh position-1/zero-click pattern is a CTR or content problem** — the property-scope, canonical, and reporting-artifact explanations were not fully separable from this export set.
 - **Do not resolve the Price/Cost triple-block either way** (leave the `cost`/`price` negatives, the guide page, and its lack of paid targeting exactly as they are) until a decision-maker confirms whether the original exclusion was deliberate.
-- **Do not act on the £1,179.85 / 54-conversion account-level gap by assumption** — pull a Campaigns performance report (by campaign type) before making any judgement about where that value is coming from.
+- **Do not act on the account-vs-Search conversion gap by assumption** — the Campaigns-by-type pull (Section N) has narrowed but not closed it; one further read-only check (re-pulling with Removed campaigns included) is identified and should happen before any budget or attribution conclusion is drawn from it.
 - **Do not change the site's cookie-consent/GA4-loading architecture** on the basis of the low GA4 session count — that count is expected under the current, deliberate consent design, not a bug.
 - **No code, content, schema, redirects, internal links, Google Ads settings, GSC settings, or GA4 configuration were changed in the process of producing this report**, consistent with the stop condition this phase was scoped to.
+
+---
+
+## N. Final Reconciliation — Campaigns-by-Type Pass
+
+**Status: this pass narrows the account-level discrepancy and yields one new, decision-relevant conclusion (on `scaffolding hire`), but does not fully close the original gap. PR #43 remains in draft. No implementation follows from this section.**
+
+### Source and scope
+
+Unlike the five raw CSV exports used in Sections A–M, this pass is based on a **live Campaigns-view screen capture** provided directly in chat, not a downloaded file. This is a materially different kind of evidence and is treated with more caution:
+
+- **View:** Google Ads Campaigns table, account "Axis Scaffolding Essex" (MJ AdSystems).
+- **Filter shown:** `Ad state is Enabled, Disabled`. This explicitly **excludes any Removed (deleted) campaign** — that exclusion is itself part of the reconciliation below, not an oversight in reading it.
+- **Date range: not visible in what was provided.** No date-range control, header, or label appeared in the captured view. **(D)** This is the single biggest limitation of this pass: everything below assumes this view represents the same "All time" scope as the other five exports, but that is an assumption, not a confirmed fact. The Google Ads UI's Campaigns tab does not default to "All time" — it commonly defaults to the last 7 or 30 days unless changed — so this cannot be taken as equivalent to the other exports without the account owner confirming the date-range control was set to "All time" before capturing it.
+- Two campaigns are shown, both **Campaign type: Search**. No Performance Max, Display, Demand Gen, Video, Shopping, or Local campaign appears anywhere in this view.
+
+### Totals as provided (A — directly evidenced, transcribed exactly, no re-derivation)
+
+| Campaign | Status | Type | Clicks | Impr. | CTR | Avg. CPC | Cost | Impr. (Top) % | Impr. (Abs. Top) % | Conversions | Conv. value | Cost/conv. | Conv. rate |
+|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Phone calls Campaign - Axis High Intent | Enabled | Search | 560 | 18,438 | 3.04% | £4.75 | £2,659.14 | 21.25% | 51.41% | 36.00 | 0 | £73.86 | 6.43% |
+| Axis Scaffolding \| High Intent | Paused | Search | 134 | 4,164 | 3.22% | £2.01 | £269.62 | 18.06% | 54.64% | 3.00 | 0 | £89.87 | 2.24% |
+| **Total** | — | — | **694** | **22,602** | 3.07% | £4.22 | **£2,928.76** | 20.66% | 52.01% | **39.00** | **0** | £75.10 | 5.62% |
+
+**Conv. value = 0 for both campaigns.** No conversion-value/revenue tracking is configured at the account level. This is an independent cross-confirmation of the GA4 screenshot finding in Section H, which also showed £0.00 total revenue — two unrelated sources agreeing on the same underlying fact.
+
+### Reconciliation arithmetic — three separate comparisons, none silently merged
+
+**1. Campaigns total vs. "Total: Search" (Search Terms export, pulled 2026-09-05, labelled "All time"):**
+
+| | Clicks | Cost | Conversions |
+|---|--:|--:|--:|
+| Total: Search (Search Terms export) | 743 | £3,002.21 | 40.00 |
+| Campaigns view total (this pass) | 694 | £2,928.76 | 39.00 |
+| **Difference** | **−49** | **−£73.45** | **−1.00** |
+
+The Campaigns-view total is *smaller* than the Search Terms export's own "Total: Search" row, by a small margin. This is the opposite direction you would expect from simple time passing (more days should mean more accumulated clicks, not fewer) — which is itself evidence that this Campaigns-view pull most likely reflects a **shorter date window than "All time,"** not a longer one (i.e., it is more consistent with a default recent-period view than a full-lifetime view). **(C)** This is the most likely explanation for this specific small gap, but it is not confirmed, because the date range was never visible.
+
+**2. Campaigns total vs. "Total: Account" (Search Terms export, same file, same "All time" label):**
+
+| | Clicks | Cost | Conversions |
+|---|--:|--:|--:|
+| Total: Account (Search Terms export) | 3,449 | £4,182.06 | 94.00 |
+| Campaigns view total (this pass) | 694 | £2,928.76 | 39.00 |
+| **Difference** | **2,755** | **£1,253.30** | **55.00** |
+
+This is the core discrepancy this pass was commissioned to close. **It is not closed.** What this pass does establish directly:
+
+- **(A) Ruled out with high confidence:** items 2–7 on the requested checklist (Performance Max, Display, Demand Gen, Video, Shopping, "other campaign types") — the account has exactly two campaigns and both are Search. If a third, Removed campaign existed, it would not appear in this "Enabled, Disabled" view, so this rules out *additional currently-active or paused* campaign types, not necessarily historical ones (see below).
+- **(C) Most plausible remaining candidate — item 8/11/14 on the requested checklist (reporting-scope and date-range differences, "other identifiable reporting mechanism"):** a **removed/deleted campaign** that existed earlier in the account's history. "Total: Account" in a search-terms export is a lifetime rollup that is not filtered by current campaign status; a campaign that was deleted (not merely paused) would still count toward that lifetime figure but would be invisible to a "Enabled, Disabled" Campaigns-view filter. This single mechanism, if it applies here, would fully explain both the missing campaign-type coverage and the missing conversions in one stroke — but it is **not confirmed**, only the best-fitting hypothesis against the evidence actually available.
+- **(D) Not ruled out:** the date-range ambiguity above means this comparison itself may not be valid — if the Campaigns view is scoped to (for example) the last 30 days rather than all time, then it was never going to match "Total: Account" regardless of what campaigns exist or existed, and the entire gap could simply be a scope mismatch rather than a missing-campaign question at all.
+- **The one further read-only check that would resolve this, unambiguously, without touching anything:** re-open the Campaigns view, explicitly set the date range to **All time**, and change the **Ad state filter to include Removed** alongside Enabled and Disabled. If a third campaign appears with roughly 2,755 clicks / £1,253.30 / 55 conversions, the gap is explained. If no third campaign appears and the two existing campaigns' all-time totals still fall short of "Total: Account," the gap remains genuinely unexplained and would need Google Ads support-level investigation (e.g. a historical account merge, a MCC-level rollup artifact, or a conversion-action change that retroactively affected reporting) — outside what any export-based audit can resolve.
+
+**This gap is preserved as unresolved, per instruction, not assumed closed.**
+
+**3. Campaigns total vs. Keywords export (93 rows, summed independently in Section D/E, no official "Total:" row of its own to cross-check against):**
+
+| | Clicks | Cost | Conversions |
+|---|--:|--:|--:|
+| Keywords export (summed) | 632 | £2,770.47 | 39.00 |
+| Campaigns view total (this pass) | 694 | £2,928.76 | 39.00 |
+| **Difference** | **+62** | **+£158.29** | **0.00** |
+
+**Conversions match exactly (39 = 39).** This is the most reassuring reconciliation point in this entire pass: every conversion recorded at the campaign level is also accounted for at the keyword level, with no residual "unattributed conversions" gap between the two. Clicks and cost each carry a small (~9%/5%) residual gap, most plausibly the same short-window/pull-timing effect noted in comparison 1 above — **(C)**, not confirmed.
+
+### Answering the four specific sub-questions on `scaffolding hire`
+
+> A. Does the £1,466.31 / 52.9%-of-keyword-spend figure represent genuine campaign-level spend?
+
+**(A) Yes, with high confidence, and slightly strengthened by this pass.** £1,466.31 is 50.1% of this pass's own campaign-level total cost (£2,928.76) — closely in line with the 52.9%-of-keyword-level-cost figure already reported. The small residual gap between keyword-level and campaign-level totals (comparison 3 above, £158.29) is not large enough to materially change this conclusion either way.
+
+> B. Is the 61.5% conversion share genuinely attributable to that keyword?
+
+**(A) Yes — this sub-question is now more confidently answered than before this pass.** Because campaign-level conversions (39.00) match keyword-level conversions (39.00) **exactly**, there is no room for a large pool of campaign-level conversions sitting outside named keywords that could be silently diluting or inflating `scaffolding hire`'s apparent 61.5% share (24 of 39). The share is real, at both levels of the account's own reporting.
+
+> C. Does the search-term report's export/matching limitation prevent full attribution to that keyword?
+
+**(A) Yes — unchanged by this pass, and this pass does not and cannot resolve it.** This pass adds no search-term-level data. The original finding stands exactly as reported in Section D/E: the Search Terms export has no "matched keyword" column, so the £1,466.31-vs-£109.40 mismatch between `scaffolding hire`'s keyword-level spend and the text-matched "Hire/rental" search-term category remains open, and the most likely explanation (broad-match semantic expansion capturing queries that don't literally contain "hire") remains an inference, not a fact.
+
+> D. Does the relationship remain unresolved?
+
+**Partially.** The *conversion* side of the `scaffolding hire` finding (sub-question B) is now well-supported by cross-level agreement. The *spend* side (sub-question A) is supported but carries a small unexplained residual. The *search-term attribution mechanism* (sub-question C) remains genuinely unresolved and requires an export this audit does not have access to.
+
+### Does the 54/55-conversion discrepancy affect any other finding already in this report?
+
+- **`scaffolding hire` (Section D/E):** No material effect — addressed directly above; if anything, this pass increases confidence in the conversion-share finding.
+- **London (Section A.8, G):** No effect. London's figures come from the Location report, which is a separate export from the account/Search totals question; nothing in this pass touches location-level data.
+- **Kent (Section A.9, G):** No effect, same reason.
+- **Competitor traffic (Section F):** Not addressed by this pass — campaign-level totals do not break out competitor-term spend; that reconciliation still rests entirely on the Search Terms export's own text classification (Section D), unchanged.
+- **Local generic traffic (Section D, category 1):** Not addressed by this pass for the same reason — no campaign-level breakdown by search-term category exists in what was provided.
+- **The trailing-slash finding (Section C), the `domestic`/`cost` negative-keyword findings (Section F), and the GA4 findings (Section H):** No effect — all independent of the account-level Ads accounting question.
+
+### What remains unknown, stated exactly (per instruction, not smoothed over)
+
+- The **precise date range** of the Campaigns-view pull used in this section is unconfirmed.
+- The **£1,253.30 / 55-conversion gap between the Campaigns-view total and "Total: Account"** is not closed. The leading hypothesis (a removed/deleted historical campaign) is plausible and consistent with the evidence, but unproven.
+- **What additional export would close it:** the same Campaigns view, re-pulled with (a) date range explicitly set to All time, and (b) Ad state filter including Removed. If that still does not reconcile, a request to Google Ads support or an MCC-level account history review would be the next step — beyond what any further CSV export can resolve alone.
+
+**No conclusion in Sections A–M is withdrawn as a result of this pass, apart from the specific "other campaign type" phrasing in A.7, which is corrected above.** PR #43 remains in draft.
