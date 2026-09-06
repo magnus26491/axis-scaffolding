@@ -469,6 +469,13 @@ def footer() -> str:
     # the footer appears on every page, so this was previously providing
     # zero navigational value to any of the 12 real area pages.
     area = "".join(f'<li><a href="/areas/{data["slug"]}">{name}</a></li>' for name, data in AREA_DATA.items())
+    # Phase H PR H1: London gets the same sitewide structural link the core
+    # 12 towns get here (previously reachable from one place only, the
+    # /areas hub) — structural discoverability parity, not a copy of the
+    # core-town page architecture. Brentwood/Loughton are deliberately not
+    # added: their individual paid performance is still unconfirmed, unlike
+    # London's (top-spending location, 12 conversions, PR#43 §A.8/§G).
+    area += f'<li><a href="/areas/{EXPANSION_AREA_DATA["London"]["slug"]}">London</a></li>'
     return f"""
 <footer class="site-footer">
   <div class="container footer-grid">
