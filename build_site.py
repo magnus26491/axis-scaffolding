@@ -253,6 +253,31 @@ SERVICE_GENERAL_FAQ_SLUGS = {
     "scaffold-supply-erection": ["cost", "cisrs"],
 }
 
+
+def _build_service_guide_map() -> dict[str, str]:
+    """Phase H PR H2 — deterministic one-guide-per-service-page mapping.
+    No invented relationships: built entirely from data that already
+    exists. Precedence: a service already tagged with the "licence"
+    general FAQ (its own content already raises the highway-licence
+    question) points to that guide; everything else falls back to its
+    SERVICE_GROUPS category. Services in neither bucket (the Specialist
+    group — temporary roofing, emergency, dismantling) get no guide
+    link, because no real content relationship was found for them."""
+    group_guide = {"home-property": "scaffolding-cost-essex", "commercial-trade": "do-i-need-scaffolding"}
+    mapping = {
+        slug: group_guide[group["key"]]
+        for group in SERVICE_GROUPS if group["key"] in group_guide
+        for slug in group["slugs"]
+    }
+    for slug, faq_slugs in SERVICE_GENERAL_FAQ_SLUGS.items():
+        if "licence" in faq_slugs:
+            mapping[slug] = "highway-licence-scaffolding"
+    return mapping
+
+
+SERVICE_TO_GUIDE_SLUG: dict[str, str] = _build_service_guide_map()
+GUIDES_BY_SLUG = {g["slug"]: g for g in GUIDES}
+
 AREAS = [
     "Benfleet",
     "Canvey Island",
@@ -3667,6 +3692,14 @@ def service_detail_body(service: dict) -> str:
     # general FAQ set (see SERVICE_GENERAL_FAQ_SLUGS) — one relevant
     # accordion, not the whole FAQ database dumped on every page.
     faqs = list(detail.get("faqs", [])) + [FAQS_BY_SLUG[s] for s in SERVICE_GENERAL_FAQ_SLUGS.get(slug, [])]
+    # Phase H PR H2: exactly one guide link per service page, per the fixed
+    # SERVICE_TO_GUIDE_SLUG mapping — no blanket "read our guides" link,
+    # no guide for services the mapping doesn't cover (see its docstring).
+    guide_slug = SERVICE_TO_GUIDE_SLUG.get(slug)
+    guide_link_html = (
+        f'<p class="centered" style="margin-top:1.5rem;">Read our guide: <a href="/guides/{guide_slug}">{GUIDES_BY_SLUG[guide_slug]["title"]}</a></p>'
+        if guide_slug else ""
+    )
     cta_label = detail.get("cta_label", f"Need {service['name'].lower()}?")
     cta_is_phone = detail.get("cta_is_phone", False)
 
@@ -3751,10 +3784,10 @@ def service_detail_body(service: dict) -> str:
 <section class="section section-light">
   <div class="container faq-wrap">
     <h2>Frequently Asked Questions</h2>
-    {faq_html}
+    {faq_html}{guide_link_html}
   </div>
 </section>
-""" if faq_html else "")
+""" if faq_html else (f'<section class="section section-light"><div class="container">{guide_link_html}</div></section>' if guide_link_html else ""))
         + (lambda more_projects=related[1:] if proof_photo else related: f"""
 <section class="section section-dark">
   <div class="container">
@@ -4007,6 +4040,15 @@ def area_page_body(area_name: str, data: dict) -> str:
          f'<a href="/areas/{target["slug"]}">{n}</a>' if target else f'<a href="/contact">{n}</a>')()
         for n in data.get("nearby", [])
     )
+    # Phase H PR H2: a guide link is added only where this area's own
+    # existing "access" copy already raises the highway-licence question
+    # (a genuine contextual bridge, not a blanket link on every area page).
+    # Objective test, not judgement: does the area's own text mention
+    # "licence" at all. Four of the twelve core towns currently do.
+    licence_guide_html = (
+        f'<p>Read our guide to <a href="/guides/highway-licence-scaffolding">highway licences for scaffolding on the pavement</a>.</p>'
+        if "licence" in data["access"].lower() else ""
+    )
     return (
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
@@ -4027,7 +4069,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   <div class="container">
     <h2>Site Access in {area_name}</h2>
     <p>{data['access']}</p>
-    <h2>Nearby Areas We Also Cover</h2>
+    {licence_guide_html}<h2>Nearby Areas We Also Cover</h2>
     <p>{nearby_links}</p>
     <p>We cover all of South Essex. <a href="/contact">Contact us</a> to confirm coverage for your specific location.</p>
   </div>
