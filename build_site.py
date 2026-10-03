@@ -21,10 +21,20 @@ TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
 FORM_NEXT = 'https://www.axisscaffoldingessex.co.uk/thank-you'
-# Verified GA4 property for this site (confirmed by the business, Phase E5A).
-# Analytics load only after the visitor grants consent via the cookie bar —
-# see loadGA4()/restoreConsent() in generate_js() below.
-GA4_MEASUREMENT_ID: str | None = "G-J9VHTYEYNW"
+# Google tag for this site, linked to the Google Ads account (supplied by the
+# business). gtag.js loads on every page under Consent Mode v2 with all storage
+# denied by default; consent is only upgraded after the visitor accepts via the
+# cookie bar — see loadGA4()/applyConsentCategories() in generate_js() below.
+GA4_MEASUREMENT_ID: str | None = "G-Y7CLNBBT73"
+# Previously confirmed GA4 property (Phase E5A), kept receiving data alongside.
+GA4_EXTRA_IDS: list[str] = ["G-J9VHTYEYNW"]
+
+
+def ga_config_script() -> str:
+    return (
+        f"<script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};"
+        f"window.AXIS_GA4_EXTRA_IDS = {json.dumps(GA4_EXTRA_IDS)};</script>"
+    )
 
 NAP = {
     "name": "Axis Scaffolding Ltd",
@@ -835,7 +845,7 @@ def render_page(
   {footer()}
   {cookie_ui()}
   {project_lightbox()}
-  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
+  {ga_config_script()}
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -2473,31 +2483,52 @@ def generate_js() -> None:
   }
   start();
 
-  // ── ANALYTICS (consent-gated, no-op until a real GA4 ID is configured) ──
+  // ── GOOGLE TAG (Consent Mode v2: loads always, storage denied until consent) ──
   const CATEGORIES_KEY = 'axis_cookie_categories';
   function loadGA4() {
     if (!window.AXIS_GA4_ID || window.__axisGA4Loaded) return;
     window.__axisGA4Loaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    // Consent Mode v2: everything denied until the visitor opts in.
+    window.gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500,
+    });
     var s = document.createElement('script');
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AXIS_GA4_ID;
     s.async = true;
     document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function() { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
-    window.gtag('config', window.AXIS_GA4_ID, { anonymize_ip: true });
+    [window.AXIS_GA4_ID].concat(window.AXIS_GA4_EXTRA_IDS || []).forEach(function(id) {
+      window.gtag('config', id, { anonymize_ip: true });
+    });
+  }
+  function updateGoogleConsent(categories) {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('consent', 'update', {
+      analytics_storage: categories.analytics ? 'granted' : 'denied',
+      ad_storage: categories.marketing ? 'granted' : 'denied',
+      ad_user_data: categories.marketing ? 'granted' : 'denied',
+      ad_personalization: categories.marketing ? 'granted' : 'denied',
+    });
   }
   function trackEvent(name, params) {
     if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
   }
   function applyConsentCategories(categories) {
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-    if (categories.analytics) loadGA4();
+    loadGA4();
+    updateGoogleConsent(categories);
   }
   (function restoreConsent() {
     try {
       const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
-      if (stored && stored.analytics) loadGA4();
+      loadGA4();
+      if (stored) updateGoogleConsent(stored);
     } catch (_err) { /* ignore malformed stored consent */ }
   })();
   document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
@@ -4856,7 +4887,7 @@ def generate_pages() -> None:
   <main id="main-content">""" + thank_you_body + """</main>
   """ + footer() + """
   """ + cookie_ui() + f"""
-  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
+  {ga_config_script()}
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -4905,7 +4936,7 @@ def generate_pages() -> None:
   <main id="main-content">""" + notfound_body + """</main>
   """ + footer() + """
   """ + cookie_ui() + f"""
-  <script>window.AXIS_GA4_ID = {json.dumps(GA4_MEASUREMENT_ID)};</script>
+  {ga_config_script()}
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
