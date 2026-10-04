@@ -925,6 +925,7 @@ def generate_css() -> None:
   --accent-dark:      #8e949c;
   --accent-hover:     #b0b7bf;
   --accent-glow:      rgba(200, 205, 212, 0.12);
+  --highlight:        #4da3ff;  /* single bright accent: service-card icons, hover edge */
   --accent-gradient:  linear-gradient(135deg,
                         #e8eaed 0%,
                         #9ba3ab 40%,
@@ -1386,22 +1387,21 @@ textarea:focus-visible {
   }
 }
 .service-card { padding:1.5rem; }
-.service-card-has-media { padding-top:0; overflow:hidden; }
-.service-card-media {
-  margin:0 -1.5rem 1.1rem; aspect-ratio:16/9; overflow:hidden;
-  background:#0d0d0d; border-bottom:1px solid var(--border);
+/* Icon "insignia" as a large highlighted watermark behind the card text —
+   simple and professional, no photography. Text sits above it. */
+.services-grid .service-card { overflow:hidden; border-top:2px solid var(--highlight) !important; }
+.service-card-watermark {
+  position:absolute; right:-6px; bottom:-26px; width:150px; height:150px;
+  color:var(--highlight); opacity:0.42; pointer-events:none;
+  transition:opacity 0.25s ease, transform 0.25s ease;
 }
-.service-card-media img {
-  width:100%; height:100%; object-fit:cover; object-position:center 35%;
-  display:block; transition:transform 0.4s ease;
-}
-.service-card:hover .service-card-media img { transform:scale(1.04); }
-.service-card-media-icon {
-  display:flex; align-items:center; justify-content:center; color:var(--silver, #c8cdd4);
-  background:radial-gradient(ellipse at center, #1c1c1c 0%, #0d0d0d 75%);
-}
-.service-card-media-icon svg { width:56px; height:56px; opacity:0.75; }
-.service-card-urgent .service-card-media-icon { color:#ff8a8a; }
+.service-card-watermark svg { width:100%; height:100%; display:block; }
+.service-card:hover .service-card-watermark { opacity:0.65; transform:scale(1.06) rotate(-3deg); }
+.service-card > *:not(.service-card-watermark) { position:relative; z-index:1; }
+.service-card > p { max-width:72%; }
+.service-card-urgent .service-card-watermark { color:#ff6b6b; }
+.services-grid .service-card-urgent { border-top-color:#ff6b6b !important; }
+@media (prefers-reduced-motion: reduce) { .service-card-watermark { transition:none; } }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
@@ -3101,51 +3101,24 @@ def untagged_photo_card(p: dict) -> str:
 SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 
 
-# Real, fully-tagged project photo per service for the overview cards. Only a
-# photo whose PROJECTS entry carries that exact service_slug is used — a
-# service with no genuinely matching photo gets a neutral icon panel instead
-# of a guessed image (see the project-4 "Temporary Roofing" mismatch above).
-SERVICE_CARD_PHOTO = {
-    "residential-scaffolding": "project-1",
-    "domestic-scaffolding": "project-17",
-    "roof-scaffolding": "project-5",
-    "commercial-scaffolding": "project-2",
-}
-_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{}</svg>'
+_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{}</svg>'
+# One simple line "insignia" per service, shown as a large highlighted
+# watermark behind the card text (see .service-card-watermark in the CSS).
 SERVICE_CARD_ICON = {
+    "residential-scaffolding": _ICON.format('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
+    "domestic-scaffolding": _ICON.format('<path d="M3 12l9-8 9 8"/><path d="M6 10v10h12V10"/><path d="M16 7V4h2v5"/><path d="M10 20v-5h4v5"/>'),
+    "roof-scaffolding": _ICON.format('<path d="M2 14L12 5l10 9"/><path d="M5 12v8M19 12v8M5 16h14M5 20h14"/>'),
+    "commercial-scaffolding": _ICON.format('<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>'),
     "loading-bay-scaffolding": _ICON.format('<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>'),
     "scaffold-supply-erection": _ICON.format('<path d="M4 4v16M12 4v16M20 4v16M4 8h16M4 14h16"/>'),
-    "temporary-roofing": _ICON.format('<path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/>'),
+    "temporary-roofing": _ICON.format('<path d="M3 12a9 9 0 0118 0z"/><path d="M12 12v7a2 2 0 004 0"/>'),
     "emergency-scaffolding": _ICON.format('<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'),
     "dismantling-scaffolding": _ICON.format('<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>'),
 }
 
 
 def _service_card_media(svc: dict) -> str:
-    slug = svc["slug"]
-    pslug = SERVICE_CARD_PHOTO.get(slug)
-    project = next((p for p in PROJECTS if p["slug"] == pslug), None) if pslug else None
-    if project and project["service_slug"] == slug:
-        alt = f"{project['label']} in {project['location']}, Essex — real Axis Scaffolding project photograph"
-        native_w = project["w"]
-    elif pslug and any(u["slug"] == pslug for u in UNTAGGED_PHOTOS):
-        # Genuine, founder-confirmed Axis photo with no confirmed town/service:
-        # alt text states only what is visibly true, no location claim.
-        alt = "Scaffold erected on a semi-detached house — genuine Axis Scaffolding photograph"
-        native_w = next(u["w"] for u in UNTAGGED_PHOTOS if u["slug"] == pslug)
-    else:
-        return f'<div class="service-card-media service-card-media-icon" aria-hidden="true">{SERVICE_CARD_ICON.get(slug, "")}</div>'
-    widths = [w for w in (480, 768) if w <= native_w]
-    candidates = [(f"/images/{pslug}-{w}w.webp", w) for w in widths]
-    if native_w < 768:  # native file is the sharpest option available
-        candidates.append((f"/images/{pslug}.webp", native_w))
-    src, src_w = candidates[-1]
-    srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
-    return (
-        f'<div class="service-card-media"><img src="{src}" srcset="{srcset}" '
-        f'sizes="(max-width: 768px) 100vw, 360px" alt="{alt}" width="{src_w}" '
-        f'height="{round(src_w * 9 / 16)}" loading="lazy" decoding="async"></div>'
-    )
+    return f'<div class="service-card-watermark" aria-hidden="true">{SERVICE_CARD_ICON.get(svc["slug"], "")}</div>'
 
 
 def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
@@ -3155,7 +3128,7 @@ def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Servic
     itself (service_detail_body) does the actual explaining."""
     urgent_class = " service-card-urgent" if svc["slug"] == "emergency-scaffolding" else ""
     return f"""
-<article class="service-card service-card-has-media{urgent_class}">
+<article class="service-card{urgent_class}">
   {_service_card_media(svc)}
   <{heading_tag}>{svc['name']}</{heading_tag}>
   <span class="service-card-audience">{svc['audience']}</span>
@@ -3381,45 +3354,6 @@ def homepage() -> str:
     </div>
     <div>
       <img src="/images/project-2.webp" alt="Commercial scaffolding access at a site in Canvey Island, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image parallax-image">
-    </div>
-  </div>
-</section>
-
-<section class="section section-light decision-section hex-texture" aria-labelledby="decision-heading">
-  <div class="container">
-    <h2 id="decision-heading">Which of These Is You?</h2>
-    <p class="section-intro">Now you know what we do — pick the option closest to your project and we'll point you to the right place.</p>
-    <div class="decision-grid">
-      <a href="/services/residential-scaffolding" class="decision-card">
-        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
-        <h3>Homeowner</h3>
-        <p>Roofing &middot; rendering &middot; extensions &middot; chimneys</p>
-        <span class="decision-link" aria-hidden="true">Find out more &rarr;</span>
-      </a>
-      <a href="/contractors" class="decision-card">
-        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
-        <h3>Builder / Roofer</h3>
-        <p>Access scaffold &middot; trade support &middot; fast turnaround</p>
-        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
-      </a>
-      <a href="/contractors" class="decision-card">
-        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg></div>
-        <h3>Commercial</h3>
-        <p>Sites &middot; offices &middot; retail &middot; schools &middot; developments</p>
-        <span class="decision-link" aria-hidden="true">For contractors &rarr;</span>
-      </a>
-      <a href="/services/emergency-scaffolding" class="decision-card decision-card-urgent">
-        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-        <h3>Emergency</h3>
-        <p>Storm damage &middot; urgent access &middot; temporary protection</p>
-        <span class="decision-link" aria-hidden="true">Call us now &rarr;</span>
-      </a>
-      <a href="/contact" class="decision-card decision-card-open">
-        <div class="decision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-        <h3>Not Sure</h3>
-        <p>Tell us what you're doing and we'll point you in the right direction.</p>
-        <span class="decision-link" aria-hidden="true">Get in touch &rarr;</span>
-      </a>
     </div>
   </div>
 </section>
