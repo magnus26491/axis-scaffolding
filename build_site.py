@@ -36,6 +36,12 @@ def ga_config_script() -> str:
         f"window.AXIS_GA4_EXTRA_IDS = {json.dumps(GA4_EXTRA_IDS)};</script>"
     )
 
+# WhatsApp uses the business mobile shown on the Google Business Profile.
+WHATSAPP_E164 = "447895668559"
+WHATSAPP_DISPLAY = "07895 668559"
+WHATSAPP_URL = f"https://wa.me/{WHATSAPP_E164}?text=Hi%20Axis%20Scaffolding%2C%20I%27d%20like%20a%20scaffolding%20quote."
+WHATSAPP_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="vertical-align:-3px;margin-right:0.4rem"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.96L2 22l5.19-1.36A9.92 9.92 0 1 0 12.04 2Zm0 18.1a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.08.8.82-3-.2-.31a8.2 8.2 0 1 1 6.94 3.83Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.1-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05 0 1.2.88 2.37 1 2.53.12.16 1.73 2.65 4.2 3.72.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.66-1.17.2-.58.2-1.07.14-1.17-.06-.1-.23-.16-.48-.29Z"/></svg>'
+
 NAP = {
     "name": "Axis Scaffolding Ltd",
     "address": "Arterial Road, Rayleigh, Essex, SS6 7XT",
@@ -2536,6 +2542,11 @@ def generate_js() -> None:
       trackEvent('phone_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
     });
   });
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('whatsapp_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
+    });
+  });
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     let started = false;
     form.addEventListener('input', () => {
@@ -3247,6 +3258,7 @@ def homepage() -> str:
     <div class="hero-cta-row">
       <a class="btn btn-primary btn-hero-call" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
       <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="{WHATSAPP_URL}" target="_blank" rel="noopener noreferrer">{WHATSAPP_ICON}WhatsApp us</a>
     </div>
     <div class="hero-trust-badges" aria-label="Trust credentials">
       <span>CISRS Qualified</span>
@@ -4373,7 +4385,7 @@ def generate_pages() -> None:
             "Need scaffolding Essex support from Rayleigh? Call Axis Scaffolding or send your details for a fast response. Get a free quote today.",
         )
         + f"""
-<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#c8cdd4;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>WhatsApp:</strong> <a href="{WHATSAPP_URL}" target="_blank" rel="noopener noreferrer">{WHATSAPP_DISPLAY}</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#c8cdd4;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
 """
     )
     write(
