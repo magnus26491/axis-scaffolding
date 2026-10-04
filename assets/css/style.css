@@ -8,7 +8,7 @@
   --accent-dark:      #8e949c;
   --accent-hover:     #b0b7bf;
   --accent-glow:      rgba(200, 205, 212, 0.12);
-  --highlight:        #4da3ff;  /* single bright accent: service-card icons, hover edge */
+  --highlight:        #ff8a1f;  /* service-card icon watermark colour */
   --accent-gradient:  linear-gradient(135deg,
                         #e8eaed 0%,
                         #9ba3ab 40%,
@@ -472,18 +472,18 @@ textarea:focus-visible {
 .service-card { padding:1.5rem; }
 /* Icon "insignia" as a large highlighted watermark behind the card text —
    simple and professional, no photography. Text sits above it. */
-.services-grid .service-card { overflow:hidden; border-top:2px solid var(--highlight) !important; }
+.services-grid .service-card { overflow:hidden; border-top:2px solid var(--silver) !important; }
 .service-card-watermark {
   position:absolute; right:-6px; bottom:-26px; width:150px; height:150px;
-  color:var(--highlight); opacity:0.42; pointer-events:none;
+  color:var(--highlight); opacity:0.85; pointer-events:none;
   transition:opacity 0.25s ease, transform 0.25s ease;
 }
 .service-card-watermark svg { width:100%; height:100%; display:block; }
-.service-card:hover .service-card-watermark { opacity:0.65; transform:scale(1.06) rotate(-3deg); }
+.service-card:hover .service-card-watermark { opacity:1; transform:scale(1.06) rotate(-3deg); }
 .service-card > *:not(.service-card-watermark) { position:relative; z-index:1; }
 .service-card > p { max-width:72%; }
 .service-card-urgent .service-card-watermark { color:#ff6b6b; }
-.services-grid .service-card-urgent { border-top-color:#ff6b6b !important; }
+.services-grid .service-card-urgent { border-top-color:rgba(255,120,120,0.6) !important; }
 @media (prefers-reduced-motion: reduce) { .service-card-watermark { transition:none; } }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
