@@ -8,6 +8,7 @@
   --accent-dark:      #8e949c;
   --accent-hover:     #b0b7bf;
   --accent-glow:      rgba(200, 205, 212, 0.12);
+  --highlight:        #ff8a1f;  /* service-card icon watermark colour */
   --accent-gradient:  linear-gradient(135deg,
                         #e8eaed 0%,
                         #9ba3ab 40%,
@@ -469,6 +470,41 @@ textarea:focus-visible {
   }
 }
 .service-card { padding:1.5rem; }
+/* Photo strip on the right of each card, fading into the dark card so the
+   text stays on solid dark. Silver top edge keeps the existing theme. */
+.services-grid .service-card {
+  overflow:hidden; border-top:2px solid var(--silver) !important; min-height:270px;
+  display:flex; flex-direction:column; align-items:flex-start;
+}
+.service-card-photo { position:absolute; inset:0; z-index:0; }
+.service-card-photo img {
+  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+  transition:transform 0.5s ease;
+}
+.service-card-photo::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(14,14,14,0.98) 0%, rgba(14,14,14,0.95) 55%, rgba(14,14,14,0.45) 78%, rgba(14,14,14,0.08) 100%);
+}
+.service-card:hover .service-card-photo img { transform:scale(1.05); }
+.service-card > *:not(.service-card-photo) { position:relative; z-index:1; }
+.service-card > p { max-width:66%; }
+.services-grid .service-card > a {
+  margin-top:auto; display:inline-block; padding:0.55rem 1.15rem;
+  border:1px solid var(--silver); border-radius:9999px; font-size:0.9rem;
+}
+.services-grid .service-card > a:hover { background:var(--silver); color:#000 !important; }
+.service-card-urgent .service-card-photo::after {
+  background:linear-gradient(90deg, rgba(30,10,10,0.98) 0%, rgba(30,10,10,0.95) 55%, rgba(30,10,10,0.5) 78%, rgba(30,10,10,0.1) 100%);
+}
+.services-grid .service-card-urgent { border-top-color:rgba(255,120,120,0.6) !important; }
+@media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
+
+/* "Why choose us" — three tick-badge points. */
+.why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
+.why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
+.why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }
+.why-item p { margin:0; color:var(--text-secondary); line-height:1.65; max-width:34ch; }
+@media (max-width:768px) { .why-axis .why-grid { grid-template-columns:1fr; gap:1.75rem; } }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
@@ -1069,8 +1105,9 @@ body.lightbox-open { overflow:hidden; }
 @media (max-width:768px) {
   .cookie-bar { padding:var(--space-3); gap:var(--space-2); }
   .cookie-bar p { font-size:var(--text-xs); line-height:1.35; }
-  .cookie-bar-actions { gap:var(--space-2); }
-  .cookie-bar-actions .btn { padding:0.45rem 0.9rem; }
+  .cookie-bar-actions { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); width:100%; }
+  .cookie-bar-actions .btn { padding:0.5rem 0.5rem; text-align:center; justify-content:center; }
+  .cookie-bar-actions .btn-manage { grid-column:1 / -1; padding:0; font-size:var(--text-xs); text-align:center; }
 }
 
 /* ── DECISION CARDS ──
@@ -1237,7 +1274,13 @@ body.lightbox-open { overflow:hidden; }
   }
   .site-nav a:not(.cta-pill)::after { display:none; }
   .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
-  .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
+  /* Three in-flow children (logo, phone, toggle) — .site-nav is fixed and
+     out of flow — so three columns; with only two the toggle wrapped onto
+     a second row and nearly doubled the header height. */
+  .nav-wrap { grid-template-columns:auto 1fr auto; min-height:72px; gap:0.75rem; }
+  .nav-phone-mobile { justify-self:end; font-size:0.95rem; }
+  .logo-circle-nav { width:52px; height:52px; }
+  .logo-circle-nav img { width:52px; height:52px; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
 }
