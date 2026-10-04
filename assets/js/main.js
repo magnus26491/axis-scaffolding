@@ -301,31 +301,52 @@
   }
   start();
 
-  // ── ANALYTICS (consent-gated, no-op until a real GA4 ID is configured) ──
+  // ── GOOGLE TAG (Consent Mode v2: loads always, storage denied until consent) ──
   const CATEGORIES_KEY = 'axis_cookie_categories';
   function loadGA4() {
     if (!window.AXIS_GA4_ID || window.__axisGA4Loaded) return;
     window.__axisGA4Loaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    // Consent Mode v2: everything denied until the visitor opts in.
+    window.gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500,
+    });
     var s = document.createElement('script');
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AXIS_GA4_ID;
     s.async = true;
     document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function() { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
-    window.gtag('config', window.AXIS_GA4_ID, { anonymize_ip: true });
+    [window.AXIS_GA4_ID].concat(window.AXIS_GA4_EXTRA_IDS || []).forEach(function(id) {
+      window.gtag('config', id, { anonymize_ip: true });
+    });
+  }
+  function updateGoogleConsent(categories) {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('consent', 'update', {
+      analytics_storage: categories.analytics ? 'granted' : 'denied',
+      ad_storage: categories.marketing ? 'granted' : 'denied',
+      ad_user_data: categories.marketing ? 'granted' : 'denied',
+      ad_personalization: categories.marketing ? 'granted' : 'denied',
+    });
   }
   function trackEvent(name, params) {
     if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
   }
   function applyConsentCategories(categories) {
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-    if (categories.analytics) loadGA4();
+    loadGA4();
+    updateGoogleConsent(categories);
   }
   (function restoreConsent() {
     try {
       const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
-      if (stored && stored.analytics) loadGA4();
+      loadGA4();
+      if (stored) updateGoogleConsent(stored);
     } catch (_err) { /* ignore malformed stored consent */ }
   })();
   document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
