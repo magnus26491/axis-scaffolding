@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so sitemap <lastmod> reflects real page changes
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -70,6 +72,7 @@ jobs:
               "gallery/index.html",
               "robots.txt",
               "sitemap.xml",
+              "llms.txt",
           ]
           for p in required:
               if not (root / p).exists():
