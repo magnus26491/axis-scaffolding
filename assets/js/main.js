@@ -354,6 +354,11 @@
       trackEvent('phone_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
     });
   });
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('whatsapp_click', { event_category: 'Lead', link_url: link.getAttribute('href') });
+    });
+  });
   document.querySelectorAll('.axis-quote-form').forEach((form) => {
     let started = false;
     form.addEventListener('input', () => {
