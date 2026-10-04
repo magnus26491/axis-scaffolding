@@ -1387,21 +1387,41 @@ textarea:focus-visible {
   }
 }
 .service-card { padding:1.5rem; }
-/* Icon "insignia" as a large highlighted watermark behind the card text —
-   simple and professional, no photography. Text sits above it. */
-.services-grid .service-card { overflow:hidden; border-top:2px solid var(--silver) !important; }
-.service-card-watermark {
-  position:absolute; right:-6px; bottom:-26px; width:150px; height:150px;
-  color:var(--highlight); opacity:0.85; pointer-events:none;
-  transition:opacity 0.25s ease, transform 0.25s ease;
+/* Photo strip on the right of each card, fading into the dark card so the
+   text stays on solid dark. Silver top edge keeps the existing theme. */
+.services-grid .service-card {
+  overflow:hidden; border-top:2px solid var(--silver) !important; min-height:270px;
+  display:flex; flex-direction:column; align-items:flex-start;
 }
-.service-card-watermark svg { width:100%; height:100%; display:block; }
-.service-card:hover .service-card-watermark { opacity:1; transform:scale(1.06) rotate(-3deg); }
-.service-card > *:not(.service-card-watermark) { position:relative; z-index:1; }
-.service-card > p { max-width:72%; }
-.service-card-urgent .service-card-watermark { color:#ff6b6b; }
+.service-card-photo { position:absolute; inset:0; z-index:0; }
+.service-card-photo img {
+  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+  transition:transform 0.5s ease;
+}
+.service-card-photo::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(14,14,14,0.98) 0%, rgba(14,14,14,0.95) 55%, rgba(14,14,14,0.45) 78%, rgba(14,14,14,0.08) 100%);
+}
+.service-card:hover .service-card-photo img { transform:scale(1.05); }
+.service-card > *:not(.service-card-photo) { position:relative; z-index:1; }
+.service-card > p { max-width:66%; }
+.services-grid .service-card > a {
+  margin-top:auto; display:inline-block; padding:0.55rem 1.15rem;
+  border:1px solid var(--silver); border-radius:9999px; font-size:0.9rem;
+}
+.services-grid .service-card > a:hover { background:var(--silver); color:#000 !important; }
+.service-card-urgent .service-card-photo::after {
+  background:linear-gradient(90deg, rgba(30,10,10,0.98) 0%, rgba(30,10,10,0.95) 55%, rgba(30,10,10,0.5) 78%, rgba(30,10,10,0.1) 100%);
+}
 .services-grid .service-card-urgent { border-top-color:rgba(255,120,120,0.6) !important; }
-@media (prefers-reduced-motion: reduce) { .service-card-watermark { transition:none; } }
+@media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
+
+/* "Why choose us" — three tick-badge points. */
+.why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
+.why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
+.why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }
+.why-item p { margin:0; color:var(--text-secondary); line-height:1.65; max-width:34ch; }
+@media (max-width:768px) { .why-axis .why-grid { grid-template-columns:1fr; gap:1.75rem; } }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
@@ -3101,24 +3121,46 @@ def untagged_photo_card(p: dict) -> str:
 SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 
 
-_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{}</svg>'
-# One simple line "insignia" per service, shown as a large highlighted
-# watermark behind the card text (see .service-card-watermark in the CSS).
-SERVICE_CARD_ICON = {
-    "residential-scaffolding": _ICON.format('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
-    "domestic-scaffolding": _ICON.format('<path d="M3 12l9-8 9 8"/><path d="M6 10v10h12V10"/><path d="M16 7V4h2v5"/><path d="M10 20v-5h4v5"/>'),
-    "roof-scaffolding": _ICON.format('<path d="M2 14L12 5l10 9"/><path d="M5 12v8M19 12v8M5 16h14M5 20h14"/>'),
-    "commercial-scaffolding": _ICON.format('<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>'),
-    "loading-bay-scaffolding": _ICON.format('<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>'),
-    "scaffold-supply-erection": _ICON.format('<path d="M4 4v16M12 4v16M20 4v16M4 8h16M4 14h16"/>'),
-    "temporary-roofing": _ICON.format('<path d="M3 12a9 9 0 0118 0z"/><path d="M12 12v7a2 2 0 004 0"/>'),
-    "emergency-scaffolding": _ICON.format('<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'),
-    "dismantling-scaffolding": _ICON.format('<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>'),
+# Genuine Axis site photography used as a decorative strip on each service
+# card (right-hand side, fading into the card). Deliberately:
+#  * none of these appear elsewhere on the homepage (hero / Recent Projects /
+#    For Builders use project-1, project-2, project-5), and
+#  * alt="" — the photos are decoration, so they make no claim about which
+#    job or town they show. Only residential/domestic/roof/commercial are
+#    chosen to visibly fit; the rest are generic scaffold photography.
+SERVICE_CARD_PHOTO = {
+    "residential-scaffolding": "project-7",
+    "domestic-scaffolding": "project-17",
+    "roof-scaffolding": "project-14",
+    "commercial-scaffolding": "project-8",
+    "loading-bay-scaffolding": "project-4",
+    "scaffold-supply-erection": "project-13",
+    "temporary-roofing": "project-10",
+    "emergency-scaffolding": "project-3",
+    "dismantling-scaffolding": "project-12",
+}
+_CARD_PHOTO_WIDTH = {  # native widths from PROJECTS / UNTAGGED_PHOTOS
+    **{p["slug"]: p["w"] for p in PROJECTS},
+    **{u["slug"]: u["w"] for u in UNTAGGED_PHOTOS},
 }
 
 
 def _service_card_media(svc: dict) -> str:
-    return f'<div class="service-card-watermark" aria-hidden="true">{SERVICE_CARD_ICON.get(svc["slug"], "")}</div>'
+    pslug = SERVICE_CARD_PHOTO.get(svc["slug"])
+    if not pslug:
+        return ""
+    native_w = _CARD_PHOTO_WIDTH.get(pslug, 480)
+    widths = [w for w in (480, 768) if w <= native_w]
+    candidates = [(f"/images/{pslug}-{w}w.webp", w) for w in widths]
+    if native_w < 768:
+        candidates.append((f"/images/{pslug}.webp", native_w))
+    src = candidates[-1][0]
+    srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
+    return (
+        f'<div class="service-card-photo" aria-hidden="true"><img src="{src}" srcset="{srcset}" '
+        f'sizes="(max-width: 768px) 100vw, 420px" alt="" width="480" height="640" '
+        f'loading="lazy" decoding="async"></div>'
+    )
 
 
 def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
@@ -3310,6 +3352,17 @@ def homepage() -> str:
       <li><a href="#group-commercial-trade">Commercial &amp; Trade</a></li>
       <li><a href="#group-specialist">Specialist</a></li>
     </ul>
+  </div>
+</section>
+
+<section class="section why-axis" aria-labelledby="why-heading">
+  <div class="container">
+    <h2 id="why-heading">The Axis Difference</h2>
+    <div class="why-grid">
+      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Qualified and insured</h3><p>CISRS-qualified scaffolders, fully insured, with a scaffold inspection certificate handed over on every job.</p></div>
+      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Founder-led, direct communication</h3><p>You deal with the people who plan and build your scaffold, so decisions stay clear and nothing gets lost.</p></div>
+      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Quick quotes, on the agreed day</h3><p>We aim to respond to every enquiry the same working day, and to erect and strike when we said we would.</p></div>
+    </div>
   </div>
 </section>
 

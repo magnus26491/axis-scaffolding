@@ -470,21 +470,41 @@ textarea:focus-visible {
   }
 }
 .service-card { padding:1.5rem; }
-/* Icon "insignia" as a large highlighted watermark behind the card text —
-   simple and professional, no photography. Text sits above it. */
-.services-grid .service-card { overflow:hidden; border-top:2px solid var(--silver) !important; }
-.service-card-watermark {
-  position:absolute; right:-6px; bottom:-26px; width:150px; height:150px;
-  color:var(--highlight); opacity:0.85; pointer-events:none;
-  transition:opacity 0.25s ease, transform 0.25s ease;
+/* Photo strip on the right of each card, fading into the dark card so the
+   text stays on solid dark. Silver top edge keeps the existing theme. */
+.services-grid .service-card {
+  overflow:hidden; border-top:2px solid var(--silver) !important; min-height:270px;
+  display:flex; flex-direction:column; align-items:flex-start;
 }
-.service-card-watermark svg { width:100%; height:100%; display:block; }
-.service-card:hover .service-card-watermark { opacity:1; transform:scale(1.06) rotate(-3deg); }
-.service-card > *:not(.service-card-watermark) { position:relative; z-index:1; }
-.service-card > p { max-width:72%; }
-.service-card-urgent .service-card-watermark { color:#ff6b6b; }
+.service-card-photo { position:absolute; inset:0; z-index:0; }
+.service-card-photo img {
+  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+  transition:transform 0.5s ease;
+}
+.service-card-photo::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(14,14,14,0.98) 0%, rgba(14,14,14,0.95) 55%, rgba(14,14,14,0.45) 78%, rgba(14,14,14,0.08) 100%);
+}
+.service-card:hover .service-card-photo img { transform:scale(1.05); }
+.service-card > *:not(.service-card-photo) { position:relative; z-index:1; }
+.service-card > p { max-width:66%; }
+.services-grid .service-card > a {
+  margin-top:auto; display:inline-block; padding:0.55rem 1.15rem;
+  border:1px solid var(--silver); border-radius:9999px; font-size:0.9rem;
+}
+.services-grid .service-card > a:hover { background:var(--silver); color:#000 !important; }
+.service-card-urgent .service-card-photo::after {
+  background:linear-gradient(90deg, rgba(30,10,10,0.98) 0%, rgba(30,10,10,0.95) 55%, rgba(30,10,10,0.5) 78%, rgba(30,10,10,0.1) 100%);
+}
 .services-grid .service-card-urgent { border-top-color:rgba(255,120,120,0.6) !important; }
-@media (prefers-reduced-motion: reduce) { .service-card-watermark { transition:none; } }
+@media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
+
+/* "Why choose us" — three tick-badge points. */
+.why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
+.why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
+.why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }
+.why-item p { margin:0; color:var(--text-secondary); line-height:1.65; max-width:34ch; }
+@media (max-width:768px) { .why-axis .why-grid { grid-template-columns:1fr; gap:1.75rem; } }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
