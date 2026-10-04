@@ -1573,6 +1573,7 @@ textarea:focus-visible {
 /* Homepage: three equal tiles, same 4:3 crop, so the row reads as one set. */
 .projects-grid-home .project-item-media { aspect-ratio: 4/3; }
 .projects-grid-home .project-item-media img { object-position: center 40%; }
+@media (min-width:1025px) { .projects-grid-home-4 { grid-template-columns:repeat(4,minmax(0,1fr)); } }
 @media (max-width:1024px) { .projects-grid-home { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:640px) { .projects-grid-home { grid-template-columns:1fr; } }
 /* "Recently Added" on /gallery only — genuine, founder-confirmed photos
@@ -3166,6 +3167,12 @@ PROJECTS = [
 # Founder-supplied photos processed from images/originals/ (see generate_media_assets).
 NEW_PROJECT_PHOTOS = ["project-18"]
 
+# Homepage "Recent Projects": none of these may also appear elsewhere on the
+# homepage (hero = project-1's source job, service cards use project-3/4/7/8/10/12/13/14/17,
+# For Builders & Roofers uses project-18). project-6 is the extra tile.
+HOME_RECENT_PROJECTS = ["project-1", "project-2", "project-5", "project-6"]
+
+
 # Genuine Axis Scaffolding site photography, confirmed directly by the
 # founder — but not yet carrying the specific town/service information every
 # PROJECTS entry above needs for its area/service links. Deliberately kept
@@ -3754,8 +3761,8 @@ def homepage() -> str:
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
     <p class="section-intro">Real Axis Scaffolding work across Essex — no stock photography.</p>
-    <div class="projects-grid projects-grid-home">
-      {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in ("project-1", "project-2", "project-5"))}
+    <div class="projects-grid projects-grid-home{' projects-grid-home-4' if len(HOME_RECENT_PROJECTS) == 4 else ''}">
+      {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in HOME_RECENT_PROJECTS)}
     </div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
