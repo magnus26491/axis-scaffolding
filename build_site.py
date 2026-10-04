@@ -20,6 +20,9 @@ OG_IMAGE_URL = f"{SITE}/public/og-image.jpg"
 TODAY = date.today().isoformat()
 CONTACT_EMAIL = 'axis-scaffolding@outlook.com'
 FORM_ACTION = 'https://formsubmit.co/axis-scaffolding@outlook.com'
+# Google Business Profile (supplied by the business). Replaces the old
+# maps.google.com/?q=<street address> links, which resolved to the road.
+GOOGLE_BUSINESS_URL = "https://share.google/F46FyrQwCSKgjuaC5"
 FORM_NEXT = 'https://www.axisscaffoldingessex.co.uk/thank-you'
 # Google tag for this site, linked to the Google Ads account (supplied by the
 # business). gtag.js loads on every page under Consent Mode v2 with all storage
@@ -370,6 +373,7 @@ def local_business_schema() -> dict:
         "sameAs": [
             "https://www.facebook.com/Axisscaffoldingltd/",
             "https://www.instagram.com/axis_scaffoldingessex/",
+            GOOGLE_BUSINESS_URL,
         ],
     }
 
@@ -527,7 +531,7 @@ def footer() -> str:
         <a href="https://www.instagram.com/axis_scaffoldingessex/" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Follow Axis Scaffolding on Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5Zm8.9 1.35a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"/></svg>
         </a>
-        <a href="https://maps.google.com/?q=Arterial+Road+Rayleigh+Essex+SS6+7XT" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Find Axis Scaffolding on Google">
+        <a href="https://share.google/F46FyrQwCSKgjuaC5" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Find Axis Scaffolding on Google">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
         </a>
       </div>
@@ -3399,7 +3403,7 @@ def homepage() -> str:
     <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
       <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
     </div>
-    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://maps.google.com/?q=Axis+Scaffolding+Rayleigh+Essex" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
+    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://share.google/F46FyrQwCSKgjuaC5" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
   </div>
 </section>
 
@@ -3446,7 +3450,7 @@ def homepage() -> str:
         <span>Instagram</span>
         <small>@axis_scaffoldingessex</small>
       </a>
-      <a href="https://maps.google.com/?q=Arterial+Road+Rayleigh+Essex+SS6+7XT" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Find Axis Scaffolding on Google">
+      <a href="https://share.google/F46FyrQwCSKgjuaC5" target="_blank" rel="noopener noreferrer" class="social-card" aria-label="Find Axis Scaffolding on Google">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.03-7 13-7 13S5 14.03 5 9a7 7 0 0 1 7-7Zm0 3.1A3.9 3.9 0 1 0 12 12.9 3.9 3.9 0 0 0 12 5.1Z"/></svg>
         <span>Google</span>
         <small>Leave us a review</small>
