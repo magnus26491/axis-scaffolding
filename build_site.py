@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from typing import Iterable
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).parent
@@ -1029,6 +1029,22 @@ def generate_media_assets() -> None:
             with Image.open(src) as im:
                 im.convert("RGB").save(ROOT / f"images/project-{idx}.webp", format="WEBP", quality=85)
 
+    # Newer project photos: the founder's original is archived in images/originals/
+    # and turned into {slug}.webp plus 480/768 variants (never wider than the source).
+    for slug in NEW_PROJECT_PHOTOS:
+        src = ROOT / f"images/originals/{slug}.jpg"
+        if not src.exists():
+            continue
+        with Image.open(src) as im:
+            rgb = ImageOps.exif_transpose(im).convert("RGB")
+            w0, h0 = rgb.size
+            rgb.save(ROOT / f"images/{slug}.webp", format="WEBP", quality=85)
+            for w in (480, 768):
+                if w0 > w:
+                    rgb.resize((w, round(h0 * w / w0)), Image.LANCZOS).save(
+                        ROOT / f"images/{slug}-{w}w.webp", format="WEBP", quality=85
+                    )
+
     hero_src = ROOT / "assets/images/job1.jpg"
     if hero_src.exists():
         with Image.open(hero_src) as im:
@@ -1684,6 +1700,7 @@ textarea:focus-visible {
 /* Homepage: three equal tiles, same 4:3 crop, so the row reads as one set. */
 .projects-grid-home .project-item-media { aspect-ratio: 4/3; }
 .projects-grid-home .project-item-media img { object-position: center 40%; }
+@media (min-width:1025px) { .projects-grid-home-4 { grid-template-columns:repeat(4,minmax(0,1fr)); } }
 @media (max-width:1024px) { .projects-grid-home { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:640px) { .projects-grid-home { grid-template-columns:1fr; } }
 /* "Recently Added" on /gallery only — genuine, founder-confirmed photos
@@ -3269,7 +3286,19 @@ PROJECTS = [
     {"slug": "project-14", "label": "Roof Scaffolding", "location": "Rochford", "area_slug": "rochford",
      "desc": "Roof scaffold for full tile replacement and chimney repointing.",
      "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-18", "label": "Access Scaffold & Handrail", "location": "Chelmsford", "area_slug": "chelmsford",
+     "desc": "Scaffolding and handrail erected for a local builder to remove a concrete slab.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 960, "h": 1280},
 ]
+
+# Founder-supplied photos processed from images/originals/ (see generate_media_assets).
+NEW_PROJECT_PHOTOS = ["project-18"]
+
+# Homepage "Recent Projects": none of these may also appear elsewhere on the
+# homepage (hero = project-1's source job, service cards use project-3/4/7/8/10/12/13/14/17,
+# For Builders & Roofers uses project-18). project-6 is the extra tile.
+HOME_RECENT_PROJECTS = ["project-1", "project-2", "project-5", "project-6"]
+
 
 # Genuine Axis Scaffolding site photography, confirmed directly by the
 # founder — but not yet carrying the specific town/service information every
@@ -3859,8 +3888,8 @@ def homepage() -> str:
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
     <p class="section-intro">Real Axis Scaffolding work across Essex — no stock photography.</p>
-    <div class="projects-grid projects-grid-home">
-      {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in ("project-1", "project-2", "project-5"))}
+    <div class="projects-grid projects-grid-home{' projects-grid-home-4' if len(HOME_RECENT_PROJECTS) == 4 else ''}">
+      {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in HOME_RECENT_PROJECTS)}
     </div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
@@ -3883,7 +3912,7 @@ def homepage() -> str:
       </div>
     </div>
     <div>
-      <img src="/images/project-2.webp" alt="Commercial scaffolding access at a site in Canvey Island, Essex by Axis Scaffolding Ltd" width="640" height="800" loading="lazy" decoding="async" class="rounded-image parallax-image">
+      <img src="/images/project-18.webp" srcset="/images/project-18-480w.webp 480w, /images/project-18-768w.webp 768w, /images/project-18.webp 960w" sizes="(max-width: 900px) 100vw, 50vw" alt="Access scaffold and handrail on a commercial building in Chelmsford, Essex by Axis Scaffolding Ltd" width="960" height="1280" loading="lazy" decoding="async" class="rounded-image parallax-image">
     </div>
   </div>
 </section>

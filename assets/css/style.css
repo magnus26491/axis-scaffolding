@@ -608,6 +608,7 @@ textarea:focus-visible {
 /* Homepage: three equal tiles, same 4:3 crop, so the row reads as one set. */
 .projects-grid-home .project-item-media { aspect-ratio: 4/3; }
 .projects-grid-home .project-item-media img { object-position: center 40%; }
+@media (min-width:1025px) { .projects-grid-home-4 { grid-template-columns:repeat(4,minmax(0,1fr)); } }
 @media (max-width:1024px) { .projects-grid-home { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:640px) { .projects-grid-home { grid-template-columns:1fr; } }
 /* "Recently Added" on /gallery only — genuine, founder-confirmed photos
