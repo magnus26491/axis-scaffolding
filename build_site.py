@@ -3289,15 +3289,22 @@ PROJECTS = [
     {"slug": "project-18", "label": "Access Scaffold & Handrail", "location": "Chelmsford", "area_slug": "chelmsford",
      "desc": "Scaffolding and handrail erected for a local builder to remove a concrete slab.",
      "category": "commercial", "service_slug": "commercial-scaffolding", "w": 960, "h": 1280},
+    {"slug": "project-19", "label": "Commercial Scaffolding", "location": "Southend-on-Sea", "area_slug": "southend",
+     "desc": "Scaffold erected for a local printer.",
+     "category": "commercial", "service_slug": "commercial-scaffolding", "w": 960, "h": 1280},
+    # No town supplied for this one, so it carries none (no area link, no location claim).
+    {"slug": "project-20", "label": "Roof Access Scaffold", "location": "", "area_slug": "",
+     "desc": "Access provided for a local solar company to install new solar.",
+     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
 ]
 
 # Founder-supplied photos processed from images/originals/ (see generate_media_assets).
-NEW_PROJECT_PHOTOS = ["project-18"]
+NEW_PROJECT_PHOTOS = ["project-18", "project-19", "project-20"]
 
 # Homepage "Recent Projects": none of these may also appear elsewhere on the
 # homepage (hero = project-1's source job, service cards use project-3/4/7/8/10/12/13/14/17,
 # For Builders & Roofers uses project-18). project-6 is the extra tile.
-HOME_RECENT_PROJECTS = ["project-1", "project-2", "project-5", "project-6"]
+HOME_RECENT_PROJECTS = ["project-1", "project-2", "project-5", "project-6", "project-19", "project-20"]
 
 
 # Genuine Axis Scaffolding site photography, confirmed directly by the
@@ -3334,28 +3341,36 @@ SERVICE_NAME_BY_SLUG = {s["slug"]: s["name"] for s in SERVICES}
 def project_card(p: dict, *, featured: bool = False, eager: bool = False) -> str:
     srcset = _project_srcset(p["slug"], p["w"])
     sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" if not featured else "(max-width: 900px) 100vw, 60vw"
-    area_link = f'/areas/{p["area_slug"]}'
+    area_link = f'/areas/{p["area_slug"]}' if p.get("area_slug") else ""
     service_link = f'/services/{p["service_slug"]}'
     service_name = SERVICE_NAME_BY_SLUG.get(p["service_slug"], p["service_slug"])
     loading = "eager" if eager else "lazy"
     fetchpriority = ' fetchpriority="high"' if eager else ""
-    alt = f"{p['label']} in {p['location']}, Essex — real Axis Scaffolding project photograph"
+    loc = p.get("location", "")
+    alt = (
+        f"{p['label']} in {loc}, Essex — real Axis Scaffolding project photograph"
+        if loc else f"{p['label']} — real Axis Scaffolding project photograph"
+    )
+    meta_html = (
+        f'<span class="project-item-meta"><a href="{area_link}">{loc}</a> &middot; Essex</span>' if loc else ""
+    )
+    in_loc = f" in {loc}" if loc else ""
     # The photo itself opens the lightbox (a button, not a link — it performs
     # an in-page action, it doesn't navigate); the service relationship gets
     # its own explicit text link instead of overloading the image's click
     # target with two different destinations.
     return f"""
 <figure class="project-item{' project-item-featured' if featured else ''}{' project-item-landscape' if p['w'] > p['h'] else ''}" data-category="{p['category']}"
-        data-label="{p['label']}" data-location="{p['location']}" data-desc="{p['desc']}"
+        data-label="{p['label']}" data-location="{loc}" data-desc="{p['desc']}"
         data-service-href="{service_link}" data-service-name="{service_name}" data-area-href="{area_link}">
-  <button type="button" class="project-item-media" aria-label="View full-size photo — {p['label']} in {p['location']}">
+  <button type="button" class="project-item-media" aria-label="View full-size photo — {p['label']}{in_loc}">
     <img src="/images/{p['slug']}.webp" srcset="{srcset}" sizes="{sizes}"
          alt="{alt}"
          width="{p['w']}" height="{p['h']}" loading="{loading}"{fetchpriority} decoding="async">
   </button>
   <figcaption>
     <span class="project-item-label">{p['label']}</span>
-    <span class="project-item-meta"><a href="{area_link}">{p['location']}</a> &middot; Essex</span>
+    {meta_html}
     {f'<p class="project-item-desc">{p["desc"]}</p>' if featured else ''}
     <a class="project-item-service-link" href="{service_link}">View {service_name} &rarr;</a>
   </figcaption>
