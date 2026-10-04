@@ -358,15 +358,7 @@ def local_business_schema() -> dict:
             "addressCountry": "GB",
         },
         "geo": {"@type": "GeoCoordinates", "latitude": 51.5868, "longitude": 0.6044},
-        "areaServed": [
-            {"@type": "City", "name": "Rayleigh"},
-            {"@type": "City", "name": "Benfleet"},
-            {"@type": "City", "name": "Canvey Island"},
-            {"@type": "City", "name": "Southend-on-Sea"},
-            {"@type": "City", "name": "Basildon"},
-            {"@type": "City", "name": "Chelmsford"},
-            {"@type": "AdministrativeArea", "name": "Essex"},
-        ],
+        "areaServed": _area_served(),
         "priceRange": "££",
         "openingHoursSpecification": [
             {
@@ -381,6 +373,75 @@ def local_business_schema() -> dict:
             "https://www.instagram.com/axis_scaffoldingessex/",
             GOOGLE_BUSINESS_URL,
         ],
+        "description": (
+            "Founder-led, CISRS-qualified, fully insured scaffolding company based in Rayleigh, Essex, "
+            "providing domestic, residential, roof, commercial and emergency scaffolding across South Essex."
+        ),
+        "logo": f"{SITE}/images/logo.webp",
+        "image": OG_IMAGE_URL,
+        "identifier": {
+            "@type": "PropertyValue",
+            "propertyID": "Companies House company number",
+            "value": NAP["company_no"],
+        },
+        "knowsAbout": [
+            "Scaffolding", "Domestic scaffolding", "Residential scaffolding", "Roof scaffolding",
+            "Commercial scaffolding", "Temporary roofing", "Emergency scaffolding",
+            "Scaffold dismantling", "Highway licences for scaffolding", "CISRS scaffolding qualifications",
+        ],
+        "contactPoint": [
+            {"@type": "ContactPoint", "telephone": f"+{NAP['phone_e164'].lstrip('+')}", "contactType": "customer service",
+             "areaServed": "GB", "availableLanguage": "en-GB"},
+            {"@type": "ContactPoint", "telephone": f"+{WHATSAPP_E164}", "contactType": "customer service",
+             "areaServed": "GB", "availableLanguage": "en-GB"},
+        ],
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Scaffolding services",
+            "itemListElement": [
+                {"@type": "Offer", "itemOffered": {"@type": "Service", "name": svc["name"], "url": f"{SITE}/services/{svc['slug']}"}}
+                for svc in SERVICES
+            ],
+        },
+    }
+
+
+def _area_served() -> list[dict]:
+    places = [{"@type": "City", "name": name} for name in AREA_DATA]
+    places += [{"@type": "City", "name": n} for n in ("Brentwood", "Loughton")]
+    places += [
+        {"@type": "AdministrativeArea", "name": "London"},
+        {"@type": "AdministrativeArea", "name": "Essex"},
+    ]
+    return places
+
+
+def website_schema() -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": f"{SITE}/#website",
+        "url": SITE,
+        "name": "Axis Scaffolding Ltd",
+        "inLanguage": "en-GB",
+        "publisher": {"@id": f"{SITE}/#business"},
+    }
+
+
+_PAGE_TYPES = {"/about": "AboutPage", "/contact": "ContactPage", "/quote": "ContactPage", "/gallery": "CollectionPage"}
+
+
+def webpage_schema(title: str, desc: str, path: str) -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": _PAGE_TYPES.get(path, "WebPage"),
+        "@id": f"{SITE}{path}#webpage",
+        "url": f"{SITE}{path}",
+        "name": title,
+        "description": desc,
+        "inLanguage": "en-GB",
+        "isPartOf": {"@id": f"{SITE}/#website"},
+        "about": {"@id": f"{SITE}/#business"},
     }
 
 
@@ -413,6 +474,69 @@ def faq_schema() -> dict:
     }
 
 
+def service_faqs(slug: str) -> list[tuple[str, str]]:
+    """The (question, answer) pairs shown on a service page — also the source
+    of its FAQPage markup, so markup always matches what is visible."""
+    detail = SERVICE_DETAIL.get(slug, {})
+    return list(detail.get("faqs", [])) + [FAQS_BY_SLUG[x] for x in SERVICE_GENERAL_FAQ_SLUGS.get(slug, [])]
+
+
+def area_faqs(area_name: str) -> list[tuple[str, str]]:
+    """Four local questions per core area page. Every answer reuses wording the
+    site already publishes sitewide (cost / speed / licence), localised only in
+    the question — no new claims."""
+    return [
+        (
+            f"Do you provide scaffolding in {area_name}?",
+            f"Yes. Axis Scaffolding Ltd is based in Rayleigh, Essex, and provides domestic, residential, roof and commercial "
+            f"scaffolding in {area_name} and across South Essex. Call {NAP['phone']} or request a quote online to confirm your exact location.",
+        ),
+        (f"How much does scaffolding cost in {area_name}?", FAQS_BY_SLUG["cost"][1]),
+        (f"How quickly can scaffolding be erected in {area_name}?", FAQS_BY_SLUG["speed"][1]),
+        (f"Do I need a licence for scaffolding on the pavement in {area_name}?", FAQS_BY_SLUG["licence"][1]),
+    ]
+
+
+def faq_page_schema(entries: list[tuple[str, str]]) -> dict:
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in entries
+        ],
+    }
+
+
+def _auto_page_schemas(title: str, desc: str, path: str) -> list[dict]:
+    """Page-type schema derived from the URL, so every page of a kind gets it
+    automatically and the markup can never drift from the visible content."""
+    out: list[dict] = []
+    parts = [p for p in path.strip("/").split("/") if p]
+    if len(parts) == 2 and parts[0] == "services" and parts[1] in SERVICES_BY_SLUG:
+        svc = SERVICES_BY_SLUG[parts[1]]
+        out.append({
+            "@context": "https://schema.org", "@type": "Service", "@id": f"{SITE}{path}#service",
+            "name": svc["name"], "serviceType": svc["name"], "url": f"{SITE}{path}",
+            "description": svc.get("summary") or desc,
+            "provider": {"@id": f"{SITE}/#business"}, "areaServed": _area_served(),
+        })
+        faqs = service_faqs(parts[1])
+        if faqs:
+            out.append(faq_page_schema(faqs))
+    elif len(parts) == 2 and parts[0] == "areas":
+        name = next((n for n, d in AREA_DATA.items() if d["slug"] == parts[1]), None)
+        if name:
+            out.append(faq_page_schema(area_faqs(name)))
+    elif len(parts) == 2 and parts[0] == "guides":
+        out.append({
+            "@context": "https://schema.org", "@type": "Article", "@id": f"{SITE}{path}#article",
+            "headline": title.split(" | ")[0], "description": desc, "inLanguage": "en-GB",
+            "mainEntityOfPage": {"@id": f"{SITE}{path}#webpage"}, "image": OG_IMAGE_URL,
+            "author": {"@id": f"{SITE}/#business"}, "publisher": {"@id": f"{SITE}/#business"},
+        })
+    return out
+
+
 def head_tags(
     *,
     title: str,
@@ -424,7 +548,8 @@ def head_tags(
     extra_schemas: list[dict] | None = None,
 ) -> str:
     canonical = SITE + path
-    schemas = [local_business_schema()]
+    schemas = [local_business_schema(), website_schema(), webpage_schema(title, desc, path)]
+    schemas.extend(_auto_page_schemas(title, desc, path))
     if breadcrumb_items:
         schemas.append(breadcrumb_schema(breadcrumb_items))
     if include_faq_schema:
@@ -450,6 +575,7 @@ def head_tags(
   <title>{title}</title>
   <meta name="description" content="{desc}">
   <meta name="author" content="Axis Scaffolding Ltd">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="{canonical}">
   <link rel="alternate" hreflang="en-gb" href="{canonical}">
   <meta property="og:title" content="{title}">
@@ -466,7 +592,8 @@ def head_tags(
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"></noscript>
   {preload}
   <link rel="stylesheet" href="/assets/css/style.css">
   {schema_tags}
@@ -549,7 +676,7 @@ def footer() -> str:
         </a>
       </div>
     </section>
-    <section><h2>Our Services</h2><ul>{svc}</ul></section>
+    <section><h2>Our Services</h2><ul>{svc}</ul><p><a href="/guides">Scaffolding guides</a></p></section>
     <section><h2>Areas We Cover</h2><ul>{area}</ul></section>
     <section>
       <h2>Contact Us</h2>
@@ -4120,7 +4247,7 @@ def service_detail_body(service: dict) -> str:
     # Service-specific FAQs plus a small, curated selection from the
     # general FAQ set (see SERVICE_GENERAL_FAQ_SLUGS) — one relevant
     # accordion, not the whole FAQ database dumped on every page.
-    faqs = list(detail.get("faqs", [])) + [FAQS_BY_SLUG[s] for s in SERVICE_GENERAL_FAQ_SLUGS.get(slug, [])]
+    faqs = service_faqs(slug)
     # Phase H PR H2: exactly one guide link per service page, per the fixed
     # SERVICE_TO_GUIDE_SLUG mapping — no blanket "read our guides" link,
     # no guide for services the mapping doesn't cover (see its docstring).
@@ -4488,6 +4615,7 @@ def area_page_body(area_name: str, data: dict) -> str:
         + f"""
 <section class="section section-light hex-texture">
   <div class="container">
+    <p class="direct-answer">Axis Scaffolding Ltd provides scaffolding in {area_name}, Essex &mdash; residential, roof and commercial access from a Rayleigh base. CISRS-qualified and fully insured, with free quotes and a same-working-day response aim: call {NAP['phone']}.</p>
     <h2>Housing and Properties in {area_name}</h2>
     <p>{data['housing']}</p>
     <h2>Typical Scaffolding Projects in {area_name}</h2>
@@ -4516,6 +4644,13 @@ def area_page_body(area_name: str, data: dict) -> str:
   <div class="container">
     <h2>Get a Free Quote in {area_name}</h2>
     {quote_form(f'area-{data["slug"]}', f'Request a Free Quote — {area_name}')}
+  </div>
+</section>
+
+<section class="section" aria-labelledby="area-faq-heading">
+  <div class="container faq-wrap">
+    <h2 id="area-faq-heading">Scaffolding in {area_name}: Common Questions</h2>
+    {faq_accordion(area_faqs(area_name), id_prefix="afaq-" + data["slug"])}
   </div>
 </section>
 
@@ -4980,7 +5115,7 @@ def generate_pages() -> None:
     write(
         "guides/do-i-need-scaffolding/index.html",
         render_page(
-            title="Do I Need Scaffolding for My Project? | Axis Scaffolding Essex",
+            title="Do I Need Scaffolding? | Axis Scaffolding Essex",
             desc="Find out whether your building or repair project needs scaffolding. Practical guidance on when scaffold is required and when a ladder may be sufficient.",
             path="/guides/do-i-need-scaffolding",
             body=need_scaffold_body,
@@ -5150,7 +5285,7 @@ def generate_pages() -> None:
     write(
         "contractors/index.html",
         render_page(
-            title="Scaffolding for Builders &amp; Contractors | Axis Scaffolding Essex",
+            title="Scaffolding for Builders &amp; Contractors | Axis Scaffolding",
             desc="Axis Scaffolding works with builders, roofers and developers across South Essex. CISRS qualified, RAMS available, trade enquiries welcome. Call 01702 820468.",
             path="/contractors",
             body=contractors_body,
@@ -5342,25 +5477,97 @@ def generate_pages() -> None:
     )
 
 
+# Crawlers explicitly welcomed: classic search engines plus the AI search /
+# assistant crawlers (so the business can be cited in AI answers). Training-only
+# scrapers are left to the default rule.
+_ALLOWED_BOTS = [
+    "Googlebot", "Bingbot", "DuckDuckBot", "Applebot",
+    "OAI-SearchBot", "OAI-AdsBot", "ChatGPT-User", "GPTBot",
+    "ClaudeBot", "Claude-SearchBot", "Claude-User", "anthropic-ai",
+    "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot-Extended",
+]
+
+
+def _git_lastmod(path: str) -> str:
+    """Date the page's committed HTML last changed (needs full git history, which
+    CI fetches). Empty string when unknown — better to omit lastmod than invent one."""
+    import subprocess
+    rel = "index.html" if path == "/" else path.strip("/") + "/index.html"
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", rel],
+            cwd=ROOT, capture_output=True, text=True, timeout=20,
+        ).stdout.strip()
+    except Exception:
+        return ""
+    return out
+
+
+def generate_llms_txt() -> None:
+    svc_lines = "\n".join(
+        f"- [{svc['name']}]({SITE}/services/{svc['slug']}): {svc['card_blurb']}" for svc in SERVICES
+    )
+    area_lines = ", ".join(
+        f"[{name}]({SITE}/areas/{d['slug']})"
+        for name, d in {**AREA_DATA, **EXPANSION_AREA_DATA}.items()
+    )
+    guide_lines = "\n".join(
+        f"- [{g['title']}]({SITE}/guides/{g['slug']}): {g['summary']}" for g in GUIDES
+    )
+    text = f"""# Axis Scaffolding Ltd
+
+> Founder-led, CISRS-qualified, fully insured scaffolding company based in Rayleigh, Essex, providing domestic, residential, roof, commercial and emergency scaffolding across South Essex. Free, no-obligation quotes.
+
+## Key facts
+
+- Business: {NAP['name']} (Companies House no. {NAP['company_no']})
+- Address: {NAP['address']}
+- Phone: {NAP['phone']}
+- WhatsApp: {WHATSAPP_DISPLAY}
+- Email: {NAP['email']}
+- Reviews: {APPROVED_RATING['ratingValue']} from {APPROVED_RATING['reviewCount']} Google reviews ({GOOGLE_BUSINESS_URL})
+- Response: we aim to respond to every enquiry the same working day
+- Pricing guidance: {FAQS_BY_SLUG['cost'][1].split(' The final price')[0]}
+- Highway licence: scaffolding on a pavement or road needs a licence under Section 169 of the Highways Act 1980; we advise on the process.
+
+## Services
+
+{svc_lines}
+
+## Areas covered
+
+{area_lines}. Full list: {SITE}/areas
+
+## Guides
+
+{guide_lines}
+
+## Contact and quotes
+
+- [Get a free quote]({SITE}/quote)
+- [Contact]({SITE}/contact)
+- [For builders and contractors]({SITE}/contractors)
+- [Project gallery]({SITE}/gallery)
+- [About]({SITE}/about)
+"""
+    write("llms.txt", text)
+
+
 def generate_robots_sitemap() -> None:
+    bots = "".join(f"User-agent: {bot}\nAllow: /\n\n" for bot in _ALLOWED_BOTS)
     robots = (
         "# Axis Scaffolding Ltd — robots.txt\n"
-        "# https://www.axisscaffoldingessex.co.uk\n\n"
-        "User-agent: Googlebot\n"
-        "Allow: /\n\n"
-        "User-agent: Bingbot\n"
-        "Allow: /\n\n"
-        "User-agent: OAI-SearchBot\n"
-        "Allow: /\n\n"
-        "User-agent: OAI-AdsBot\n"
-        "Allow: /\n\n"
-        "User-agent: *\n"
+        "# https://www.axisscaffoldingessex.co.uk\n"
+        "# AI search and assistant crawlers are welcome. See also /llms.txt\n\n"
+        + bots
+        + "User-agent: *\n"
         "Allow: /\n"
         "Disallow: /admin/\n"
         "Disallow: /private/\n\n"
         f"Sitemap: {SITE}/sitemap.xml\n"
     )
     write("robots.txt", robots)
+    generate_llms_txt()
     # Only include canonical, indexable pages in sitemap — exclude noindex pages
     pages = [
         ("/", "1.0", "weekly"),
@@ -5388,9 +5595,15 @@ def generate_robots_sitemap() -> None:
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
     ]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    seen: set[str] = set()
     for path, priority, changefreq in pages:
+        if path in seen:
+            continue
+        seen.add(path)
+        lastmod = _git_lastmod(path)
+        lastmod_tag = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""
         lines.append(
-            f"  <url><loc>{SITE}{path}</loc><lastmod>{TODAY}</lastmod><changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
+            f"  <url><loc>{SITE}{path}</loc>{lastmod_tag}<changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
         )
     lines.append("</urlset>")
     write("sitemap.xml", "\n".join(lines))
