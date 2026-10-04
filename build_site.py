@@ -435,7 +435,14 @@ def head_tags(
         f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>'
         for s in schemas
     )
-    preload = '<link rel="preload" as="image" href="/images/hero-bg.webp">' if preload_hero else ""
+    # Mirror the hero <img>'s srcset/sizes exactly: a bare href preload makes every
+    # device (phones included) fetch the full 1920px file on top of the right-sized one.
+    preload = (
+        '<link rel="preload" as="image" href="/images/hero-bg-1024w.webp" fetchpriority="high" '
+        'imagesrcset="/images/hero-bg-480w.webp 480w, /images/hero-bg-768w.webp 768w, '
+        '/images/hero-bg-1024w.webp 1024w, /images/hero-bg-1440w.webp 1440w, /images/hero-bg.webp 1920w" '
+        'imagesizes="100vw">'
+    ) if preload_hero else ""
     return f"""
 <head>
   <meta charset="utf-8">
@@ -832,6 +839,20 @@ def quote_wizard() -> str:
 """
 
 
+def mobile_cta_bar(path: str) -> str:
+    """Sticky bottom bar on phones: the three ways to enquire, one tap away on
+    every page (the /quote wizard and thank-you page already are the action)."""
+    if path in ("/quote", "/thank-you"):
+        return ""
+    return f"""
+<div class="site-cta-bar" role="region" aria-label="Contact Axis Scaffolding">
+  <a class="site-cta-call" href="tel:{NAP['phone_e164']}">Call</a>
+  <a class="site-cta-wa" href="{WHATSAPP_URL}" target="_blank" rel="noopener noreferrer">{WHATSAPP_ICON}WhatsApp</a>
+  <a class="site-cta-quote" href="/quote">Free Quote</a>
+</div>
+"""
+
+
 def render_page(
     *,
     title: str,
@@ -853,6 +874,7 @@ def render_page(
   {moved_site_banner()}
   <main id="main-content">{body}</main>
   {footer()}
+  {mobile_cta_bar(path)}
   {cookie_ui()}
   {project_lightbox()}
   {ga_config_script()}
@@ -1234,6 +1256,14 @@ textarea:focus-visible {
   padding:0.5rem 0.9rem;
 }
 .hero-trust-badges span:first-child { border-left:none; }
+/* Phones: a tidy centred 2x2 grid instead of a ragged wrapped row (the third
+   badge used to sit alone, left-aligned, under the first two). */
+@media (max-width:640px) {
+  .hero-trust-badges { display:grid; grid-template-columns:1fr 1fr; width:100%; max-width:340px; margin-left:auto; margin-right:auto; }
+  .hero-trust-badges span { text-align:center; display:flex; align-items:center; justify-content:center; padding:0.6rem 0.4rem; font-size:0.7rem; line-height:1.25; }
+  .hero-trust-badges span:nth-child(odd) { border-left:none; }
+  .hero-trust-badges span:nth-child(n+3) { border-top:2px solid var(--silver); }
+}
 
 /* ── HERO PARALLAX ──
    Photo-only. An earlier version also carried a hex mesh layer directly
@@ -1427,6 +1457,16 @@ textarea:focus-visible {
 @media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
 
 /* "Why choose us" — three tick-badge points. */
+.why-axis { padding-top:var(--space-8, 2rem); padding-bottom:var(--space-8, 2rem); }
+.why-axis .why-panel {
+  background:#ffffff; color:#111827; border-radius:14px; padding:2.25rem 2.5rem 2.5rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.45);
+}
+.why-axis .why-panel h2 { color:#0a0a0a; margin-top:0; }
+.why-axis .why-panel .why-item h3 { color:#0a0a0a; }
+.why-axis .why-panel .why-item p { color:#374151; }
+.why-axis .why-panel .why-item svg { color:#f07800; }
+@media (max-width:768px) { .why-axis .why-panel { padding:1.75rem 1.4rem 2rem; } }
 .why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
 .why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
 .why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }
@@ -1697,7 +1737,17 @@ body.lightbox-open { overflow:hidden; }
   background:#151515; color:#fff; border:1px solid var(--border-strong); font-size:1.6rem; line-height:1;
 }
 .testimonial-nav:hover { background:#222; border-color:var(--silver); }
-@media (max-width:640px) { .testimonial-nav { width:36px; height:36px; font-size:1.3rem; } }
+.review-strip-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+.review-strip-grid .testimonial-card { min-width:0; }
+@media (max-width:900px) { .review-strip-grid { grid-template-columns:1fr; } }
+@media (max-width:640px) {
+  .testimonial-nav { width:40px; height:40px; font-size:1.4rem; }
+  /* full-width card, arrows centred underneath instead of squeezing it */
+  .testimonial-wrap { flex-wrap:wrap; justify-content:center; gap:0.75rem 1rem; }
+  .testimonial-wrap .testimonial-carousel { order:1; flex:1 1 100%; }
+  .testimonial-prev { order:2; }
+  .testimonial-next { order:3; }
+}
 
 /* ── AREA PILLS ── */
 .area-pills { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.6rem; }
@@ -2149,6 +2199,25 @@ body.lightbox-open { overflow:hidden; }
 .reveal-right.is-visible { opacity:1; transform:none; }
 
 /* ── MOBILE STICKY CTA BAR ── */
+.site-cta-bar { display:none; }
+@media (max-width:768px) {
+  .site-cta-bar {
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:9999; height:56px;
+    padding-bottom:env(safe-area-inset-bottom); box-sizing:content-box;
+    background:var(--surface-3); border-top:2px solid var(--border-strong);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.4);
+  }
+  .site-cta-bar a {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:0.35rem;
+    font-weight:700; font-size:0.95rem; text-decoration:none; color:#fff;
+    border-right:1px solid var(--border);
+  }
+  .site-cta-bar a:last-child { border-right:none; }
+  .site-cta-bar .site-cta-call { background:linear-gradient(135deg,#e8eaed,#c8cdd4); color:#000; }
+  .site-cta-bar .site-cta-quote { background:#151515; color:#fff; }
+  .site-cta-bar svg { margin:0; }
+  body:has(.site-cta-bar) { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
+}
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
   z-index:9999; background:var(--surface-3); padding:0;
@@ -3549,9 +3618,8 @@ TESTIMONIALS = [
 APPROVED_RATING: dict | None = {"ratingValue": "5.0", "reviewCount": "31", "source": "Google"}
 
 
-def testimonials() -> str:
-    return "".join(
-        f"""
+def _testimonial_card(t: dict) -> str:
+    return f"""
 <div class="testimonial-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
@@ -3568,8 +3636,33 @@ def testimonials() -> str:
   </div>
 </div>
 """
-        for t in TESTIMONIALS
-    )
+
+
+def testimonials() -> str:
+    return "".join(_testimonial_card(t) for t in TESTIMONIALS)
+
+
+# Which approved Google reviews to show where (matched on a unique opening of the
+# approved text, so the checker still validates every one verbatim).
+_REVIEW_PICKS = {
+    "general": ("Good communication, reliable and fair price", "Ashley's quote was very competitive", "Great job by Ashley and his lads"),
+    "trade": ("Have been using Axis recently for all of our rendering jobs", "Professional and fast service with very competitive prices", "Being a painter/decorator"),
+}
+
+
+def review_strip(kind: str = "general", heading: str = "What Our Customers Say") -> str:
+    """Three approved Google reviews plus the confirmed rating line, as a static
+    row — social proof on the pages where a visitor is deciding whether to call."""
+    picks = [next(t for t in TESTIMONIALS if t["text"].startswith(prefix)) for prefix in _REVIEW_PICKS[kind]]
+    return f"""
+<section class="section section-light hex-texture review-strip" aria-label="Customer reviews">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="review-summary"><span class="review-summary-stars" aria-hidden="true">★★★★★</span> <strong>{APPROVED_RATING['ratingValue']}</strong> from {APPROVED_RATING['reviewCount']} Google reviews &middot; <a href="{GOOGLE_BUSINESS_URL}" target="_blank" rel="noopener noreferrer">Read them on Google</a></p>
+    <div class="review-strip-grid">{"".join(_testimonial_card(t) for t in picks)}</div>
+  </div>
+</section>
+"""
 
 
 def homepage() -> str:
@@ -3614,33 +3707,23 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section what-we-do hex-texture" aria-labelledby="what-we-do-heading">
-  <div class="container">
-    <h2 id="what-we-do-heading">Scaffolding for Homes, Trade and Commercial Work</h2>
-    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across South Essex — from a single chimney scaffold to a full commercial site package. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
-    <ul class="what-we-do-routes">
-      <li><a href="#group-home-property">Home &amp; Property</a></li>
-      <li><a href="#group-commercial-trade">Commercial &amp; Trade</a></li>
-      <li><a href="#group-specialist">Specialist</a></li>
-    </ul>
-  </div>
-</section>
-
 <section class="section why-axis" aria-labelledby="why-heading">
   <div class="container">
+   <div class="why-panel">
     <h2 id="why-heading">The Axis Difference</h2>
     <div class="why-grid">
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Qualified and insured</h3><p>CISRS-qualified scaffolders, fully insured, with a scaffold inspection certificate handed over on every job.</p></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Founder-led, direct communication</h3><p>You deal with the people who plan and build your scaffold, so decisions stay clear and nothing gets lost.</p></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Quick quotes, on the agreed day</h3><p>We aim to respond to every enquiry the same working day, and to erect and strike when we said we would.</p></div>
     </div>
+   </div>
   </div>
 </section>
 
 <section class="section section-light hex-texture" aria-labelledby="services-heading">
   <div class="container">
     <h2 id="services-heading">Our Scaffolding Services</h2>
-    <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
+    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/roof-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait.</p>
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
@@ -3648,7 +3731,7 @@ def homepage() -> str:
 <section class="section section-dark" aria-labelledby="projects-heading">
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
-    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <p class="section-intro">Real Axis Scaffolding work across Essex — no stock photography.</p>
     <div class="projects-grid projects-grid-home">
       {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in ("project-1", "project-2", "project-5"))}
     </div>
@@ -4154,6 +4237,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """
         + f"""
+{review_strip("general")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
@@ -4435,6 +4519,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
+{review_strip("general")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
@@ -4552,8 +4637,8 @@ def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding Essex | Axis Scaffolding Ltd Rayleigh Team",
-            desc="Axis Scaffolding delivers trusted scaffolding Essex support from Rayleigh for homes and businesses across Essex. Contact our team and get a free quote today.",
+            title="Scaffolding in Rayleigh and Essex | Axis Scaffolding Ltd",
+            desc="Rayleigh-based, CISRS-qualified scaffolders for homes, roofers and commercial sites across South Essex. 5.0 from 31 Google reviews. Free quotes: 01702 820468.",
             path="/",
             body=homepage(),
             include_faq_schema=True,
@@ -5047,6 +5132,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
+{review_strip("trade", "Trusted by Trades")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
