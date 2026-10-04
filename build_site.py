@@ -1646,6 +1646,18 @@ body.lightbox-open { overflow:hidden; }
 .reviewer-name { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:0.9rem; }
 .review-source { display:flex; align-items:center; gap:0.35rem; color:#6b7280; font-size:0.78rem; }
 .review-source img { width:16px; height:16px; display:inline-block; }
+.review-summary { margin:0.25rem 0 1.5rem; color:#d1d5db; font-size:1rem; }
+.review-summary strong { color:#ffffff; }
+.review-summary-stars { color:#f5c518; letter-spacing:2px; }
+.review-summary a { color:#c8cdd4; text-decoration:underline; }
+.testimonial-wrap { position:relative; display:flex; align-items:center; gap:0.5rem; }
+.testimonial-wrap .testimonial-carousel { flex:1; min-width:0; }
+.testimonial-nav {
+  flex:none; width:44px; height:44px; border-radius:50%; cursor:pointer;
+  background:#151515; color:#fff; border:1px solid var(--border-strong); font-size:1.6rem; line-height:1;
+}
+.testimonial-nav:hover { background:#222; border-color:var(--silver); }
+@media (max-width:640px) { .testimonial-nav { width:36px; height:36px; font-size:1.3rem; } }
 
 /* ── AREA PILLS ── */
 .area-pills { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.6rem; }
@@ -2470,12 +2482,17 @@ def generate_js() -> None:
   const carousel = document.getElementById('testimonial-carousel');
   let idx = 0;
   let timer = null;
+  const slideCount = () => (track ? track.children.length : 0);
+  const goTo = (i) => {
+    const n = slideCount();
+    if (!n) return;
+    idx = (i + n) % n;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+  };
   const start = () => {
-    if (!track || track.children.length <= 1) return;
-    timer = window.setInterval(() => {
-      idx = (idx + 1) % track.children.length;
-      track.style.transform = `translateX(-${idx * 100}%)`;
-    }, 4500);
+    if (!track || slideCount() <= 1 || timer) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = window.setInterval(() => goTo(idx + 1), 7000);
   };
   const stop = () => {
     if (timer) clearInterval(timer);
@@ -2484,6 +2501,21 @@ def generate_js() -> None:
   if (carousel) {
     carousel.addEventListener('mouseenter', stop);
     carousel.addEventListener('mouseleave', start);
+    carousel.addEventListener('focusin', stop);
+  }
+  const prevBtn = document.getElementById('testimonial-prev');
+  const nextBtn2 = document.getElementById('testimonial-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { stop(); goTo(idx - 1); });
+  if (nextBtn2) nextBtn2.addEventListener('click', () => { stop(); goTo(idx + 1); });
+  if (track) {
+    let tx = null;
+    track.addEventListener('touchstart', (e) => { tx = e.changedTouches[0].clientX; stop(); }, { passive: true });
+    track.addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) goTo(idx + (dx < 0 ? 1 : -1));
+      tx = null;
+    }, { passive: true });
   }
   start();
 
@@ -3171,6 +3203,212 @@ def related_guides_section(current_slug: str) -> str:
 # invented quotes. See CLAIM_VERIFICATION.md's Phase B section for the full
 # record. Do not add a new entry here without a genuine, sourced review.
 TESTIMONIALS = [
+    # Genuine Google reviews, copied from the live Google Business Profile
+    # (supplied by the business, Oct 2026). Names shortened to first name + initial;
+    # truncated reviews end with an ellipsis rather than guessing the rest.
+    {
+        "text": 'Great job by Ashley and his lads, on time and courteous. We liked his attention to detail and was clean and tidy. Well done to Axis Scaffolding Essex, we wouldn’t hesitate in recommending the company in future. 5*',
+        "name": 'Mike L.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'I wouldn’t use any other company Axis Scaffolding are the best out there great bunch of lads efficiency is key they never let you down they are polite and hard working and very reasonable on cost you won’t get a better price or job',
+        "name": 'Lee C.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Good communication, reliable and fair price. Definitely recommend Ashley and his team to anyone looking for a good service, we will definitely look to use him again.',
+        "name": 'Ryan H.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Axis was great company to deal with. Did exactly what I needed and a quick turnaround, Thank you Ashley',
+        "name": 'Styles G.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": "Ashley's quote was very competitive and the service provided was excellent and very prompt. Quoted Friday scaffolding up on the Tuesday morning. Highly recommended.",
+        "name": 'Martin D.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Have been using Axis recently for all of our rendering jobs. ( We are a small plastering and rendering firm.). Ashley and the boys always arrive on the pre arranged time and day. …',
+        "name": 'Adie T.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": '5 Star service from Ashley and his team. Couldn’t have been more polite and helpful. Excellent work.',
+        "name": 'Colin',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Used Axis on multiple jobs and services has always been second to none! Wouldn’t go to any other firm',
+        "name": 'Ollie S.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great reliable service .very clean workers No messing just got on with job very courteous to my neighbours and took it down the day we wanted would recommend axis to anyone having a new roof or other works done thanks axis Essex.',
+        "name": 'Fred M.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'This company responded promptly and did a good job. I hereby recommend them.',
+        "name": 'Olu A.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Being a painter/decorator, I have been using Axis now for a couple of years on my exterior projects. Ash and his team are fantastic. …',
+        "name": 'Hannah M.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Been using Ashely at axis scaffolding for the past four years (many jobs ) his work is always too a good standard , my customers always comment on his polite manner and can do attitude',
+        "name": 'Lee H.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great work very reliable and good prices definitely use again',
+        "name": 'Paul G.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Ashley and his team turned up on the day worked very well and got the job done. Great Communication with a sensible price.',
+        "name": 'James',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'These scaffolder are highly recommended from me, helped me out with my home. Being a tradsmen myself I know good people when I meet them. Go with this company 👍',
+        "name": 'Gary B.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Professional and fast service with very competitive prices. I use this scaffolding company regularly for my rendering projects and they consistently deliver excellent results.',
+        "name": 'Andrius A.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'great communication, arrived when they said they would. no problems',
+        "name": 'Jane C.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": "Best scaffolders, I can not say anything about these guys. I've got more then 22 years working on scaffolds, nobody look after me except these guys. Perfect work",
+        "name": 'Rumen A.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great service from start to finish. The team was professional, punctual, and the scaffolding was solid and safely installed. Highly recommend for any scaffolding needs!',
+        "name": 'Grace K.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great workers Very tidy and clean up after scaffolding done Very polite',
+        "name": 'Raul P.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'A great company and great service and I know a lot of others that have used them',
+        "name": 'Carol C.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Very professional service all round, excellent communication from start to finish. Highly recommend this company',
+        "name": 'Louise R.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great company . Very reliable Highly recommend',
+        "name": 'Paul K.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Reliable, efficient, and professional service. Would definitely recommend.',
+        "name": 'Mollie',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Good price, good communication, friendly staff',
+        "name": 'Dave S.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Had axis-scaffolding install scaffolding at the front of my shop for new sign, Great service',
+        "name": 'Hannah M.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great job, would highly recommend!',
+        "name": 'Emily A.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Ashley and crew were fantastic from day one. No need to use any other Scaffolding company, Axis scaffolding Essex Ltd is the GOAT. …',
+        "name": 'Stu',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
+    {
+        "text": 'Great work from Ash and his team, Axis is Quick and reliable and safe on site would definitely recommend if you need scaffolding',
+        "name": 'Thomas H.',
+        "badge_icon": "/images/icons/google-badge.svg",
+        "badge_alt": "Google review",
+        "platform": "Google Review",
+    },
     {
         "text": "They turned up on time and completed the work efficiently. The tower was exactly as our builder requested.",
         "name": "Sally M.",
@@ -3209,7 +3447,11 @@ TESTIMONIALS = [
 # "Google"} — until then, scripts/check_testimonials.py treats ANY rating
 # or review-count claim found anywhere on the site as unsupported and fails
 # the build.
-APPROVED_RATING: dict | None = None
+# Confirmed from the live Google Business Profile panel (5.0, 31 Google reviews,
+# supplied by the business, Oct 2026). Shown as plain text only — deliberately no
+# schema.org AggregateRating (self-serving reviews aren't eligible for rich results).
+# Update the count here if it changes.
+APPROVED_RATING: dict | None = {"ratingValue": "5.0", "reviewCount": "31", "source": "Google"}
 
 
 def testimonials() -> str:
@@ -3258,6 +3500,21 @@ def homepage() -> str:
       <span>10+ Years' Experience</span>
       <span>Based in Rayleigh</span>
     </div>
+  </div>
+</section>
+
+<section class="section section-light hex-texture reviews-section" aria-labelledby="reviews-heading">
+  <div class="container">
+    <h2 id="reviews-heading">What Our Customers Say</h2>
+    <p class="review-summary"><span class="review-summary-stars" aria-hidden="true">★★★★★</span> <strong>{APPROVED_RATING['ratingValue']}</strong> from {APPROVED_RATING['reviewCount']} Google reviews &middot; <a href="{GOOGLE_BUSINESS_URL}" target="_blank" rel="noopener noreferrer">Read them on Google</a></p>
+    <div class="testimonial-wrap">
+      <button type="button" class="testimonial-nav testimonial-prev" id="testimonial-prev" aria-label="Previous review">&lsaquo;</button>
+      <div class="testimonial-carousel" id="testimonial-carousel">
+        <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
+      </div>
+      <button type="button" class="testimonial-nav testimonial-next" id="testimonial-next" aria-label="Next review">&rsaquo;</button>
+    </div>
+    <p class="centered review-source-note" style="font-size:0.85rem; color:#9ca3af; margin-top:1rem;">Genuine customer reviews. <a href="{GOOGLE_BUSINESS_URL}" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
   </div>
 </section>
 
@@ -3394,16 +3651,6 @@ def homepage() -> str:
       <li>Temporary roofing requirement</li>
     </ul>
     <p>We provide free, no-obligation quotations. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or complete the quote form below.</p>
-  </div>
-</section>
-
-<section class="section section-light hex-texture" aria-labelledby="reviews-heading">
-  <div class="container">
-    <h2 id="reviews-heading">What Our Customers Say</h2>
-    <div class="testimonial-carousel" id="testimonial-carousel" aria-live="polite">
-      <div class="testimonial-track" id="testimonial-track">{testimonials()}</div>
-    </div>
-    <p class="centered review-source-note" style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Reviews sourced from Google, Bark.com and verified customers. <a href="https://share.google/F46FyrQwCSKgjuaC5" target="_blank" rel="noopener noreferrer">Leave a Google review</a></p>
   </div>
 </section>
 

@@ -284,12 +284,17 @@
   const carousel = document.getElementById('testimonial-carousel');
   let idx = 0;
   let timer = null;
+  const slideCount = () => (track ? track.children.length : 0);
+  const goTo = (i) => {
+    const n = slideCount();
+    if (!n) return;
+    idx = (i + n) % n;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+  };
   const start = () => {
-    if (!track || track.children.length <= 1) return;
-    timer = window.setInterval(() => {
-      idx = (idx + 1) % track.children.length;
-      track.style.transform = `translateX(-${idx * 100}%)`;
-    }, 4500);
+    if (!track || slideCount() <= 1 || timer) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = window.setInterval(() => goTo(idx + 1), 7000);
   };
   const stop = () => {
     if (timer) clearInterval(timer);
@@ -298,6 +303,21 @@
   if (carousel) {
     carousel.addEventListener('mouseenter', stop);
     carousel.addEventListener('mouseleave', start);
+    carousel.addEventListener('focusin', stop);
+  }
+  const prevBtn = document.getElementById('testimonial-prev');
+  const nextBtn2 = document.getElementById('testimonial-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { stop(); goTo(idx - 1); });
+  if (nextBtn2) nextBtn2.addEventListener('click', () => { stop(); goTo(idx + 1); });
+  if (track) {
+    let tx = null;
+    track.addEventListener('touchstart', (e) => { tx = e.changedTouches[0].clientX; stop(); }, { passive: true });
+    track.addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) goTo(idx + (dx < 0 ? 1 : -1));
+      tx = null;
+    }, { passive: true });
   }
   start();
 
