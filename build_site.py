@@ -435,7 +435,14 @@ def head_tags(
         f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False)}</script>'
         for s in schemas
     )
-    preload = '<link rel="preload" as="image" href="/images/hero-bg.webp">' if preload_hero else ""
+    # Mirror the hero <img>'s srcset/sizes exactly: a bare href preload makes every
+    # device (phones included) fetch the full 1920px file on top of the right-sized one.
+    preload = (
+        '<link rel="preload" as="image" href="/images/hero-bg-1024w.webp" fetchpriority="high" '
+        'imagesrcset="/images/hero-bg-480w.webp 480w, /images/hero-bg-768w.webp 768w, '
+        '/images/hero-bg-1024w.webp 1024w, /images/hero-bg-1440w.webp 1440w, /images/hero-bg.webp 1920w" '
+        'imagesizes="100vw">'
+    ) if preload_hero else ""
     return f"""
 <head>
   <meta charset="utf-8">
@@ -832,6 +839,20 @@ def quote_wizard() -> str:
 """
 
 
+def mobile_cta_bar(path: str) -> str:
+    """Sticky bottom bar on phones: the three ways to enquire, one tap away on
+    every page (the /quote wizard and thank-you page already are the action)."""
+    if path in ("/quote", "/thank-you"):
+        return ""
+    return f"""
+<div class="site-cta-bar" role="region" aria-label="Contact Axis Scaffolding">
+  <a class="site-cta-call" href="tel:{NAP['phone_e164']}">Call</a>
+  <a class="site-cta-wa" href="{WHATSAPP_URL}" target="_blank" rel="noopener noreferrer">{WHATSAPP_ICON}WhatsApp</a>
+  <a class="site-cta-quote" href="/quote">Free Quote</a>
+</div>
+"""
+
+
 def render_page(
     *,
     title: str,
@@ -853,6 +874,7 @@ def render_page(
   {moved_site_banner()}
   <main id="main-content">{body}</main>
   {footer()}
+  {mobile_cta_bar(path)}
   {cookie_ui()}
   {project_lightbox()}
   {ga_config_script()}
@@ -1697,6 +1719,9 @@ body.lightbox-open { overflow:hidden; }
   background:#151515; color:#fff; border:1px solid var(--border-strong); font-size:1.6rem; line-height:1;
 }
 .testimonial-nav:hover { background:#222; border-color:var(--silver); }
+.review-strip-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+.review-strip-grid .testimonial-card { min-width:0; }
+@media (max-width:900px) { .review-strip-grid { grid-template-columns:1fr; } }
 @media (max-width:640px) { .testimonial-nav { width:36px; height:36px; font-size:1.3rem; } }
 
 /* ── AREA PILLS ── */
@@ -2149,6 +2174,25 @@ body.lightbox-open { overflow:hidden; }
 .reveal-right.is-visible { opacity:1; transform:none; }
 
 /* ── MOBILE STICKY CTA BAR ── */
+.site-cta-bar { display:none; }
+@media (max-width:768px) {
+  .site-cta-bar {
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:9999; height:56px;
+    padding-bottom:env(safe-area-inset-bottom); box-sizing:content-box;
+    background:var(--surface-3); border-top:2px solid var(--border-strong);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.4);
+  }
+  .site-cta-bar a {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:0.35rem;
+    font-weight:700; font-size:0.95rem; text-decoration:none; color:#fff;
+    border-right:1px solid var(--border);
+  }
+  .site-cta-bar a:last-child { border-right:none; }
+  .site-cta-bar .site-cta-call { background:linear-gradient(135deg,#e8eaed,#c8cdd4); color:#000; }
+  .site-cta-bar .site-cta-quote { background:#151515; color:#fff; }
+  .site-cta-bar svg { margin:0; }
+  body:has(.site-cta-bar) { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
+}
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
   z-index:9999; background:var(--surface-3); padding:0;
@@ -3549,9 +3593,8 @@ TESTIMONIALS = [
 APPROVED_RATING: dict | None = {"ratingValue": "5.0", "reviewCount": "31", "source": "Google"}
 
 
-def testimonials() -> str:
-    return "".join(
-        f"""
+def _testimonial_card(t: dict) -> str:
+    return f"""
 <div class="testimonial-card">
   <div class="review-stars" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
@@ -3568,8 +3611,33 @@ def testimonials() -> str:
   </div>
 </div>
 """
-        for t in TESTIMONIALS
-    )
+
+
+def testimonials() -> str:
+    return "".join(_testimonial_card(t) for t in TESTIMONIALS)
+
+
+# Which approved Google reviews to show where (matched on a unique opening of the
+# approved text, so the checker still validates every one verbatim).
+_REVIEW_PICKS = {
+    "general": ("Good communication, reliable and fair price", "Ashley's quote was very competitive", "Great job by Ashley and his lads"),
+    "trade": ("Have been using Axis recently for all of our rendering jobs", "Professional and fast service with very competitive prices", "Being a painter/decorator"),
+}
+
+
+def review_strip(kind: str = "general", heading: str = "What Our Customers Say") -> str:
+    """Three approved Google reviews plus the confirmed rating line, as a static
+    row — social proof on the pages where a visitor is deciding whether to call."""
+    picks = [next(t for t in TESTIMONIALS if t["text"].startswith(prefix)) for prefix in _REVIEW_PICKS[kind]]
+    return f"""
+<section class="section section-light hex-texture review-strip" aria-label="Customer reviews">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="review-summary"><span class="review-summary-stars" aria-hidden="true">★★★★★</span> <strong>{APPROVED_RATING['ratingValue']}</strong> from {APPROVED_RATING['reviewCount']} Google reviews &middot; <a href="{GOOGLE_BUSINESS_URL}" target="_blank" rel="noopener noreferrer">Read them on Google</a></p>
+    <div class="review-strip-grid">{"".join(_testimonial_card(t) for t in picks)}</div>
+  </div>
+</section>
+"""
 
 
 def homepage() -> str:
@@ -3617,7 +3685,7 @@ def homepage() -> str:
 <section class="section what-we-do hex-texture" aria-labelledby="what-we-do-heading">
   <div class="container">
     <h2 id="what-we-do-heading">Scaffolding for Homes, Trade and Commercial Work</h2>
-    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across South Essex — from a single chimney scaffold to a full commercial site package. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
+    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/roof-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
     <ul class="what-we-do-routes">
       <li><a href="#group-home-property">Home &amp; Property</a></li>
       <li><a href="#group-commercial-trade">Commercial &amp; Trade</a></li>
@@ -4154,6 +4222,7 @@ def service_detail_body(service: dict) -> str:
 </section>
 """
         + f"""
+{review_strip("general")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
@@ -4435,6 +4504,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   </div>
 </section>
 
+{review_strip("general")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>
@@ -4552,8 +4622,8 @@ def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding Essex | Axis Scaffolding Ltd Rayleigh Team",
-            desc="Axis Scaffolding delivers trusted scaffolding Essex support from Rayleigh for homes and businesses across Essex. Contact our team and get a free quote today.",
+            title="Scaffolding in Rayleigh and Essex | Axis Scaffolding Ltd",
+            desc="Rayleigh-based, CISRS-qualified scaffolders for homes, roofers and commercial sites across South Essex. 5.0 from 31 Google reviews. Free quotes: 01702 820468.",
             path="/",
             body=homepage(),
             include_faq_schema=True,
@@ -5047,6 +5117,7 @@ def generate_pages() -> None:
   </div>
 </section>
 
+{review_strip("trade", "Trusted by Trades")}
 <section class="cta-banner hex-texture">
   <div class="container cta-banner-inner">
     <div>

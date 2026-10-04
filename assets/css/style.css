@@ -770,6 +770,9 @@ body.lightbox-open { overflow:hidden; }
   background:#151515; color:#fff; border:1px solid var(--border-strong); font-size:1.6rem; line-height:1;
 }
 .testimonial-nav:hover { background:#222; border-color:var(--silver); }
+.review-strip-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+.review-strip-grid .testimonial-card { min-width:0; }
+@media (max-width:900px) { .review-strip-grid { grid-template-columns:1fr; } }
 @media (max-width:640px) { .testimonial-nav { width:36px; height:36px; font-size:1.3rem; } }
 
 /* ── AREA PILLS ── */
@@ -1222,6 +1225,25 @@ body.lightbox-open { overflow:hidden; }
 .reveal-right.is-visible { opacity:1; transform:none; }
 
 /* ── MOBILE STICKY CTA BAR ── */
+.site-cta-bar { display:none; }
+@media (max-width:768px) {
+  .site-cta-bar {
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:9999; height:56px;
+    padding-bottom:env(safe-area-inset-bottom); box-sizing:content-box;
+    background:var(--surface-3); border-top:2px solid var(--border-strong);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.4);
+  }
+  .site-cta-bar a {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:0.35rem;
+    font-weight:700; font-size:0.95rem; text-decoration:none; color:#fff;
+    border-right:1px solid var(--border);
+  }
+  .site-cta-bar a:last-child { border-right:none; }
+  .site-cta-bar .site-cta-call { background:linear-gradient(135deg,#e8eaed,#c8cdd4); color:#000; }
+  .site-cta-bar .site-cta-quote { background:#151515; color:#fff; }
+  .site-cta-bar svg { margin:0; }
+  body:has(.site-cta-bar) { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
+}
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
   z-index:9999; background:var(--surface-3); padding:0;
