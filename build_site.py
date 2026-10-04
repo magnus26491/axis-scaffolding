@@ -1386,6 +1386,22 @@ textarea:focus-visible {
   }
 }
 .service-card { padding:1.5rem; }
+.service-card-has-media { padding-top:0; overflow:hidden; }
+.service-card-media {
+  margin:0 -1.5rem 1.1rem; aspect-ratio:16/9; overflow:hidden;
+  background:#0d0d0d; border-bottom:1px solid var(--border);
+}
+.service-card-media img {
+  width:100%; height:100%; object-fit:cover; object-position:center 35%;
+  display:block; transition:transform 0.4s ease;
+}
+.service-card:hover .service-card-media img { transform:scale(1.04); }
+.service-card-media-icon {
+  display:flex; align-items:center; justify-content:center; color:var(--silver, #c8cdd4);
+  background:radial-gradient(ellipse at center, #1c1c1c 0%, #0d0d0d 75%);
+}
+.service-card-media-icon svg { width:56px; height:56px; opacity:0.75; }
+.service-card-urgent .service-card-media-icon { color:#ff8a8a; }
 .service-icon {
   width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, #c8cdd4, #8e949c) !important;
@@ -1986,8 +2002,9 @@ body.lightbox-open { overflow:hidden; }
 @media (max-width:768px) {
   .cookie-bar { padding:var(--space-3); gap:var(--space-2); }
   .cookie-bar p { font-size:var(--text-xs); line-height:1.35; }
-  .cookie-bar-actions { gap:var(--space-2); }
-  .cookie-bar-actions .btn { padding:0.45rem 0.9rem; }
+  .cookie-bar-actions { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); width:100%; }
+  .cookie-bar-actions .btn { padding:0.5rem 0.5rem; text-align:center; justify-content:center; }
+  .cookie-bar-actions .btn-manage { grid-column:1 / -1; padding:0; font-size:var(--text-xs); text-align:center; }
 }
 
 /* ── DECISION CARDS ──
@@ -2154,7 +2171,13 @@ body.lightbox-open { overflow:hidden; }
   }
   .site-nav a:not(.cta-pill)::after { display:none; }
   .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
-  .nav-wrap { grid-template-columns:auto auto; justify-content:space-between; }
+  /* Three in-flow children (logo, phone, toggle) — .site-nav is fixed and
+     out of flow — so three columns; with only two the toggle wrapped onto
+     a second row and nearly doubled the header height. */
+  .nav-wrap { grid-template-columns:auto 1fr auto; min-height:72px; gap:0.75rem; }
+  .nav-phone-mobile { justify-self:end; font-size:0.95rem; }
+  .logo-circle-nav { width:52px; height:52px; }
+  .logo-circle-nav img { width:52px; height:52px; }
   .footer-grid { grid-template-columns:1fr; }
   .hero-media { top:0 !important; height:100% !important; transform:none !important; }
 }
@@ -3078,6 +3101,48 @@ def untagged_photo_card(p: dict) -> str:
 SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 
 
+# Real, fully-tagged project photo per service for the overview cards. Only a
+# photo whose PROJECTS entry carries that exact service_slug is used — a
+# service with no genuinely matching photo gets a neutral icon panel instead
+# of a guessed image (see the project-4 "Temporary Roofing" mismatch above).
+SERVICE_CARD_PHOTO = {
+    "residential-scaffolding": "project-1",
+    "domestic-scaffolding": "project-6",
+    "roof-scaffolding": "project-5",
+    "commercial-scaffolding": "project-2",
+}
+_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{}</svg>'
+SERVICE_CARD_ICON = {
+    "loading-bay-scaffolding": _ICON.format('<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>'),
+    "scaffold-supply-erection": _ICON.format('<path d="M4 4v16M12 4v16M20 4v16M4 8h16M4 14h16"/>'),
+    "temporary-roofing": _ICON.format('<path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/>'),
+    "emergency-scaffolding": _ICON.format('<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'),
+    "dismantling-scaffolding": _ICON.format('<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>'),
+}
+
+
+def _service_card_media(svc: dict) -> str:
+    slug = svc["slug"]
+    pslug = SERVICE_CARD_PHOTO.get(slug)
+    project = next((p for p in PROJECTS if p["slug"] == pslug), None) if pslug else None
+    if project and project["service_slug"] == slug:
+        alt = f"{project['label']} in {project['location']}, Essex — real Axis Scaffolding project photograph"
+        widths = [w for w in (480, 768) if w <= project["w"]]
+        candidates = [(f"/images/{pslug}-{w}w.webp", w) for w in widths]
+        if project["w"] < 768:  # native file is the sharpest option available
+            candidates.append((f"/images/{pslug}.webp", project["w"]))
+        src = candidates[-1][0]
+        srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
+        widths = [candidates[-1][1]]
+        return (
+            f'<div class="service-card-media"><img src="{src}" srcset="{srcset}" '
+            f'sizes="(max-width: 768px) 100vw, 360px" alt="{alt}" width="{widths[-1]}" '
+            f'height="{round(widths[-1] * 9 / 16)}" loading="lazy" decoding="async"></div>'
+        )
+    return f'<div class="service-card-media service-card-media-icon" aria-hidden="true">{SERVICE_CARD_ICON.get(slug, "")}</div>'
+
+
+
 def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
     """The overview card's job is recognition, not education — "is this
     the service I need?", not the full page. Name, a visible audience
@@ -3085,7 +3150,8 @@ def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Servic
     itself (service_detail_body) does the actual explaining."""
     urgent_class = " service-card-urgent" if svc["slug"] == "emergency-scaffolding" else ""
     return f"""
-<article class="service-card{urgent_class}">
+<article class="service-card service-card-has-media{urgent_class}">
+  {_service_card_media(svc)}
   <{heading_tag}>{svc['name']}</{heading_tag}>
   <span class="service-card-audience">{svc['audience']}</span>
   <p>{svc['card_blurb']}</p>
