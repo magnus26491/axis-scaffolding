@@ -508,6 +508,16 @@ textarea:focus-visible {
 @media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
 
 /* "Why choose us" — three tick-badge points. */
+.why-axis { padding-top:var(--space-8, 2rem); padding-bottom:var(--space-8, 2rem); }
+.why-axis .why-panel {
+  background:#ffffff; color:#111827; border-radius:14px; padding:2.25rem 2.5rem 2.5rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.45);
+}
+.why-axis .why-panel h2 { color:#0a0a0a; margin-top:0; }
+.why-axis .why-panel .why-item h3 { color:#0a0a0a; }
+.why-axis .why-panel .why-item p { color:#374151; }
+.why-axis .why-panel .why-item svg { color:#f07800; }
+@media (max-width:768px) { .why-axis .why-panel { padding:1.75rem 1.4rem 2rem; } }
 .why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
 .why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
 .why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }

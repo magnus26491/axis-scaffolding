@@ -1457,6 +1457,16 @@ textarea:focus-visible {
 @media (prefers-reduced-motion: reduce) { .service-card-photo img { transition:none; } }
 
 /* "Why choose us" — three tick-badge points. */
+.why-axis { padding-top:var(--space-8, 2rem); padding-bottom:var(--space-8, 2rem); }
+.why-axis .why-panel {
+  background:#ffffff; color:#111827; border-radius:14px; padding:2.25rem 2.5rem 2.5rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.45);
+}
+.why-axis .why-panel h2 { color:#0a0a0a; margin-top:0; }
+.why-axis .why-panel .why-item h3 { color:#0a0a0a; }
+.why-axis .why-panel .why-item p { color:#374151; }
+.why-axis .why-panel .why-item svg { color:#f07800; }
+@media (max-width:768px) { .why-axis .why-panel { padding:1.75rem 1.4rem 2rem; } }
 .why-axis .why-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8, 2rem); margin-top:var(--space-6, 1.5rem); }
 .why-item svg { width:52px; height:52px; color:var(--highlight); margin-bottom:0.9rem; display:block; }
 .why-item h3 { font-size:1.2rem; margin:0 0 0.5rem; color:#fff; }
@@ -3697,33 +3707,23 @@ def homepage() -> str:
   </div>
 </section>
 
-<section class="section what-we-do hex-texture" aria-labelledby="what-we-do-heading">
-  <div class="container">
-    <h2 id="what-we-do-heading">Scaffolding for Homes, Trade and Commercial Work</h2>
-    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/roof-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait. We aim to respond to every enquiry the same working day, and every job is handed over with a scaffold inspection certificate.</p>
-    <ul class="what-we-do-routes">
-      <li><a href="#group-home-property">Home &amp; Property</a></li>
-      <li><a href="#group-commercial-trade">Commercial &amp; Trade</a></li>
-      <li><a href="#group-specialist">Specialist</a></li>
-    </ul>
-  </div>
-</section>
-
 <section class="section why-axis" aria-labelledby="why-heading">
   <div class="container">
+   <div class="why-panel">
     <h2 id="why-heading">The Axis Difference</h2>
     <div class="why-grid">
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Qualified and insured</h3><p>CISRS-qualified scaffolders, fully insured, with a scaffold inspection certificate handed over on every job.</p></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Founder-led, direct communication</h3><p>You deal with the people who plan and build your scaffold, so decisions stay clear and nothing gets lost.</p></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Quick quotes, on the agreed day</h3><p>We aim to respond to every enquiry the same working day, and to erect and strike when we said we would.</p></div>
     </div>
+   </div>
   </div>
 </section>
 
 <section class="section section-light hex-texture" aria-labelledby="services-heading">
   <div class="container">
     <h2 id="services-heading">Our Scaffolding Services</h2>
-    <p class="section-intro">Three kinds of job. Find yours, then see exactly what's involved.</p>
+    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/roof-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait.</p>
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
@@ -3731,7 +3731,7 @@ def homepage() -> str:
 <section class="section section-dark" aria-labelledby="projects-heading">
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
-    <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
+    <p class="section-intro">Real Axis Scaffolding work across Essex — no stock photography.</p>
     <div class="projects-grid projects-grid-home">
       {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in ("project-1", "project-2", "project-5"))}
     </div>
