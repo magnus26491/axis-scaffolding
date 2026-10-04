@@ -1493,24 +1493,22 @@ textarea:focus-visible {
    supplementary hover affordance; everything a customer actually needs
    to evaluate the project is visible without interaction. */
 .projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
-/* /gallery's full portfolio only: a periodic wide tile breaks up an
-   otherwise uniform wall of identical cards. grid-auto-flow:dense means a
-   filtered-out (display:none) item is simply removed from the flow, so the
-   remaining tiles repack cleanly — the wide positions aren't reserved gaps,
-   the dense algorithm fills around whichever tiles are actually visible. */
-.projects-grid-portfolio {
-  grid-auto-flow: dense; gap:var(--space-10) var(--space-6);
-}
-.projects-grid-portfolio .project-item:nth-child(5n+1) {
-  grid-column: span 2;
-}
-.projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media {
-  aspect-ratio: 16/9;
-}
+/* /gallery's full portfolio: uniform 4:5 tiles so rows line up. Only a
+   genuinely landscape photo spans two columns (33:20 ≈ the height of a 4:5
+   tile), so nothing portrait is cropped to a wide strip and
+   rows stay level. grid-auto-flow:dense repacks cleanly when filtered. */
+.projects-grid-portfolio { grid-auto-flow: dense; gap:var(--space-10) var(--space-6); }
+.projects-grid-portfolio .project-item-landscape { grid-column: span 2; }
+.projects-grid-portfolio .project-item-landscape .project-item-media { aspect-ratio: 33/20; }
 @media (max-width:900px) {
-  .projects-grid-portfolio .project-item:nth-child(5n+1) { grid-column: span 1; }
-  .projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media { aspect-ratio: 4/5; }
+  .projects-grid-portfolio .project-item-landscape { grid-column: span 1; }
+  .projects-grid-portfolio .project-item-landscape .project-item-media { aspect-ratio: 4/5; }
 }
+/* Homepage: three equal tiles, same 4:3 crop, so the row reads as one set. */
+.projects-grid-home .project-item-media { aspect-ratio: 4/3; }
+.projects-grid-home .project-item-media img { object-position: center 40%; }
+@media (max-width:1024px) { .projects-grid-home { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .projects-grid-home { grid-template-columns:1fr; } }
 /* "Recently Added" on /gallery only — genuine, founder-confirmed photos
    not yet matched to a town/service, so no lightbox, no area/service link,
    no category filter: just the photo (opens full-size in a new tab) and an
@@ -1521,7 +1519,7 @@ textarea:focus-visible {
 .untagged-photo a:hover img, .untagged-photo a:focus-visible img { transform:scale(1.04); }
 .untagged-photo figcaption { padding:var(--space-3) 0 0; color:var(--text-muted); font-size:var(--text-sm); }
 @media (max-width:640px) { .untagged-photo-grid { grid-template-columns:1fr; } }
-.project-item { position:relative; }
+.project-item { position:relative; margin:0; }
 .project-item-media {
   position:relative; display:block; overflow:hidden; width:100%;
   aspect-ratio:4/5; background:var(--surface-2);
@@ -3075,7 +3073,7 @@ def project_card(p: dict, *, featured: bool = False, eager: bool = False) -> str
     # its own explicit text link instead of overloading the image's click
     # target with two different destinations.
     return f"""
-<figure class="project-item{' project-item-featured' if featured else ''}" data-category="{p['category']}"
+<figure class="project-item{' project-item-featured' if featured else ''}{' project-item-landscape' if p['w'] > p['h'] else ''}" data-category="{p['category']}"
         data-label="{p['label']}" data-location="{p['location']}" data-desc="{p['desc']}"
         data-service-href="{service_link}" data-service-name="{service_name}" data-area-href="{area_link}">
   <button type="button" class="project-item-media" aria-label="View full-size photo — {p['label']} in {p['location']}">
@@ -3378,12 +3376,8 @@ def homepage() -> str:
   <div class="container">
     <h2 id="projects-heading">Recent Projects</h2>
     <p class="section-intro">Real Axis Scaffolding work across South Essex — no stock photography.</p>
-    <div class="projects-feature-grid">
-      {project_card(next(p for p in PROJECTS if p["slug"] == "project-1"), featured=True)}
-      <div class="projects-feature-secondary">
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-2"))}
-        {project_card(next(p for p in PROJECTS if p["slug"] == "project-5"))}
-      </div>
+    <div class="projects-grid projects-grid-home">
+      {"".join(project_card(next(p for p in PROJECTS if p["slug"] == slug)) for slug in ("project-1", "project-2", "project-5"))}
     </div>
     <p class="centered"><a class="btn btn-outline-orange" href="/gallery">View All Projects &rarr;</a></p>
   </div>
@@ -4346,8 +4340,7 @@ def generate_pages() -> None:
   {"".join(f'<button class="project-filter-btn" data-filter="{key}" aria-pressed="false">{label}</button>' for key, label in CATEGORY_LABELS.items())}
 </div>
 """
-    gallery_featured = next(p for p in PROJECTS if p["slug"] == "project-3")
-    gallery_rest = [p for p in PROJECTS if p["slug"] != gallery_featured["slug"]]
+    gallery_rest = list(PROJECTS)
     gallery_body = (
         inner_hero(
             [("Home", "/"), ("Projects", "/gallery")],
@@ -4355,12 +4348,10 @@ def generate_pages() -> None:
             "Every photograph below is a completed Axis Scaffolding project — no stock imagery. Browse by type or get a free quote for your own job.",
         )
         + f"""<section class="section section-dark"><div class="container">
-<p class="section-eyebrow">Featured Project</p>
-<div class="projects-feature-single">{project_card(gallery_featured, featured=True, eager=True)}</div>
 <h2 class="projects-grid-heading">The Full Portfolio</h2>
 <p class="section-intro">Every completed job, filterable by type — no two scaffolds are the same.</p>
 {project_filter_tabs}
-<div class="projects-grid projects-grid-portfolio">{"".join(project_card(p, eager=i < 2) for i, p in enumerate(gallery_rest))}</div>
+<div class="projects-grid projects-grid-portfolio">{"".join(project_card(p, eager=i < 3) for i, p in enumerate(gallery_rest))}</div>
 </div></section>"""
         + (f"""<section class="section"><div class="container">
 <h2>Recently Added</h2>
