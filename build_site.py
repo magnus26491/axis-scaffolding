@@ -3107,7 +3107,7 @@ SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 # of a guessed image (see the project-4 "Temporary Roofing" mismatch above).
 SERVICE_CARD_PHOTO = {
     "residential-scaffolding": "project-1",
-    "domestic-scaffolding": "project-6",
+    "domestic-scaffolding": "project-17",
     "roof-scaffolding": "project-5",
     "commercial-scaffolding": "project-2",
 }
@@ -3127,20 +3127,25 @@ def _service_card_media(svc: dict) -> str:
     project = next((p for p in PROJECTS if p["slug"] == pslug), None) if pslug else None
     if project and project["service_slug"] == slug:
         alt = f"{project['label']} in {project['location']}, Essex — real Axis Scaffolding project photograph"
-        widths = [w for w in (480, 768) if w <= project["w"]]
-        candidates = [(f"/images/{pslug}-{w}w.webp", w) for w in widths]
-        if project["w"] < 768:  # native file is the sharpest option available
-            candidates.append((f"/images/{pslug}.webp", project["w"]))
-        src = candidates[-1][0]
-        srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
-        widths = [candidates[-1][1]]
-        return (
-            f'<div class="service-card-media"><img src="{src}" srcset="{srcset}" '
-            f'sizes="(max-width: 768px) 100vw, 360px" alt="{alt}" width="{widths[-1]}" '
-            f'height="{round(widths[-1] * 9 / 16)}" loading="lazy" decoding="async"></div>'
-        )
-    return f'<div class="service-card-media service-card-media-icon" aria-hidden="true">{SERVICE_CARD_ICON.get(slug, "")}</div>'
-
+        native_w = project["w"]
+    elif pslug and any(u["slug"] == pslug for u in UNTAGGED_PHOTOS):
+        # Genuine, founder-confirmed Axis photo with no confirmed town/service:
+        # alt text states only what is visibly true, no location claim.
+        alt = "Scaffold erected on a semi-detached house — genuine Axis Scaffolding photograph"
+        native_w = next(u["w"] for u in UNTAGGED_PHOTOS if u["slug"] == pslug)
+    else:
+        return f'<div class="service-card-media service-card-media-icon" aria-hidden="true">{SERVICE_CARD_ICON.get(slug, "")}</div>'
+    widths = [w for w in (480, 768) if w <= native_w]
+    candidates = [(f"/images/{pslug}-{w}w.webp", w) for w in widths]
+    if native_w < 768:  # native file is the sharpest option available
+        candidates.append((f"/images/{pslug}.webp", native_w))
+    src, src_w = candidates[-1]
+    srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
+    return (
+        f'<div class="service-card-media"><img src="{src}" srcset="{srcset}" '
+        f'sizes="(max-width: 768px) 100vw, 360px" alt="{alt}" width="{src_w}" '
+        f'height="{round(src_w * 9 / 16)}" loading="lazy" decoding="async"></div>'
+    )
 
 
 def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
