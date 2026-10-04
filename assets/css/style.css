@@ -540,24 +540,22 @@ textarea:focus-visible {
    supplementary hover affordance; everything a customer actually needs
    to evaluate the project is visible without interaction. */
 .projects-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-8) var(--space-6); }
-/* /gallery's full portfolio only: a periodic wide tile breaks up an
-   otherwise uniform wall of identical cards. grid-auto-flow:dense means a
-   filtered-out (display:none) item is simply removed from the flow, so the
-   remaining tiles repack cleanly — the wide positions aren't reserved gaps,
-   the dense algorithm fills around whichever tiles are actually visible. */
-.projects-grid-portfolio {
-  grid-auto-flow: dense; gap:var(--space-10) var(--space-6);
-}
-.projects-grid-portfolio .project-item:nth-child(5n+1) {
-  grid-column: span 2;
-}
-.projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media {
-  aspect-ratio: 16/9;
-}
+/* /gallery's full portfolio: uniform 4:5 tiles so rows line up. Only a
+   genuinely landscape photo spans two columns (33:20 ≈ the height of a 4:5
+   tile), so nothing portrait is cropped to a wide strip and
+   rows stay level. grid-auto-flow:dense repacks cleanly when filtered. */
+.projects-grid-portfolio { grid-auto-flow: dense; gap:var(--space-10) var(--space-6); }
+.projects-grid-portfolio .project-item-landscape { grid-column: span 2; }
+.projects-grid-portfolio .project-item-landscape .project-item-media { aspect-ratio: 33/20; }
 @media (max-width:900px) {
-  .projects-grid-portfolio .project-item:nth-child(5n+1) { grid-column: span 1; }
-  .projects-grid-portfolio .project-item:nth-child(5n+1) .project-item-media { aspect-ratio: 4/5; }
+  .projects-grid-portfolio .project-item-landscape { grid-column: span 1; }
+  .projects-grid-portfolio .project-item-landscape .project-item-media { aspect-ratio: 4/5; }
 }
+/* Homepage: three equal tiles, same 4:3 crop, so the row reads as one set. */
+.projects-grid-home .project-item-media { aspect-ratio: 4/3; }
+.projects-grid-home .project-item-media img { object-position: center 40%; }
+@media (max-width:1024px) { .projects-grid-home { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px) { .projects-grid-home { grid-template-columns:1fr; } }
 /* "Recently Added" on /gallery only — genuine, founder-confirmed photos
    not yet matched to a town/service, so no lightbox, no area/service link,
    no category filter: just the photo (opens full-size in a new tab) and an
@@ -568,7 +566,7 @@ textarea:focus-visible {
 .untagged-photo a:hover img, .untagged-photo a:focus-visible img { transform:scale(1.04); }
 .untagged-photo figcaption { padding:var(--space-3) 0 0; color:var(--text-muted); font-size:var(--text-sm); }
 @media (max-width:640px) { .untagged-photo-grid { grid-template-columns:1fr; } }
-.project-item { position:relative; }
+.project-item { position:relative; margin:0; }
 .project-item-media {
   position:relative; display:block; overflow:hidden; width:100%;
   aspect-ratio:4/5; background:var(--surface-2);
