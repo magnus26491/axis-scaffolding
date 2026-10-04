@@ -1256,6 +1256,14 @@ textarea:focus-visible {
   padding:0.5rem 0.9rem;
 }
 .hero-trust-badges span:first-child { border-left:none; }
+/* Phones: a tidy centred 2x2 grid instead of a ragged wrapped row (the third
+   badge used to sit alone, left-aligned, under the first two). */
+@media (max-width:640px) {
+  .hero-trust-badges { display:grid; grid-template-columns:1fr 1fr; width:100%; max-width:340px; margin-left:auto; margin-right:auto; }
+  .hero-trust-badges span { text-align:center; display:flex; align-items:center; justify-content:center; padding:0.6rem 0.4rem; font-size:0.7rem; line-height:1.25; }
+  .hero-trust-badges span:nth-child(odd) { border-left:none; }
+  .hero-trust-badges span:nth-child(n+3) { border-top:2px solid var(--silver); }
+}
 
 /* ── HERO PARALLAX ──
    Photo-only. An earlier version also carried a hex mesh layer directly
@@ -1722,7 +1730,14 @@ body.lightbox-open { overflow:hidden; }
 .review-strip-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
 .review-strip-grid .testimonial-card { min-width:0; }
 @media (max-width:900px) { .review-strip-grid { grid-template-columns:1fr; } }
-@media (max-width:640px) { .testimonial-nav { width:36px; height:36px; font-size:1.3rem; } }
+@media (max-width:640px) {
+  .testimonial-nav { width:40px; height:40px; font-size:1.4rem; }
+  /* full-width card, arrows centred underneath instead of squeezing it */
+  .testimonial-wrap { flex-wrap:wrap; justify-content:center; gap:0.75rem 1rem; }
+  .testimonial-wrap .testimonial-carousel { order:1; flex:1 1 100%; }
+  .testimonial-prev { order:2; }
+  .testimonial-next { order:3; }
+}
 
 /* ── AREA PILLS ── */
 .area-pills { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.6rem; }
