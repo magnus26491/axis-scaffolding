@@ -481,6 +481,15 @@ def service_faqs(slug: str) -> list[tuple[str, str]]:
     return list(detail.get("faqs", [])) + [FAQS_BY_SLUG[x] for x in SERVICE_GENERAL_FAQ_SLUGS.get(slug, [])]
 
 
+def _area_licence_answer(area_name: str) -> str:
+    if area_name == "Southend-on-Sea":
+        who = "Southend-on-Sea City Council, which asks for at least 28 days' notice"
+    else:
+        who = "Essex Highways (Essex County Council), which states 15 working days to process an application"
+    return (f"Yes, if any scaffold stands on or projects over a public pavement or road. In {area_name} the licence comes from {who}. "
+            "It is applied for by the scaffolding contractor, and Axis Scaffolding will tell you at quotation stage whether your job needs one.")
+
+
 def area_faqs(area_name: str) -> list[tuple[str, str]]:
     """Four local questions per core area page. Every answer reuses wording the
     site already publishes sitewide (cost / speed / licence), localised only in
@@ -493,7 +502,7 @@ def area_faqs(area_name: str) -> list[tuple[str, str]]:
         ),
         (f"How much does scaffolding cost in {area_name}?", FAQS_BY_SLUG["cost"][1]),
         (f"How quickly can scaffolding be erected in {area_name}?", FAQS_BY_SLUG["speed"][1]),
-        (f"Do I need a licence for scaffolding on the pavement in {area_name}?", FAQS_BY_SLUG["licence"][1]),
+        (f"Do I need a licence for scaffolding on the pavement in {area_name}?", _area_licence_answer(area_name)),
     ]
 
 
@@ -534,6 +543,8 @@ def _auto_page_schemas(title: str, desc: str, path: str) -> list[dict]:
             "mainEntityOfPage": {"@id": f"{SITE}{path}#webpage"}, "image": OG_IMAGE_URL,
             "author": {"@id": f"{SITE}/#business"}, "publisher": {"@id": f"{SITE}/#business"},
         })
+        if GUIDE_FAQS.get(parts[1]):
+            out.append(faq_page_schema(GUIDE_FAQS[parts[1]]))
     return out
 
 
@@ -3499,6 +3510,49 @@ def expansion_area_pills() -> str:
     )
 
 
+GUIDE_FAQS: dict[str, list[tuple[str, str]]] = {
+    "do-i-need-scaffolding": [
+        ("Do I need scaffolding to replace a roof?", "Yes. A roof replacement needs a stable working platform and edge protection, and somewhere to land materials at roof level. Roofers do not normally re-roof from ladders."),
+        ("Can a ladder be used instead of scaffolding?", "For a brief, light task, a ladder used with the correct technique can be appropriate under a risk assessment. For sustained work, two-handed work or work near a roof edge, scaffold is the right solution under the Work at Height Regulations 2005."),
+        ("Who decides whether a job needs scaffolding?", "The tradesperson carrying out the work is responsible for planning it safely. If you are unsure, call Axis Scaffolding on " + NAP["phone"] + " and describe the job; we will tell you what access it needs."),
+    ],
+    "scaffolding-cost-essex": [
+        ("What affects the cost of scaffolding?", "Size and height, the number of elevations, how long the scaffold stays up, and site access. A highway licence, where one is needed, is an additional cost."),
+        ("Do you quote for free?", "Yes. Axis Scaffolding gives free, no-obligation quotes. Call " + NAP["phone"] + " or use the online quote form."),
+        ("Why can't you give an exact price without seeing the job?", "Every property is different. The only reliable figure is a quote from a scaffolder who has assessed your specific project."),
+    ],
+    "highway-licence-scaffolding": [
+        ("Do I need a licence for scaffolding on the pavement?", "Yes. If any part of a scaffold is on, or projects over, a public footway or road, the highway authority's licence is required before it goes up. Scaffold entirely within your own boundary does not need one."),
+        ("Who applies for the scaffold licence?", "The scaffolding contractor applies, not the homeowner. Essex Highways requires the contractor to apply, and Southend-on-Sea City Council asks for at least 28 days' notice."),
+        ("How long does the licence take?", "Essex Highways states 15 working days to process an application. Southend-on-Sea City Council asks for at least 28 days' notice. Raise it as early as possible."),
+        ("Can Axis Scaffolding arrange the licence for me?", "Yes. We identify at quotation stage whether your job needs one and handle the application as the contractor."),
+    ],
+}
+
+
+def guide_closing(slug: str) -> str:
+    faqs = GUIDE_FAQS.get(slug, [])
+    items = "".join(
+        f"""<div class="faq-item"><button class="faq-question" id="gfaq-btn-{i}" aria-expanded="false" aria-controls="gfaq-panel-{i}">{q}</button><div class="faq-answer" id="gfaq-panel-{i}" role="region" aria-labelledby="gfaq-btn-{i}"><p>{a}</p></div></div>"""
+        for i, (q, a) in enumerate(faqs)
+    )
+    faq_block = f'<h2>Common Questions</h2><div class="faq-list">{items}</div>' if items else ""
+    return f"""
+<section class="section section-light hex-texture">
+  <div class="container">
+    {faq_block}
+    <h2>Why Call Axis Scaffolding?</h2>
+    <ul class="usp-list">
+      <li>CISRS-qualified, fully insured scaffolders based in Rayleigh</li>
+      <li>5.0 from {APPROVED_RATING['reviewCount']} Google reviews</li>
+      <li>A scaffold inspection certificate handed over on every job</li>
+      <li>Free, no-obligation quotes &mdash; call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or <a href="/quote">request one online</a></li>
+    </ul>
+  </div>
+</section>
+"""
+
+
 def related_guides_section(current_slug: str) -> str:
     others = [g for g in GUIDES if g["slug"] != current_slug]
     cards = "".join(
@@ -5100,6 +5154,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + guide_closing("scaffolding-cost-essex")
         + related_guides_section("scaffolding-cost-essex")
     )
     write(
@@ -5154,6 +5209,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + guide_closing("do-i-need-scaffolding")
         + related_guides_section("do-i-need-scaffolding")
     )
     write(
@@ -5177,14 +5233,14 @@ def generate_pages() -> None:
 <section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>Yes — a Licence Is Required</h2>
-    <p>If scaffolding overhangs or occupies any part of a public highway — including the pavement in front of your property — a licence under <strong>Section 169 of the Highways Act 1980</strong> is required before erection begins. Working without a licence can result in enforcement action by the local authority and invalidate your insurance. Axis Scaffolding can advise on the licence process and liaise with Essex Highways on your behalf.</p>
+    <p>If scaffolding overhangs or occupies any part of a public highway — including the pavement in front of your property — a licence under <strong>Section 169 of the Highways Act 1980</strong> is required before erection begins. The licence is applied for by the scaffolding contractor, not the homeowner. Axis Scaffolding identifies the requirement at quotation stage and handles the application for you.</p>
   </div>
 </section>
 
 <section class="section section-dark hex-texture">
   <div class="container">
     <h2>What Is a Section 169 Licence?</h2>
-    <p>A Section 169 licence (also called a "scaffolding licence" or "highway licence") is a formal permission granted by the highway authority — in most of Essex this is Essex County Council Highways — to occupy or overhang the public highway with a scaffold structure. It specifies conditions including the scaffold footprint, lighting and signing requirements, and the permitted duration.</p>
+    <p>A Section 169 licence (also called a "scaffolding licence" or "highway licence") is a formal permission granted by the highway authority — in most of Essex this is Essex County Council (Essex Highways); in Southend-on-Sea it is Southend-on-Sea City Council — to occupy or overhang the public highway with a scaffold structure. It specifies conditions including the scaffold footprint, lighting and signing requirements, and the permitted duration.</p>
     <h2>When Do You Need One?</h2>
     <div class="decision-grid">
       <div class="decision-card"><h3>Pavement Overhang</h3><p>If any part of the scaffold — including ties, standards or boards — extends over the public footpath, a licence is required even if the scaffold base is on private land.</p></div>
@@ -5193,9 +5249,9 @@ def generate_pages() -> None:
       <div class="decision-card decision-card-urgent"><h3>Not Required If Fully On Private Land</h3><p>If the scaffold is entirely within the property boundary, away from the highway, no Section 169 licence is needed — though planning restrictions may still apply.</p></div>
     </div>
     <h2>How Long Does It Take?</h2>
-    <p>Essex Highways typically requires a minimum of 5–10 working days' notice. Some districts and urban areas may require longer. We recommend raising the licence requirement as early as possible in the project planning process. Axis Scaffolding will identify the requirement at the quotation stage and advise accordingly.</p>
+    <p><strong>Essex Highways</strong> states that it processes a scaffold licence application within 15 working days; a licence is valid for two weeks from issue and can be extended up to 26 weeks. <strong>Southend-on-Sea City Council</strong> asks for at least 28 days' notice, and requires a licence for any projection over the highway at any height. Raise the requirement as early as you can &mdash; Axis Scaffolding will flag it at quotation stage.</p>
     <h2>What Does It Cost?</h2>
-    <p>Licence fees are set by the highway authority and vary. As a guide, Essex Highways charges a fee based on the area of highway occupied and the duration. These fees are passed through at cost. We will include the estimated licence cost in your quotation so there are no surprises.</p>
+    <p>Fees are set by the council. The applicant must also hold public liability insurance of at least &pound;10 million. We will confirm the licence cost with your quotation. Official guidance: <a href="https://www.essexhighways.org" rel="noopener">Essex Highways</a> and <a href="https://www.southend.gov.uk" rel="noopener">Southend-on-Sea City Council</a>.</p>
     <div class="hero-cta-row" style="margin-top:2rem;">
       <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
       <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
@@ -5203,6 +5259,7 @@ def generate_pages() -> None:
   </div>
 </section>
 """
+        + guide_closing("highway-licence-scaffolding")
         + related_guides_section("highway-licence-scaffolding")
     )
     write(
