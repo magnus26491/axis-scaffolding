@@ -128,6 +128,49 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', sync, { passive: true });
   })();
+  // Dropdown menus: chevron buttons toggle their panel; Escape and outside clicks close.
+  const navItems = Array.from(document.querySelectorAll('.nav-item.has-sub'));
+  const closeNavItems = (except) => {
+    navItems.forEach((item) => {
+      if (item === except) return;
+      item.classList.remove('open');
+      const t = item.querySelector('.nav-sub-toggle');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  };
+  navItems.forEach((item) => {
+    const toggle = item.querySelector('.nav-sub-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const open = item.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) closeNavItems(item);
+    });
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.nav-item.has-sub')) closeNavItems(null);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const openItem = navItems.find((item) => item.classList.contains('open') || item.matches(':hover, :focus-within'));
+    closeNavItems(null);
+    if (openItem) {
+      openItem.classList.add('nav-suppress');
+      const t = openItem.querySelector('.nav-sub-toggle');
+      if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); }
+    }
+  });
+  navItems.forEach((item) => {
+    ['pointerenter', 'focusin'].forEach((evt) => item.addEventListener(evt, (e) => {
+      // Re-arm hover/focus opening once the visitor moves in again (but not for the
+      // focus that Escape itself returns to the chevron).
+      if (evt === 'focusin' && e.target.classList.contains('nav-sub-toggle')) return;
+      item.classList.remove('nav-suppress');
+    }));
+    const toggle = item.querySelector('.nav-sub-toggle');
+    if (toggle) toggle.addEventListener('click', () => item.classList.remove('nav-suppress'));
+  });
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');

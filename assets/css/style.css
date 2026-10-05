@@ -187,6 +187,55 @@ textarea:focus-visible {
 .site-nav a:not(.cta-pill):hover { color: #c8cdd4; }
 .site-nav a:not(.cta-pill):hover::after,
 .site-nav a:not(.cta-pill):focus-visible::after { right:0; }
+/* ── DROPDOWN MENUS ──
+   Each top-level label is a real link to its hub page; the chevron button opens a
+   panel of deeper links. Desktop: opens on hover / keyboard focus / click.
+   Phones: panels are accordions inside the slide-out drawer. */
+.nav-item { position:relative; display:flex; align-items:center; gap:0.1rem; }
+.nav-home-mobile { display:none !important; }
+.nav-sub-toggle {
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+  background:none; border:0; padding:0; color:#fff; cursor:pointer; border-radius:6px;
+}
+.nav-sub-toggle:hover { color:var(--silver); }
+.nav-sub-toggle svg { transition:transform 0.2s ease; }
+.nav-item.open > .nav-sub-toggle svg { transform:rotate(180deg); }
+.nav-sub {
+  position:absolute; top:calc(100% + 14px); left:0; z-index:1100; min-width:230px;
+  background:var(--surface); border:1px solid var(--border-strong); border-top:2px solid var(--silver);
+  border-radius:12px; box-shadow:0 18px 44px rgba(0,0,0,0.65); padding:1.1rem 1.25rem;
+  opacity:0; visibility:hidden; transform:translateY(6px);
+  transition:opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+.nav-sub::before { content:""; position:absolute; left:0; right:0; top:-16px; height:16px; }
+.nav-sub-services { width:700px; display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem 1.5rem; }
+.nav-sub-areas { width:430px; }
+.nav-sub-about { right:0; left:auto; }
+.nav-sub ul { list-style:none; margin:0; padding:0; }
+.nav-sub li { margin:0; }
+.nav-sub a:not(.cta-pill) {
+  display:block; padding:0.38rem 0; font-size:0.92rem; font-weight:500; color:#e5e7eb;
+  text-decoration:none; white-space:nowrap;
+}
+.nav-sub a:not(.cta-pill)::after { display:none; }
+.nav-sub a:not(.cta-pill):hover, .nav-sub a:not(.cta-pill):focus-visible { color:var(--silver); text-decoration:underline; }
+.nav-sub-heading {
+  margin:0 0 0.3rem; color:var(--silver); font-size:0.72rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+}
+.nav-sub-cols { columns:2; column-gap:1.75rem; }
+.nav-sub-foot {
+  grid-column:1 / -1; display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.6rem; padding-top:0.7rem;
+  border-top:1px solid var(--border);
+}
+.nav-sub-areas .nav-sub-foot { display:block; }
+.nav-sub-foot a:not(.cta-pill) { font-weight:700 !important; color:#fff !important; }
+@media (min-width:769px) {
+  .nav-item:hover > .nav-sub, .nav-item:focus-within > .nav-sub, .nav-item.open > .nav-sub {
+    opacity:1; visibility:visible; transform:translateY(0);
+  }  /* Escape closes a panel even while focus is still inside it. */
+  .nav-item.nav-suppress > .nav-sub { opacity:0; visibility:hidden; transform:translateY(6px); }
+}
 .menu-toggle {
   display:none; width:48px; height:48px;
   border:1px solid rgba(255,255,255,0.4);
@@ -1307,6 +1356,14 @@ body.lightbox-open { overflow:hidden; }
   .projects-grid { grid-template-columns:1fr; }
   .projects-feature-secondary { flex-direction:column; }
 }
+/* Tablet / small laptop: keep the phone number and quote button on one line. */
+.nav-phone-desktop, .site-nav .cta-pill { white-space:nowrap; }
+@media (min-width:769px) and (max-width:1100px) {
+  .site-nav { gap:0.85rem; }
+  .site-nav .cta-pill { padding:0.6rem 1rem; font-size:0.9rem; }
+  .nav-phone-desktop { font-size:0.88rem; }
+  .nav-wrap { gap:0.6rem; }
+}
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
   .nav-phone-mobile { display:inline-flex; align-items:center; }
@@ -1332,6 +1389,24 @@ body.lightbox-open { overflow:hidden; }
   }
   .site-nav a:not(.cta-pill)::after { display:none; }
   .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
+  /* Dropdowns become accordions inside the drawer. */
+  .nav-home-mobile { display:block !important; }
+  .nav-item { flex-wrap:wrap; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .site-nav .nav-item > a.nav-parent { width:auto; flex:1; border-bottom:0; }
+  .nav-sub-toggle { width:44px; height:44px; }
+  .nav-sub, .nav-sub-services, .nav-sub-areas, .nav-sub-about {
+    position:static; display:none; width:100%; min-width:0; opacity:1; visibility:visible; transform:none;
+    background:transparent; border:0; box-shadow:none; padding:0 0 0.75rem 0.75rem;
+  }
+  .nav-sub::before { display:none; }
+  .nav-item.open > .nav-sub { display:block; }
+  .nav-sub-services.nav-sub { grid-template-columns:1fr; }
+  .nav-sub a:not(.cta-pill) { width:100%; font-size:var(--text-base); padding:0.55rem 0; border-bottom:0; white-space:normal; }
+  .nav-sub-cols { columns:1; }
+  .nav-sub-heading { margin-top:0.9rem; }
+  .nav-sub-heading:first-child { margin-top:0.4rem; }
+  /* leave room under the drawer content for the sticky Call/WhatsApp/Quote bar */
+  .site-nav { padding-bottom:calc(var(--space-6) + 84px); }
   /* Three in-flow children (logo, phone, toggle) — .site-nav is fixed and
      out of flow — so three columns; with only two the toggle wrapped onto
      a second row and nearly doubled the header height. */

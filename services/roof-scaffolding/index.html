@@ -52,11 +52,46 @@
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
-      <a href="/">Home</a>
-      <a href="/services">Services</a>
-      <a href="/contractors">For Builders</a>
-      <a href="/gallery">Projects</a>
-      <a href="/about">About</a>
+      <a class="nav-home-mobile" href="/">Home</a>
+      <div class="nav-item has-sub" data-nav="services">
+        <a class="nav-parent" href="/services">Services</a>
+        <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="sub-services" aria-label="Show services menu"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="nav-sub nav-sub-services" id="sub-services">
+          <div class="nav-sub-group">
+            <p class="nav-sub-heading">Home & Property</p>
+            <ul><li><a href="/services/residential-scaffolding">Residential Scaffolding</a></li><li><a href="/services/domestic-scaffolding">Domestic Scaffolding</a></li><li><a href="/services/roof-scaffolding">Roof Scaffolding</a></li></ul>
+          </div>
+          <div class="nav-sub-group">
+            <p class="nav-sub-heading">Commercial & Trade</p>
+            <ul><li><a href="/services/commercial-scaffolding">Commercial Scaffolding</a></li><li><a href="/services/loading-bay-scaffolding">Loading Bay Scaffolding</a></li><li><a href="/services/scaffold-supply-erection">Scaffold Supply & Erection</a></li></ul>
+          </div>
+          <div class="nav-sub-group">
+            <p class="nav-sub-heading">Specialist</p>
+            <ul><li><a href="/services/temporary-roofing">Temporary Roofing</a></li><li><a href="/services/emergency-scaffolding">Emergency Scaffolding</a></li><li><a href="/services/dismantling-scaffolding">Scaffold Dismantling</a></li></ul>
+          </div>
+          <div class="nav-sub-foot">
+            <a href="/services">All services</a>
+            <a href="/contractors">For builders &amp; contractors</a>
+          </div></div>
+      </div>
+      <div class="nav-item has-sub" data-nav="areas">
+        <a class="nav-parent" href="/areas">Areas</a>
+        <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="sub-areas" aria-label="Show areas menu"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="nav-sub nav-sub-areas" id="sub-areas">
+          <ul class="nav-sub-cols"><li><a href="/areas/benfleet">Benfleet</a></li><li><a href="/areas/canvey-island">Canvey Island</a></li><li><a href="/areas/rayleigh">Rayleigh</a></li><li><a href="/areas/southend">Southend-on-Sea</a></li><li><a href="/areas/basildon">Basildon</a></li><li><a href="/areas/chelmsford">Chelmsford</a></li><li><a href="/areas/wickford">Wickford</a></li><li><a href="/areas/hadleigh">Hadleigh</a></li><li><a href="/areas/leigh-on-sea">Leigh-on-Sea</a></li><li><a href="/areas/thundersley">Thundersley</a></li><li><a href="/areas/hockley">Hockley</a></li><li><a href="/areas/rochford">Rochford</a></li><li><a href="/areas/london">London</a></li></ul>
+          <div class="nav-sub-foot"><a href="/areas">All areas we cover</a></div></div>
+      </div>
+      <div class="nav-item has-sub" data-nav="about">
+        <a class="nav-parent" href="/about">About</a>
+        <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="sub-about" aria-label="Show about menu"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="nav-sub nav-sub-about" id="sub-about">
+          <ul>
+            <li><a href="/about">About Axis Scaffolding</a></li>
+            <li><a href="/gallery">Our projects</a></li>
+            <li><a href="/guides">Scaffolding guides</a></li>
+            <li><a href="/contractors">For builders &amp; contractors</a></li>
+          </ul></div>
+      </div>
       <a href="/contact">Contact</a>
       <a class="nav-phone-desktop" href="tel:+441702820468">01702 820468</a>
       <a class="cta-pill" href="/quote">Get a Free Quote</a>

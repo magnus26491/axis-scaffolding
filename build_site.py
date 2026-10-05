@@ -614,7 +614,49 @@ def breadcrumb_nav(items: list[tuple[str, str]]) -> str:
     return '<nav class="breadcrumbs" aria-label="Breadcrumb">' + ' <span aria-hidden="true">&gt;</span> '.join(parts) + "</nav>"
 
 
+_CHEVRON = (
+    '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">'
+    '<path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" '
+    'stroke-linecap="round" stroke-linejoin="round"/></svg>'
+)
+
+
+def _nav_dropdown(key: str, label: str, href: str, panel_class: str, panel_html: str) -> str:
+    """One top-level menu entry: the label stays a real link to its hub page (so it
+    works with no JavaScript and is crawlable); the chevron button opens the panel."""
+    return f"""
+      <div class="nav-item has-sub" data-nav="{key}">
+        <a class="nav-parent" href="{href}">{label}</a>
+        <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="sub-{key}" aria-label="Show {label.lower()} menu">{_CHEVRON}</button>
+        <div class="nav-sub {panel_class}" id="sub-{key}">{panel_html}</div>
+      </div>"""
+
+
 def nav() -> str:
+    services_panel = "".join(
+        f"""
+          <div class="nav-sub-group">
+            <p class="nav-sub-heading">{group['name']}</p>
+            <ul>{"".join(f'<li><a href="/services/{slug}">{SERVICES_BY_SLUG[slug]["name"]}</a></li>' for slug in group['slugs'])}</ul>
+          </div>"""
+        for group in SERVICE_GROUPS
+    ) + """
+          <div class="nav-sub-foot">
+            <a href="/services">All services</a>
+            <a href="/contractors">For builders &amp; contractors</a>
+          </div>"""
+    area_links = "".join(f'<li><a href="/areas/{d["slug"]}">{name}</a></li>' for name, d in AREA_DATA.items())
+    area_links += f'<li><a href="/areas/{EXPANSION_AREA_DATA["London"]["slug"]}">London</a></li>'
+    areas_panel = f"""
+          <ul class="nav-sub-cols">{area_links}</ul>
+          <div class="nav-sub-foot"><a href="/areas">All areas we cover</a></div>"""
+    about_panel = """
+          <ul>
+            <li><a href="/about">About Axis Scaffolding</a></li>
+            <li><a href="/gallery">Our projects</a></li>
+            <li><a href="/guides">Scaffolding guides</a></li>
+            <li><a href="/contractors">For builders &amp; contractors</a></li>
+          </ul>"""
     return f"""
 <header class="site-header" id="site-header">
   <div class="container nav-wrap">
@@ -628,11 +670,7 @@ def nav() -> str:
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
-      <a href="/">Home</a>
-      <a href="/services">Services</a>
-      <a href="/contractors">For Builders</a>
-      <a href="/gallery">Projects</a>
-      <a href="/about">About</a>
+      <a class="nav-home-mobile" href="/">Home</a>{_nav_dropdown("services", "Services", "/services", "nav-sub-services", services_panel)}{_nav_dropdown("areas", "Areas", "/areas", "nav-sub-areas", areas_panel)}{_nav_dropdown("about", "About", "/about", "nav-sub-about", about_panel)}
       <a href="/contact">Contact</a>
       <a class="nav-phone-desktop" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="cta-pill" href="/quote">Get a Free Quote</a>
@@ -1279,6 +1317,55 @@ textarea:focus-visible {
 .site-nav a:not(.cta-pill):hover { color: #c8cdd4; }
 .site-nav a:not(.cta-pill):hover::after,
 .site-nav a:not(.cta-pill):focus-visible::after { right:0; }
+/* ── DROPDOWN MENUS ──
+   Each top-level label is a real link to its hub page; the chevron button opens a
+   panel of deeper links. Desktop: opens on hover / keyboard focus / click.
+   Phones: panels are accordions inside the slide-out drawer. */
+.nav-item { position:relative; display:flex; align-items:center; gap:0.1rem; }
+.nav-home-mobile { display:none !important; }
+.nav-sub-toggle {
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+  background:none; border:0; padding:0; color:#fff; cursor:pointer; border-radius:6px;
+}
+.nav-sub-toggle:hover { color:var(--silver); }
+.nav-sub-toggle svg { transition:transform 0.2s ease; }
+.nav-item.open > .nav-sub-toggle svg { transform:rotate(180deg); }
+.nav-sub {
+  position:absolute; top:calc(100% + 14px); left:0; z-index:1100; min-width:230px;
+  background:var(--surface); border:1px solid var(--border-strong); border-top:2px solid var(--silver);
+  border-radius:12px; box-shadow:0 18px 44px rgba(0,0,0,0.65); padding:1.1rem 1.25rem;
+  opacity:0; visibility:hidden; transform:translateY(6px);
+  transition:opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+.nav-sub::before { content:""; position:absolute; left:0; right:0; top:-16px; height:16px; }
+.nav-sub-services { width:700px; display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem 1.5rem; }
+.nav-sub-areas { width:430px; }
+.nav-sub-about { right:0; left:auto; }
+.nav-sub ul { list-style:none; margin:0; padding:0; }
+.nav-sub li { margin:0; }
+.nav-sub a:not(.cta-pill) {
+  display:block; padding:0.38rem 0; font-size:0.92rem; font-weight:500; color:#e5e7eb;
+  text-decoration:none; white-space:nowrap;
+}
+.nav-sub a:not(.cta-pill)::after { display:none; }
+.nav-sub a:not(.cta-pill):hover, .nav-sub a:not(.cta-pill):focus-visible { color:var(--silver); text-decoration:underline; }
+.nav-sub-heading {
+  margin:0 0 0.3rem; color:var(--silver); font-size:0.72rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+}
+.nav-sub-cols { columns:2; column-gap:1.75rem; }
+.nav-sub-foot {
+  grid-column:1 / -1; display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.6rem; padding-top:0.7rem;
+  border-top:1px solid var(--border);
+}
+.nav-sub-areas .nav-sub-foot { display:block; }
+.nav-sub-foot a:not(.cta-pill) { font-weight:700 !important; color:#fff !important; }
+@media (min-width:769px) {
+  .nav-item:hover > .nav-sub, .nav-item:focus-within > .nav-sub, .nav-item.open > .nav-sub {
+    opacity:1; visibility:visible; transform:translateY(0);
+  }  /* Escape closes a panel even while focus is still inside it. */
+  .nav-item.nav-suppress > .nav-sub { opacity:0; visibility:hidden; transform:translateY(6px); }
+}
 .menu-toggle {
   display:none; width:48px; height:48px;
   border:1px solid rgba(255,255,255,0.4);
@@ -2399,6 +2486,14 @@ body.lightbox-open { overflow:hidden; }
   .projects-grid { grid-template-columns:1fr; }
   .projects-feature-secondary { flex-direction:column; }
 }
+/* Tablet / small laptop: keep the phone number and quote button on one line. */
+.nav-phone-desktop, .site-nav .cta-pill { white-space:nowrap; }
+@media (min-width:769px) and (max-width:1100px) {
+  .site-nav { gap:0.85rem; }
+  .site-nav .cta-pill { padding:0.6rem 1rem; font-size:0.9rem; }
+  .nav-phone-desktop { font-size:0.88rem; }
+  .nav-wrap { gap:0.6rem; }
+}
 @media (max-width:768px) {
   .menu-toggle { display:inline-flex; }
   .nav-phone-mobile { display:inline-flex; align-items:center; }
@@ -2424,6 +2519,24 @@ body.lightbox-open { overflow:hidden; }
   }
   .site-nav a:not(.cta-pill)::after { display:none; }
   .site-nav .cta-pill, .site-nav .nav-phone-desktop { margin-top:var(--space-6); }
+  /* Dropdowns become accordions inside the drawer. */
+  .nav-home-mobile { display:block !important; }
+  .nav-item { flex-wrap:wrap; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .site-nav .nav-item > a.nav-parent { width:auto; flex:1; border-bottom:0; }
+  .nav-sub-toggle { width:44px; height:44px; }
+  .nav-sub, .nav-sub-services, .nav-sub-areas, .nav-sub-about {
+    position:static; display:none; width:100%; min-width:0; opacity:1; visibility:visible; transform:none;
+    background:transparent; border:0; box-shadow:none; padding:0 0 0.75rem 0.75rem;
+  }
+  .nav-sub::before { display:none; }
+  .nav-item.open > .nav-sub { display:block; }
+  .nav-sub-services.nav-sub { grid-template-columns:1fr; }
+  .nav-sub a:not(.cta-pill) { width:100%; font-size:var(--text-base); padding:0.55rem 0; border-bottom:0; white-space:normal; }
+  .nav-sub-cols { columns:1; }
+  .nav-sub-heading { margin-top:0.9rem; }
+  .nav-sub-heading:first-child { margin-top:0.4rem; }
+  /* leave room under the drawer content for the sticky Call/WhatsApp/Quote bar */
+  .site-nav { padding-bottom:calc(var(--space-6) + 84px); }
   /* Three in-flow children (logo, phone, toggle) — .site-nav is fixed and
      out of flow — so three columns; with only two the toggle wrapped onto
      a second row and nearly doubled the header height. */
@@ -2586,6 +2699,49 @@ def generate_js() -> None:
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', sync, { passive: true });
   })();
+  // Dropdown menus: chevron buttons toggle their panel; Escape and outside clicks close.
+  const navItems = Array.from(document.querySelectorAll('.nav-item.has-sub'));
+  const closeNavItems = (except) => {
+    navItems.forEach((item) => {
+      if (item === except) return;
+      item.classList.remove('open');
+      const t = item.querySelector('.nav-sub-toggle');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  };
+  navItems.forEach((item) => {
+    const toggle = item.querySelector('.nav-sub-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const open = item.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) closeNavItems(item);
+    });
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.nav-item.has-sub')) closeNavItems(null);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const openItem = navItems.find((item) => item.classList.contains('open') || item.matches(':hover, :focus-within'));
+    closeNavItems(null);
+    if (openItem) {
+      openItem.classList.add('nav-suppress');
+      const t = openItem.querySelector('.nav-sub-toggle');
+      if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); }
+    }
+  });
+  navItems.forEach((item) => {
+    ['pointerenter', 'focusin'].forEach((evt) => item.addEventListener(evt, (e) => {
+      // Re-arm hover/focus opening once the visitor moves in again (but not for the
+      // focus that Escape itself returns to the chevron).
+      if (evt === 'focusin' && e.target.classList.contains('nav-sub-toggle')) return;
+      item.classList.remove('nav-suppress');
+    }));
+    const toggle = item.querySelector('.nav-sub-toggle');
+    if (toggle) toggle.addEventListener('click', () => item.classList.remove('nav-suppress'));
+  });
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
