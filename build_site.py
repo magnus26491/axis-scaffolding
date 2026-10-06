@@ -5431,7 +5431,7 @@ def generate_pages() -> None:
     <img src="/images/ashley-founder.jpg" alt="Ashley, founder of Axis Scaffolding Ltd" width="560" height="560" loading="lazy" decoding="async" class="rounded-image">
   </div>
   <div>
-    <h2>A Founder-Led, Local Team</h2>
+    <h2>Founder Ashley and team</h2>
     <p>Axis Scaffolding Ltd is a founder-led scaffolding company based in Rayleigh, Essex, registered in England and Wales under Company Number 15050136. Customers who've worked with us know the team by name — as one recent review put it, &ldquo;Ashley and his team were professional throughout: on time, polite and great value for our project.&rdquo;</p>
     <p>We're a CISRS-qualified team with over a decade of scaffolding experience across residential and commercial work in South Essex — full insurance and CISRS qualifications available to check on request.</p>
     <p>We support residential, domestic and commercial projects with safe scaffold design, reliable communication and punctual site delivery throughout Essex.</p>
