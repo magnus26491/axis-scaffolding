@@ -103,7 +103,7 @@ SERVICES = [
     {
         "slug": "residential-scaffolding",
         "name": "Residential & Domestic Scaffolding",
-        "title": "Residential & Domestic Scaffolding Essex | Axis Scaffolding Ltd",
+        "title": "Residential & Domestic Scaffolding Essex | Axis Scaffolding",
         "desc": "Residential and domestic scaffolding in Essex: extensions, re-roofs, repairs, painting and chimney work. CISRS-qualified, Rayleigh-based. Free quotes — 01702 820468.",
         "summary": "Safe, tidy scaffold for homes across South Essex, from extensions and full re-roofs to short-term access for repairs, painting and chimney work.",
         "who_for": "Homeowners needing scaffold for extensions, roof replacements, repairs, painting, chimney work, rendering and other exterior works.",
