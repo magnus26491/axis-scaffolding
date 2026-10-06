@@ -230,8 +230,8 @@ textarea:focus-visible {
 }
 .nav-group-toggle svg { display:none; }
 .nav-sub-group + .nav-sub-group { border-left:1px solid var(--border-strong); padding-left:1.5rem; }
-@media (min-width:769px) and (max-width:1419px) {
-  .nav-sub-services { width:560px; grid-template-columns:repeat(2,1fr); }
+@media (min-width:769px) and (max-width:1139px) {
+  .nav-sub-services { width:max-content; max-width:calc(100vw - 2rem); grid-template-columns:repeat(2,auto); }
   .nav-sub-group:nth-child(3) { border-left:0; padding-left:0; }
   .nav-sub-group:nth-child(n+3) { border-top:1px solid var(--border-strong); padding-top:1rem; margin-top:0.4rem; }
 }
@@ -243,6 +243,10 @@ textarea:focus-visible {
 .nav-sub-areas .nav-sub-foot { display:block; }
 .nav-sub-foot a:not(.cta-pill) { font-weight:700 !important; color:#fff !important; }
 @media (min-width:769px) {
+  /* The wide Services panel centres on the header, not on its own link, so it
+     can never run off the right-hand edge of the screen. */
+  .nav-item[data-nav="services"] { position:static; }
+  .nav-sub-services { top:72px; left:0; right:0; margin-inline:auto; }
   .nav-item:hover > .nav-sub, .nav-item:focus-within > .nav-sub, .nav-item.open > .nav-sub {
     opacity:1; visibility:visible; transform:translateY(0);
   }  /* Escape closes a panel even while focus is still inside it. */
