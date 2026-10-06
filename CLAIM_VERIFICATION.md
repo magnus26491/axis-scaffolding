@@ -187,3 +187,9 @@ backing it.
 ### Optional
 - A named surname or short bio line for Ashley, if the business wants to expand the About page beyond what the existing testimonial and photo establish (explicitly not done in this PR — flagged only).
 - Customer/project counts, if the business tracks them and wants to use them as a trust signal (not currently used anywhere, and not invented here).
+
+
+## Update 2026-10-06 — owner confirmation
+
+- **Public liability insurance: £10 million** — confirmed by the owner. The "£5m" wording on `areas/london` and the four `/lp/*` pages was changed to £10m. This also matches the £10m public liability that Essex Highways requires of scaffold licence applicants.
+- **Residential price ranges** (Essex and London) were reset to averages of published local figures; Essex and London are now independent. Commercial work carries no price ranges.

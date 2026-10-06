@@ -58,7 +58,7 @@ FAQS = [
     (
         "cost",
         "How much does scaffolding cost in Essex?",
-        "Residential scaffolding in Essex typically costs £350–£600 for a chimney scaffold, £400–£900 for a single-elevation scaffold and £800–£1,800 for a full roof scaffold on a standard semi-detached or detached house. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
+        "Residential scaffolding in Essex typically costs £400–£900 for a chimney scaffold, £650–£1,300 for a single-elevation scaffold and £1,350–£2,600 for a full roof scaffold on a standard semi-detached or detached house. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
     ),
     (
         "speed",
@@ -4403,7 +4403,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             "Highway licence application support where a pavement licence is required",
             "Scaffold designed to minimise impact on your property and neighbours",
         ],
-        "pricing": "Scaffold for homes in Essex typically costs <strong>£350–£600</strong> for a chimney scaffold, <strong>£400–£900</strong> for a single elevation, <strong>£500–£1,200</strong> for a side or rear extension scaffold and <strong>£800–£1,800</strong> for a full roof scaffold on a standard semi-detached or detached house. Pricing depends on height, footprint, number of elevations, access, duration and whether a highway licence is needed.",
+        "pricing": "Scaffold for homes in Essex typically costs <strong>£400–£900</strong> for a chimney scaffold, <strong>£650–£1,300</strong> for a single elevation, <strong>£650–£1,300</strong> for a side or rear extension scaffold and <strong>£1,350–£2,600</strong> for a full roof scaffold on a standard semi-detached or detached house. Pricing depends on height, footprint, number of elevations, access, duration and whether a highway licence is needed.",
         "process_steps": [
             ("Tell us about your project", "Call 01702 820468 or complete the quote form with your address, the work being done and your required dates."),
             ("We assess and quote", "We evaluate access, scaffold type, height and any licence requirements. You receive a clear, itemised quote — usually same day."),
@@ -4412,7 +4412,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Dismantling and clear-up", "Once works are complete, we return promptly to dismantle and remove all scaffold materials."),
         ],
         "faqs": [
-            ("How much does residential scaffolding cost in Essex?", "For most homes in South Essex, expect £400–£900 for a single-elevation scaffold, £350–£600 for a chimney scaffold and £800–£1,800 for a full roof scaffold on a standard semi-detached or detached house. We provide itemised, no-obligation quotes."),
+            ("How much does residential scaffolding cost in Essex?", "For most homes in South Essex, expect £650–£1,300 for a single-elevation scaffold, £400–£900 for a chimney scaffold and £1,350–£2,600 for a full roof scaffold on a standard semi-detached or detached house. We provide itemised, no-obligation quotes."),
             ("Do you notify neighbours before erecting scaffold?", "We recommend homeowners notify immediate neighbours before erection, particularly where scaffold is close to boundaries. We work tidily and efficiently to minimise any inconvenience."),
             ("Do I need a licence for scaffolding on my driveway?", "A licence is only required if scaffold overhangs or occupies a public highway (road or pavement). Scaffold within your private property boundary does not require a licence. We advise on this when we quote."),
             ("How long does it take to erect residential scaffolding?", "Most standard residential scaffolds are erected in half a day to a full day depending on size. We aim to fit your builder or roofer's schedule."),
@@ -4459,7 +4459,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             "Safety checks throughout the hire period",
             "Dismantling and site clearance on completion",
         ],
-        "pricing": "Roof scaffolding in Essex typically costs <strong>£400–£900</strong> for a single-elevation access scaffold, <strong>£800–£1,800</strong> for a full-perimeter scaffold on a standard semi-detached or detached house, and <strong>£350–£600</strong> for a chimney scaffold. Hipped roofs, tall properties and difficult access cost more, and a highway licence, where needed, is additional.",
+        "pricing": "Roof scaffolding in Essex typically costs <strong>£650–£1,300</strong> for a single-elevation access scaffold, <strong>£1,350–£2,600</strong> for a full-perimeter scaffold on a standard semi-detached or detached house, and <strong>£400–£900</strong> for a chimney scaffold. Hipped roofs, tall properties and difficult access cost more, and a highway licence, where needed, is additional.",
         "process_steps": [
             ("Tell us about the roof job", "Call us or complete the quote form with your address, roof type and the work being carried out. A site visit may be required for complex roofs."),
             ("Quotation", "We confirm the scaffold design, height, number of elevations and any special requirements. You receive a clear, itemised quote."),
@@ -4611,7 +4611,7 @@ SERVICE_DETAIL: dict[str, dict] = {
     "roof-replacement-scaffolding": {
         "h1": "Roof Replacement Scaffolding in Essex",
         "who_for_detail": "Homeowners and roofers re-roofing houses, bungalows and flats across South Essex — full re-roofs, partial re-roofs and re-roofs with new fascias, soffits and guttering.",
-        "at_a_glance": [("Typical re-roof on site", "2–5 working days"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£800–£1,800")],
+        "at_a_glance": [("Typical re-roof on site", "2–5 working days"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£1,350–£2,600")],
         "whats_included": [
             "Full-perimeter or single-elevation scaffold, designed around your roof",
             "Edge protection at the eaves, with boarded platforms, guardrails and toe boards",
@@ -4627,7 +4627,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Checked while it is up", "A scaffold should be inspected before first use and at least every 7 days after that, and again after bad weather or alteration. We hand over an inspection certificate on every job."),
         ],
         "timeline": "A typical domestic re-roof takes two to five working days on site once the scaffold is up, so the scaffold is normally in place for two to four weeks to allow for weather and snagging. If the roofers overrun, call us early and we will agree how to extend the hire.",
-        "pricing": "A full-perimeter scaffold for a re-roof on a standard semi-detached or detached house in Essex typically costs <strong>£800–£1,800</strong>. If only one slope or elevation needs access, a single-elevation scaffold is typically <strong>£400–£900</strong>. A highway licence, where needed, is an additional cost. Every job is quoted individually after we have assessed it.",
+        "pricing": "A full-perimeter scaffold for a re-roof on a standard semi-detached or detached house in Essex typically costs <strong>£1,350–£2,600</strong>. If only one slope or elevation needs access, a single-elevation scaffold is typically <strong>£650–£1,300</strong>. A highway licence, where needed, is an additional cost. Every job is quoted individually after we have assessed it.",
         "photo_slugs": ["project-7", "project-1"],
         "faqs": [
             ("How long does scaffolding stay up for a roof replacement?", "Typically two to four weeks for a standard domestic re-roof: about a day to erect, two to five working days of roofing, and a margin for weather and snagging. Tell us your roofer's dates and we will plan the hire around them."),
@@ -4640,7 +4640,7 @@ SERVICE_DETAIL: dict[str, dict] = {
     "solar-panel-scaffolding": {
         "h1": "Solar Panel Scaffolding in Essex",
         "who_for_detail": "Homeowners and solar installers across South Essex who need safe, compliant roof-edge access for installing, inspecting or repairing solar panels.",
-        "at_a_glance": [("Typical panel install", "1–3 days on site"), ("Scaffold usually up for", "Days, not weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£400–£900")],
+        "at_a_glance": [("Typical panel install", "1–3 days on site"), ("Scaffold usually up for", "Days, not weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£650–£1,300")],
         "whats_included": [
             "Scaffold to eaves height on the elevation(s) the panels are going on",
             "Boarded working platform with guardrails and toe boards",
@@ -4656,7 +4656,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Inspected before use", "A scaffold should be inspected before first use and at least every 7 days after that. We hand over an inspection certificate on every job."),
         ],
         "timeline": "Most home solar installations take one to three days on site. The scaffold normally goes up shortly before the install date and comes down once the installer has finished roof work, so it is usually in place for days rather than weeks. Give us the install date and we will work back from it.",
-        "pricing": "Solar panels on a pitched roof normally need a single-elevation scaffold, which in Essex typically costs <strong>£400–£900</strong> depending on height and access. If panels are going on more than one elevation, the price rises with the extra scaffold. A highway licence, where needed, is an additional cost, and we confirm everything in your quote.",
+        "pricing": "Solar panels on a pitched roof normally need a single-elevation scaffold, which in Essex typically costs <strong>£650–£1,300</strong> depending on height and access. If panels are going on more than one elevation, the price rises with the extra scaffold. A highway licence, where needed, is an additional cost, and we confirm everything in your quote.",
         "photo_slugs": ["project-20"],
         "faqs": [
             ("Do I need scaffolding to install solar panels?", "On a pitched roof, almost always. HSE guidance is that sloping roofs need scaffold edge protection, and a solar install takes far longer than the minutes for which ladders are acceptable."),
@@ -4669,7 +4669,7 @@ SERVICE_DETAIL: dict[str, dict] = {
     "chimney-scaffolding": {
         "h1": "Chimney Scaffolding in Essex",
         "who_for_detail": "Homeowners, roofers and builders needing safe access to a chimney stack for repointing, flaunching, lead flashing, rebuilds or removal.",
-        "at_a_glance": [("Typical repointing job", "1–3 days"), ("Scaffold usually up for", "1–2 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£350–£600")],
+        "at_a_glance": [("Typical repointing job", "1–3 days"), ("Scaffold usually up for", "1–2 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£400–£900")],
         "whats_included": [
             "A boarded platform and guardrails around the stack, so the work can be done two-handed",
             "Scaffold to roof level on the elevation the stack sits on",
@@ -4685,10 +4685,10 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Taller stacks need more planning", "Height and awkward roof pitches can change the scaffold needed. We assess this before quoting so the price reflects the real job."),
         ],
         "timeline": "Chimney repointing typically takes one to three days once the scaffold is up; rebuilds and removals can take longer, up to a week or two including materials. The scaffold is normally up for one to two weeks.",
-        "pricing": "A chimney scaffold in Essex typically costs <strong>£350–£600</strong> for a single-stack access platform, usually on a one to two week hire. Taller stacks and difficult access cost more, and a highway licence, where needed, is additional. We confirm the price when we assess the job.",
+        "pricing": "A chimney scaffold in Essex typically costs <strong>£400–£900</strong> for a single-stack access platform, usually on a one to two week hire. Taller stacks and difficult access cost more, and a highway licence, where needed, is additional. We confirm the price when we assess the job.",
         "photo_slugs": ["project-5", "project-14"],
         "faqs": [
-            ("How much does chimney scaffolding cost in Essex?", "Typically £350–£600 for a single-stack access platform on a one to two week hire. Height, access and any licence can change that, so we quote each job after assessing it."),
+            ("How much does chimney scaffolding cost in Essex?", "Typically £400–£900 for a single-stack access platform on a one to two week hire. Height, access and any licence can change that, so we quote each job after assessing it."),
             ("Can a roofer repoint a chimney from a ladder?", "For anything more than a few minutes' work, no. HSE only accepts ladders for tasks lasting minutes; repointing and rebuilds need a stable working platform."),
             ("How long will the scaffold need to stay up?", "Normally one to two weeks. Repointing often takes one to three days once access is in place; a rebuild takes longer. Tell us the scope and we will plan the hire."),
             ("Is a chimney scaffold a different thing from a roof scaffold?", "It is smaller. A chimney scaffold gives access to the stack itself, while a full roof scaffold goes around the perimeter for re-roofing. We will advise which your job needs."),
@@ -4698,7 +4698,7 @@ SERVICE_DETAIL: dict[str, dict] = {
     "render-scaffolding": {
         "h1": "Render and Painting Scaffolding in Essex",
         "who_for_detail": "Homeowners, renderers and decorators working on external walls — new render, render repairs, pebbledash removal, masonry paint and exterior decoration.",
-        "at_a_glance": [("Typical render job", "4 days to 3 weeks"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£400–£1,800")],
+        "at_a_glance": [("Typical render job", "4 days to 3 weeks"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£650–£2,600")],
         "whats_included": [
             "Full-width boarded platforms across the elevation, so the finish can be worked continuously",
             "Guardrails and toe boards at every working lift",
@@ -4714,12 +4714,12 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Inspected before use", "A scaffold should be inspected before first use and at least every 7 days after that. We hand over an inspection certificate on every job."),
         ],
         "timeline": "Rendering a house typically takes anywhere from four days for a small elevation to two to three weeks for a large detached house, and cement-based render usually needs 7–14 days to dry before painting. Scaffold is normally in place for two to four weeks; if the job needs to stay up longer for drying, tell us and we will agree it.",
-        "pricing": "A single-elevation scaffold for render or painting in Essex typically costs <strong>£400–£900</strong>. Wrapping the whole house is typically <strong>£800–£1,800</strong>. A highway licence, where needed, is additional, and a longer hire for drying time adds to the cost. We quote each job after assessing it.",
+        "pricing": "A single-elevation scaffold for render or painting in Essex typically costs <strong>£650–£1,300</strong>. Wrapping the whole house is typically <strong>£1,350–£2,600</strong>. A highway licence, where needed, is additional, and a longer hire for drying time adds to the cost. We quote each job after assessing it.",
         "photo_slugs": ["project-12", "project-10"],
         "faqs": [
             ("How long does scaffolding need to stay up for rendering?", "Typically two to four weeks. A house render usually takes anything from four days to three weeks, and cement-based render typically needs 7–14 days to dry before painting. Tell us the plan and we will agree the hire."),
             ("Do I need scaffolding for exterior painting?", "For anything above a ladder's reach and more than a small patch, yes. Painting a full elevation needs a stable platform with both hands free."),
-            ("How much does render scaffolding cost?", "Typically £400–£900 for a single elevation and £800–£1,800 for a whole house in Essex, plus any licence cost. Longer hires cost more."),
+            ("How much does render scaffolding cost?", "Typically £650–£1,300 for a single elevation and £1,350–£2,600 for a whole house in Essex, plus any licence cost. Longer hires cost more."),
             ("Will the scaffold ties mark my walls?", "Ties fix to the building, so tell us what finish is going on. We will plan the positions with your renderer or decorator."),
         ],
         "cta_label": "Rendering or painting your home?",
@@ -4727,7 +4727,7 @@ SERVICE_DETAIL: dict[str, dict] = {
     "extension-loft-scaffolding": {
         "h1": "Extension and Loft Conversion Scaffolding in Essex",
         "who_for_detail": "Homeowners and builders running house extensions, loft conversions and dormer builds who need scaffold for the full build, from walls to roof.",
-        "at_a_glance": [("Typical build", "6–12+ weeks"), ("Scaffold usually up for", "4–8 weeks"), ("Erection", "Half a day to a day, longer for large runs"), ("Typical price", "£500–£1,200")],
+        "at_a_glance": [("Typical build", "6–12+ weeks"), ("Scaffold usually up for", "4–8 weeks"), ("Erection", "Half a day to a day, longer for large runs"), ("Typical price", "£650–£1,300")],
         "whats_included": [
             "Side, rear or full scaffold designed around the extension or dormer",
             "Edge protection and boarded lifts up to eaves height and above",
@@ -4743,13 +4743,13 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Tell us the build stages", "Scaffold often needs altering as walls rise or a dormer goes in. Tell us the programme so we can plan the alterations."),
         ],
         "timeline": "Scaffold for an extension is typically up for four to eight weeks, and a whole loft conversion typically takes six to twelve weeks or more depending on type. Tell us your builder's programme and we will plan the erection, any alterations and the strike around it.",
-        "pricing": "Scaffold for a house extension in Essex typically costs <strong>£500–£1,200</strong> for a side or rear scaffold on a four to eight week hire. Loft conversions that need a full wrap, or builds that run longer, cost more. A highway licence, where needed, is additional. We quote each job after assessing it.",
+        "pricing": "Scaffold for a house extension in Essex typically costs <strong>£650–£1,300</strong> for a side or rear scaffold for the first hire period, with extra weeks typically adding £50–£150 each. Loft conversions that need a full wrap, or builds that run longer, cost more. A highway licence, where needed, is additional. We quote each job after assessing it.",
         "photo_slugs": ["project-13", "project-6"],
         "faqs": [
             ("How long does scaffolding stay up for an extension?", "Typically four to eight weeks, depending on how quickly the build progresses. Tell us your builder's programme and we will plan the hire."),
             ("Do I need scaffolding for a loft conversion?", "Yes. Loft conversions involve roof-level work, so edge protection and a safe platform are needed, plus somewhere to land materials. We will tell you what your build needs."),
             ("Can the scaffold be altered during the build?", "Yes. Walls rise and dormers go in, so alterations are normal. Tell us early when your builder needs a change."),
-            ("How much does extension scaffolding cost?", "Typically £500–£1,200 for a side or rear scaffold on a four to eight week hire, plus any licence cost. Longer hires and full wraps cost more."),
+            ("How much does extension scaffolding cost?", "Typically £650–£1,300 for a side or rear scaffold for the first hire period, with extra weeks typically £50–£150 each, plus any licence cost. Longer hires and full wraps cost more."),
         ],
         "cta_label": "Planning an extension or loft conversion?",
     },
@@ -5076,7 +5076,7 @@ AREA_DATA: dict[str, dict] = {
 # copy these pages already carried as hand-authored files — restructured
 # onto the current V2 template, not rewritten or expanded. See
 # CLAIM_VERIFICATION.md for the claims embedded in this content (TG20:21,
-# CDM, Section 169, £5m insurance on London) that are left unchanged here,
+# CDM, Section 169, £10m insurance on London) that are left unchanged here,
 # per instruction not to delete or propagate them.
 EXPANSION_AREA_DATA: dict[str, dict] = {
     "London": {
@@ -5101,8 +5101,8 @@ EXPANSION_AREA_DATA: dict[str, dict] = {
         ],
         "faqs": [
             ("Do you provide scaffolding in East London?", "Yes. We regularly provide scaffolding across East and NE London including Barking, Dagenham, Havering (Romford, Hornchurch, Upminster), Redbridge, Waltham Forest and Newham. Call 01702 820468 to confirm coverage for your postcode."),
-            ("How much does scaffolding cost in London?", "Scaffolding costs in London depend on property size, access, hire duration and the type of work being carried out. Residential scaffolds start from around £500–£800 for smaller properties. Standard 2–3 bed houses typically cost £800–£1,400 depending on complexity. Commercial projects are priced individually. Call 01702 820468 for a free quote after a site visit."),
-            ("Are you CISRS certified for London scaffolding work?", "Yes. Every scaffolder on London jobs holds a current CISRS card, confirming competence to TG20:21 standards. We are fully insured with £5 million public liability cover and can provide method statements and risk assessments for all London commercial projects."),
+            ("How much does scaffolding cost in London?", "Scaffolding costs in London depend on property size, access, hire duration, borough and the type of work. For homes, a chimney scaffold typically costs £450–£1,000, a single-elevation scaffold on a two-storey house £750–£1,400 and a full house scaffold £1,200–£2,400, before any borough licence fee. Commercial projects are priced individually. Call 01702 820468 for a free quote after a site visit."),
+            ("Are you CISRS certified for London scaffolding work?", "Yes. Every scaffolder on London jobs holds a current CISRS card, confirming competence to TG20:21 standards. We are fully insured with £10 million public liability cover and can provide method statements and risk assessments for all London commercial projects."),
             ("Do you need a licence to erect scaffolding on London streets?", "Yes. Scaffolding that overhangs or sits on a public highway in London requires a Section 169 Highways Act licence from the relevant London borough council. Processing times vary by borough (typically 5–15 working days). We advise clients on the application process as part of our service."),
         ],
         "nearby": ["Brentwood", "Loughton", "Rayleigh", "Basildon"],
@@ -5552,7 +5552,7 @@ def generate_pages() -> None:
 <section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>The Short Answer</h2>
-    <p>Residential scaffolding in Essex typically costs <strong>£350–£600</strong> for smaller single-elevation domestic jobs and <strong>£800–£1,800</strong> for full roof scaffolding on a standard semi-detached or detached house. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
+    <p>Residential scaffolding in Essex typically costs <strong>£400–£900</strong> for a chimney scaffold, <strong>£650–£1,300</strong> for a single elevation and <strong>£1,350–£2,600</strong> for full roof scaffolding on a standard semi-detached or detached house. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
     <div class="hero-cta-row" style="margin-top:1.5rem;">
       <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
@@ -5597,10 +5597,10 @@ def generate_pages() -> None:
     <h2>Typical Scaffolding Prices — Essex Guide</h2>
     <p style="color:var(--text-muted); margin-bottom:1.5rem;">These are indicative ranges only. Your quote may differ depending on the factors above.</p>
     <div class="decision-grid">
-      <div class="decision-card"><h3>Chimney Scaffold</h3><p><strong>£350–£600</strong><br>Single-stack access platform, typically 1–2 week hire.</p></div>
-      <div class="decision-card"><h3>Single Elevation Scaffold</h3><p><strong>£400–£900</strong><br>One face of a house for rendering, fascias or guttering.</p></div>
-      <div class="decision-card"><h3>Full Roof Scaffold</h3><p><strong>£800–£1,800</strong><br>Full perimeter scaffold for roof replacement on a standard semi or detached.</p></div>
-      <div class="decision-card"><h3>Extension Scaffold</h3><p><strong>£500–£1,200</strong><br>Side or rear scaffold for extension builds, typically 4–8 weeks hire.</p></div>
+      <div class="decision-card"><h3>Chimney Scaffold</h3><p><strong>£400–£900</strong><br>Single-stack access platform, typically 1–2 week hire.</p></div>
+      <div class="decision-card"><h3>Single Elevation Scaffold</h3><p><strong>£650–£1,300</strong><br>One face of a house for rendering, fascias or guttering.</p></div>
+      <div class="decision-card"><h3>Full Roof Scaffold</h3><p><strong>£1,350–£2,600</strong><br>Full perimeter scaffold for roof replacement on a standard semi or detached.</p></div>
+      <div class="decision-card"><h3>Extension Scaffold</h3><p><strong>£650–£1,300</strong><br>Side or rear scaffold for extension builds; extra weeks typically £50–£150 each.</p></div>
       <div class="decision-card"><h3>Commercial Scaffold</h3><p><strong>Individually quoted</strong><br>Multi-storey, loading bays, complex access and commercial refurbishments.</p></div>
       <div class="decision-card"><h3>Temporary Roofing</h3><p><strong>Additional cost</strong><br>Added to a scaffold package — price depends on span and duration.</p></div>
     </div>
