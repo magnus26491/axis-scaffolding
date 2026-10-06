@@ -310,6 +310,16 @@ GUIDES = [
         "title": "Does Scaffolding on a Pavement Need a Licence?",
         "summary": "A plain-English guide to Section 169 highway licences — when required, how to apply, typical costs.",
     },
+    {
+        "slug": "scaffold-inspection-requirements",
+        "title": "Scaffold Inspections: What the Law Requires",
+        "summary": "When a scaffold must be inspected, who does it, what the report is for, and what to ask your scaffolder for.",
+    },
+    {
+        "slug": "scaffolding-for-roof-and-solar-work",
+        "title": "Scaffolding for Roof and Solar Panel Work",
+        "summary": "What HSE guidance says about edge protection, fragile roofs and ladders, and what that means for a re-roof or solar install.",
+    },
 ]
 
 # Curated, per-service selection from the general FAQs (see FAQS below)
@@ -352,6 +362,8 @@ def _build_service_guide_map() -> dict[str, str]:
     for slug, faq_slugs in SERVICE_GENERAL_FAQ_SLUGS.items():
         if "licence" in faq_slugs:
             mapping[slug] = "highway-licence-scaffolding"
+    for slug in ("roof-replacement-scaffolding", "solar-panel-scaffolding", "chimney-scaffolding"):
+        mapping[slug] = "scaffolding-for-roof-and-solar-work"
     return mapping
 
 
@@ -3803,6 +3815,18 @@ GUIDE_FAQS: dict[str, list[tuple[str, str]]] = {
         ("Do you quote for free?", "Yes. Axis Scaffolding gives free, no-obligation quotes. Call " + NAP["phone"] + " or use the online quote form."),
         ("Why can't you give an exact price without seeing the job?", "Every property is different. The only reliable figure is a quote from a scaffolder who has assessed your specific project."),
     ],
+    "scaffold-inspection-requirements": [
+        ("How often does a scaffold have to be inspected?", "HSE says the law requires inspection of scaffolding from which a person might fall 2 metres or more, with a report by a competent person on completion and at least weekly after that. It may also need inspecting after bad weather, and always after any modification."),
+        ("Does a scaffold have to have a tag on it?", "No. HSE says tag systems are not a legal requirement; the legal duty is the inspection and the report. A visible tag is a useful way to show people it has been inspected."),
+        ("Who is allowed to inspect a scaffold?", "A competent person: someone with the knowledge, training and experience appropriate to the type and complexity of the scaffold. HSE also says scaffolds should only be designed, erected, altered and dismantled by competent people under a competent supervisor."),
+        ("What should I ask my scaffolder for?", "Ask for the inspection record when the scaffold is handed over, and ask when the next inspection is due. Axis Scaffolding hands over a scaffold inspection certificate on every job."),
+    ],
+    "scaffolding-for-roof-and-solar-work": [
+        ("Can solar panels be installed from a ladder?", "Not for the install itself. HSE says secured ladders and roof ladders can be used for roof tasks lasting only minutes, and that sloping roofs require scaffolding to prevent people or materials falling from the edge. Fitting panels takes far longer than minutes."),
+        ("Is every roof treated as fragile?", "Yes. HSE says all roofs should be treated as fragile until a competent person has confirmed they are not, so nobody should assume a roof will take their weight."),
+        ("Who is responsible for work at height safety on my roof job?", "HSE says employers and those in control of work at height must make sure it is properly planned, supervised and carried out by competent people. Your roofer or installer plans the roof work; Axis Scaffolding provides and inspects the access scaffold."),
+        ("How long does the scaffold stay up for a re-roof or solar install?", "Typically two to four weeks for a standard domestic re-roof and days rather than weeks for a solar install, depending on the job. Tell us your contractor's dates and we will plan around them."),
+    ],
     "highway-licence-scaffolding": [
         ("Do I need a licence for scaffolding on the pavement?", "Yes. If any part of a scaffold is on, or projects over, a public footway or road, the highway authority's licence is required before it goes up. Scaffold entirely within your own boundary does not need one."),
         ("Who applies for the scaffold licence?", "The scaffolding contractor applies, not the homeowner. Essex Highways requires the contractor to apply, and Southend-on-Sea City Council asks for at least 28 days' notice."),
@@ -5748,6 +5772,130 @@ def generate_pages() -> None:
         ),
     )
 
+    SRC_NOTE = '<p class="source-note">Sources checked October 2026: {links}</p>'
+    inspection_guide_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides"), ("Scaffold Inspections", "/guides/scaffold-inspection-requirements")],
+            "Scaffold Inspections: What the Law Requires",
+            "When a scaffold must be inspected, who is allowed to do it and what to ask your scaffolder for.",
+        )
+        + f"""
+<section class="section section-light hex-texture">
+  <div class="container direct-answer">
+    <h2>The Short Answer</h2>
+    <p>Yes. HSE says the law requires inspection of scaffolding from which a person might fall <strong>2 metres or more</strong>, with a report issued by a competent person <strong>on completion and at least weekly after that</strong>. It may also need inspecting after bad weather, and always after any modification. Scaffold tags are not a legal requirement, but they are a useful visible sign that an inspection has happened.</p>
+  </div>
+</section>
+
+<section class="section section-dark hex-texture">
+  <div class="container">
+    <h2>When Is a Scaffold Inspected?</h2>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>Before First Use</h3><p>A scaffold should be inspected in position after it is built, and before anyone uses it. This is the handover inspection.</p></div>
+      <div class="decision-card"><h3>At Least Weekly</h3><p>Where a person might fall 2 metres or more, the scaffold needs a further inspection and report at least weekly while it is up. The regulations say the platform must have been inspected within the previous 7 days.</p></div>
+      <div class="decision-card"><h3>After Bad Weather</h3><p>High winds, heavy rain or an impact can affect a scaffold. HSE says inspection may also be required after bad weather.</p></div>
+      <div class="decision-card"><h3>After Any Alteration</h3><p>If a scaffold is modified, for example when a lift is added or a board is moved, it must be inspected again before use.</p></div>
+    </div>
+    <h2>Who Can Inspect a Scaffold?</h2>
+    <p>The inspection must be done by a <strong>competent person</strong>: someone whose knowledge, training and experience suit the type and complexity of the scaffold. HSE also says scaffolds should only be designed, erected, altered and dismantled by competent people, under the direction of a competent supervisor. Scaffolders hold a CISRS card as evidence of their training; you can check a card on the <a href="https://cardchecker.nocn.org/" target="_blank" rel="noopener">NOCN card checker</a>.</p>
+    <h2>What Is the Inspection Report?</h2>
+    <p>The inspection is recorded in a written report, which notes any defect that could create a risk and any action taken. Under the Work at Height Regulations 2005 the report must be provided within 24 hours of completing the inspection. Tags and certificates supplement the report; they do not replace it.</p>
+  </div>
+</section>
+
+<section class="section section-light hex-texture">
+  <div class="container">
+    <h2>What to Ask Your Scaffolder For</h2>
+    <ul class="usp-list">
+      <li>The inspection record or certificate when the scaffold is handed over</li>
+      <li>When the next inspection is due</li>
+      <li>Evidence that the people building it are CISRS-qualified</li>
+      <li>Who to call if the scaffold is damaged or looks wrong. Do not use a scaffold you think is unsafe</li>
+    </ul>
+    <h2>What You Get From Axis Scaffolding</h2>
+    <p>Axis Scaffolding hands over a scaffold inspection certificate on every job, and our CISRS-qualified team checks the scaffold routinely through the hire period. Tell us who needs access (roofer, solar installer, builder) and we will tell you what the scaffold needs.</p>
+    <div class="hero-cta-row" style="margin-top:1.5rem;">
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>
+    {SRC_NOTE.format(links='<a href="https://www.hse.gov.uk/construction/faq-scaffold.htm" target="_blank" rel="noopener">HSE &mdash; scaffolding</a> &middot; <a href="https://www.legislation.gov.uk/uksi/2005/735/regulation/12" target="_blank" rel="noopener">Work at Height Regulations 2005, reg. 12</a> &middot; <a href="https://www.hse.gov.uk/work-at-height/the-law.htm" target="_blank" rel="noopener">HSE &mdash; the law</a>')}
+  </div>
+</section>
+"""
+        + guide_closing("scaffold-inspection-requirements")
+        + related_guides_section("scaffold-inspection-requirements")
+    )
+    write(
+        "guides/scaffold-inspection-requirements/index.html",
+        render_page(
+            title="Scaffold Inspections: What the Law Requires | Axis",
+            desc="How often must a scaffold be inspected? What HSE and the Work at Height Regulations 2005 require, who can inspect, and what to ask your scaffolder.",
+            path="/guides/scaffold-inspection-requirements",
+            body=inspection_guide_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffold Inspections", "/guides/scaffold-inspection-requirements")],
+        ),
+    )
+
+    roof_solar_guide_body = (
+        inner_hero(
+            [("Home", "/"), ("Guides", "/guides"), ("Roof and Solar Scaffolding", "/guides/scaffolding-for-roof-and-solar-work")],
+            "Scaffolding for Roof and Solar Panel Work",
+            "What HSE guidance says about edge protection, fragile roofs and ladders, and what it means when you are having a roof replaced or solar panels installed.",
+        )
+        + f"""
+<section class="section section-light hex-texture">
+  <div class="container direct-answer">
+    <h2>The Short Answer</h2>
+    <p>For a re-roof or a solar install on a pitched roof, yes, you should expect scaffolding. HSE guidance is that <strong>sloping roofs require scaffolding</strong> to prevent people or materials falling from the edge, with edge protection at the eaves. Secured ladders and roof ladders are only for tasks that last minutes, and a roof replacement or solar install takes days.</p>
+  </div>
+</section>
+
+<section class="section section-dark hex-texture">
+  <div class="container">
+    <h2>What HSE Guidance Says</h2>
+    <div class="decision-grid">
+      <div class="decision-card"><h3>Edge Protection</h3><p>Sloping roofs require scaffolding to prevent falls from the edge. Edge protection is needed at the eaves, and on terraced properties at both the front and the rear.</p></div>
+      <div class="decision-card"><h3>Ladders Are for Minutes</h3><p>For brief tasks lasting only minutes, properly secured ladders and roof ladders may be used. Anything longer needs a proper platform.</p></div>
+      <div class="decision-card"><h3>Treat Every Roof as Fragile</h3><p>HSE says all roofs should be treated as fragile until a competent person has confirmed they are not. Nobody should assume a sheeted roof, ridge or purlin will take their weight.</p></div>
+      <div class="decision-card"><h3>Plan the Work</h3><p>Under the Work at Height Regulations 2005, employers and those in control must make sure work at height is properly planned, supervised and carried out by competent people, after assessing the risks.</p></div>
+    </div>
+    <h2>What This Means for You</h2>
+    <p>Your roofer or solar installer plans and carries out the roof work; the scaffold is the access they work from. Ask your contractor how they are meeting these requirements, who is arranging the scaffold, and what dates they need it for. Axis Scaffolding works with homeowners and contractors, and will tell you what the job needs when we assess it.</p>
+  </div>
+</section>
+
+<section class="section section-light hex-texture">
+  <div class="container">
+    <h2>Timelines to Plan Around</h2>
+    <p>Typical figures, not guarantees: a standard domestic re-roof takes two to five working days on site with the scaffold up for two to four weeks, and a home solar install typically takes one to three days with the scaffold up for days rather than weeks. If the scaffold goes over a pavement, allow for the licence timescale: Essex Highways states 15 working days and Southend-on-Sea City Council asks for at least 28 days' notice. See our <a href="/guides/highway-licence-scaffolding">licence guide</a>.</p>
+    <h2>Find Your Job</h2>
+    <ul class="area-pills">
+      <li><a class="area-pill-link" href="/services/roof-replacement-scaffolding">Roof Replacement Scaffolding</a></li>
+      <li><a class="area-pill-link" href="/services/solar-panel-scaffolding">Solar Panel Scaffolding</a></li>
+      <li><a class="area-pill-link" href="/services/chimney-scaffolding">Chimney Scaffolding</a></li>
+    </ul>
+    <div class="hero-cta-row" style="margin-top:1.5rem;">
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>
+    {SRC_NOTE.format(links='<a href="https://www.hse.gov.uk/construction/safetytopics/roofwork.htm" target="_blank" rel="noopener">HSE &mdash; roof work</a> &middot; <a href="https://www.hse.gov.uk/work-at-height/the-law.htm" target="_blank" rel="noopener">HSE &mdash; the law</a>')}
+  </div>
+</section>
+"""
+        + guide_closing("scaffolding-for-roof-and-solar-work")
+        + related_guides_section("scaffolding-for-roof-and-solar-work")
+    )
+    write(
+        "guides/scaffolding-for-roof-and-solar-work/index.html",
+        render_page(
+            title="Scaffolding for Roof and Solar Panel Work | Axis",
+            desc="Do roof replacements and solar installs need scaffolding? What HSE guidance says about edge protection, fragile roofs and ladders, in plain English.",
+            path="/guides/scaffolding-for-roof-and-solar-work",
+            body=roof_solar_guide_body,
+            breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Roof and Solar Scaffolding", "/guides/scaffolding-for-roof-and-solar-work")],
+        ),
+    )
+
     # ── Guides hub ───────────────────────────────────────────────────────────
     # Three genuine, differentiated guides (need? / cost? / licence?) with
     # no prior hub or cross-linking — this closes that gap rather than
@@ -6172,6 +6320,8 @@ def generate_robots_sitemap() -> None:
         ("/guides/scaffolding-cost-essex", "0.7", "monthly"),
         ("/guides/do-i-need-scaffolding", "0.7", "monthly"),
         ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
+        ("/guides/scaffold-inspection-requirements", "0.7", "monthly"),
+        ("/guides/scaffolding-for-roof-and-solar-work", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
     ]
