@@ -208,7 +208,7 @@ textarea:focus-visible {
   transition:opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
 .nav-sub::before { content:""; position:absolute; left:0; right:0; top:-16px; height:16px; }
-.nav-sub-services { width:700px; display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem 1.5rem; }
+.nav-sub-services { width:900px; display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem 1.5rem; }
 .nav-sub-areas { width:430px; }
 .nav-sub-about { right:0; left:auto; }
 .nav-sub ul { list-style:none; margin:0; padding:0; }
@@ -224,6 +224,10 @@ textarea:focus-visible {
   letter-spacing:0.08em; text-transform:uppercase;
 }
 .nav-sub-group + .nav-sub-group { border-left:1px solid var(--border-strong); padding-left:1.5rem; }
+@media (min-width:769px) and (max-width:1100px) {
+  .nav-sub-services { width:560px; grid-template-columns:repeat(2,1fr); }
+  .nav-sub-group:nth-child(3) { border-left:0; padding-left:0; }
+}
 .nav-sub-cols { columns:2; column-gap:1.75rem; }
 .nav-sub-foot {
   grid-column:1 / -1; display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.6rem; padding-top:0.7rem;
@@ -247,6 +251,19 @@ textarea:focus-visible {
 }
 .menu-toggle span { width:22px; height:2px; background:#fff; }
 
+
+/* ── JOB PAGES: at-a-glance strip, sources ── */
+.glance-strip { background:#0b0b0b; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:1.5rem 0 1.1rem; }
+.glance-grid { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.glance-card { background:var(--surface); border:1px solid var(--border-strong); border-top:2px solid var(--silver); border-radius:12px; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.35rem; }
+.glance-label { color:var(--silver); font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.glance-value { color:#fff; font-size:1.2rem; line-height:1.25; font-family:'Poppins',sans-serif; }
+.glance-note { margin:0.9rem 0 0; color:#9ca3af; font-size:0.85rem; text-align:center; }
+.proof-photo { width:100%; max-height:520px; object-fit:cover; object-position:center 35%; }
+.source-note { margin-top:1.5rem; font-size:0.85rem; color:#9ca3af; }
+.source-note a { color:#c8cdd4; text-decoration:underline; }
+@media (max-width:900px) { .glance-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:420px) { .glance-value { font-size:1.05rem; } }
 /* Nav phone links */
 .nav-phone-desktop { font-weight:600; color:#c8cdd4 !important; font-size:0.95rem; }
 .nav-phone-mobile { display:none; font-weight:700; color:#c8cdd4; font-size:0.85rem; text-decoration:none; }

@@ -190,6 +190,56 @@ SERVICES = [
         "audience": "Contractors",
         "card_blurb": "Materials and erection from a single point of contact.",
     },
+    {
+        "slug": "roof-replacement-scaffolding",
+        "name": "Roof Replacement Scaffolding",
+        "title": "Roof Replacement Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Scaffolding for roof replacement in Essex: full-perimeter access, edge protection and a safe platform for materials. Rayleigh team — call 01702 820468.",
+        "summary": "Full-perimeter or single-elevation scaffold with edge protection and a safe platform for stripping, re-tiling and landing materials.",
+        "who_for": "Homeowners and roofers re-roofing houses, bungalows and flats across South Essex.",
+        "audience": "Homeowners & Roofers",
+        "card_blurb": "Edge protection and a safe platform for a full re-roof.",
+    },
+    {
+        "slug": "solar-panel-scaffolding",
+        "name": "Solar Panel Scaffolding",
+        "title": "Solar Panel Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Solar panel scaffolding in Essex for installers and homeowners: compliant roof-edge access, timed to your install date. Rayleigh team — call 01702 820468.",
+        "summary": "Compliant roof-edge access for solar panel installation, inspection and repair, timed to your installer's date.",
+        "who_for": "Homeowners and solar installers who need safe roof access for panel installation or repair.",
+        "audience": "Homeowners & Installers",
+        "card_blurb": "Roof-edge access for solar installs, timed to your date.",
+    },
+    {
+        "slug": "chimney-scaffolding",
+        "name": "Chimney Scaffolding",
+        "title": "Chimney Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Chimney scaffolding in Essex for repointing, rebuilds and removal: a stable platform around the stack. Rayleigh team — call 01702 820468 for a quote.",
+        "summary": "A stable, boarded platform around the stack for chimney repointing, flaunching, rebuilds and removal.",
+        "who_for": "Homeowners, roofers and builders needing safe access to a chimney stack.",
+        "audience": "Homeowners & Roofers",
+        "card_blurb": "A stable platform for repointing, rebuilds and repairs.",
+    },
+    {
+        "slug": "render-scaffolding",
+        "name": "Render and Painting Scaffolding",
+        "title": "Render and Painting Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Scaffolding for rendering and exterior painting in Essex: full-width working platforms for a clean finish. Rayleigh team — call 01702 820468.",
+        "summary": "Full-width working platforms so renderers and decorators can work both-handed across the whole elevation.",
+        "who_for": "Homeowners, renderers and decorators working on external walls.",
+        "audience": "Homeowners & Trades",
+        "card_blurb": "Full-width platforms for rendering and exterior painting.",
+    },
+    {
+        "slug": "extension-loft-scaffolding",
+        "name": "Extension and Loft Scaffolding",
+        "title": "Extension and Loft Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Scaffolding for house extensions and loft conversions in Essex: edge protection and loading platforms for the whole build. Call 01702 820468.",
+        "summary": "Scaffold for the full build of an extension or loft conversion, with edge protection and a loading platform.",
+        "who_for": "Homeowners and builders running extension and loft conversion projects.",
+        "audience": "Homeowners & Builders",
+        "card_blurb": "Scaffold for the whole build, from walls to roof.",
+    },
 ]
 
 # Phase 6 — customer-facing service groups. This is a navigation/UX
@@ -221,6 +271,12 @@ SERVICE_GROUPS = [
         "slugs": ["residential-scaffolding", "domestic-scaffolding", "roof-scaffolding"],
     },
     {
+        "key": "jobs",
+        "name": "Jobs We Scaffold",
+        "intro": "Scaffolding for the specific job you are planning — what it needs, how long it takes and what it costs.",
+        "slugs": ["roof-replacement-scaffolding", "solar-panel-scaffolding", "chimney-scaffolding", "render-scaffolding", "extension-loft-scaffolding"],
+    },
+    {
         "key": "commercial-trade",
         "name": "Commercial & Trade",
         "intro": "Scaffolding for builders, roofers and commercial projects.",
@@ -247,7 +303,7 @@ GUIDES = [
     {
         "slug": "scaffolding-cost-essex",
         "title": "How Much Does Scaffolding Cost in Essex?",
-        "summary": "Typical price ranges for domestic, roof, chimney and commercial scaffolding across Essex.",
+        "summary": "Typical price ranges for domestic, roof, chimney and extension scaffolding across Essex, and what affects the price.",
     },
     {
         "slug": "highway-licence-scaffolding",
@@ -270,6 +326,11 @@ SERVICE_GENERAL_FAQ_SLUGS = {
     "dismantling-scaffolding": ["coverage"],
     "loading-bay-scaffolding": ["cisrs"],
     "scaffold-supply-erection": ["cost", "cisrs"],
+    "roof-replacement-scaffolding": ["cost", "speed"],
+    "solar-panel-scaffolding": ["speed"],
+    "chimney-scaffolding": ["cost"],
+    "render-scaffolding": ["cost"],
+    "extension-loft-scaffolding": ["cost", "speed"],
 }
 
 
@@ -282,7 +343,7 @@ def _build_service_guide_map() -> dict[str, str]:
     SERVICE_GROUPS category. Services in neither bucket (the Specialist
     group — temporary roofing, emergency, dismantling) get no guide
     link, because no real content relationship was found for them."""
-    group_guide = {"home-property": "scaffolding-cost-essex", "commercial-trade": "do-i-need-scaffolding"}
+    group_guide = {"home-property": "scaffolding-cost-essex", "jobs": "scaffolding-cost-essex", "commercial-trade": "do-i-need-scaffolding"}
     mapping = {
         slug: group_guide[group["key"]]
         for group in SERVICE_GROUPS if group["key"] in group_guide
@@ -294,6 +355,7 @@ def _build_service_guide_map() -> dict[str, str]:
     return mapping
 
 
+SERVICE_GROUPS_BY_KEY = {g["key"]: g for g in SERVICE_GROUPS}
 SERVICE_TO_GUIDE_SLUG: dict[str, str] = _build_service_guide_map()
 GUIDES_BY_SLUG = {g["slug"]: g for g in GUIDES}
 
@@ -1347,7 +1409,7 @@ textarea:focus-visible {
   transition:opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
 .nav-sub::before { content:""; position:absolute; left:0; right:0; top:-16px; height:16px; }
-.nav-sub-services { width:700px; display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem 1.5rem; }
+.nav-sub-services { width:900px; display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem 1.5rem; }
 .nav-sub-areas { width:430px; }
 .nav-sub-about { right:0; left:auto; }
 .nav-sub ul { list-style:none; margin:0; padding:0; }
@@ -1363,6 +1425,10 @@ textarea:focus-visible {
   letter-spacing:0.08em; text-transform:uppercase;
 }
 .nav-sub-group + .nav-sub-group { border-left:1px solid var(--border-strong); padding-left:1.5rem; }
+@media (min-width:769px) and (max-width:1100px) {
+  .nav-sub-services { width:560px; grid-template-columns:repeat(2,1fr); }
+  .nav-sub-group:nth-child(3) { border-left:0; padding-left:0; }
+}
 .nav-sub-cols { columns:2; column-gap:1.75rem; }
 .nav-sub-foot {
   grid-column:1 / -1; display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.6rem; padding-top:0.7rem;
@@ -1386,6 +1452,19 @@ textarea:focus-visible {
 }
 .menu-toggle span { width:22px; height:2px; background:#fff; }
 
+
+/* ── JOB PAGES: at-a-glance strip, sources ── */
+.glance-strip { background:#0b0b0b; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:1.5rem 0 1.1rem; }
+.glance-grid { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.glance-card { background:var(--surface); border:1px solid var(--border-strong); border-top:2px solid var(--silver); border-radius:12px; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.35rem; }
+.glance-label { color:var(--silver); font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.glance-value { color:#fff; font-size:1.2rem; line-height:1.25; font-family:'Poppins',sans-serif; }
+.glance-note { margin:0.9rem 0 0; color:#9ca3af; font-size:0.85rem; text-align:center; }
+.proof-photo { width:100%; max-height:520px; object-fit:cover; object-position:center 35%; }
+.source-note { margin-top:1.5rem; font-size:0.85rem; color:#9ca3af; }
+.source-note a { color:#c8cdd4; text-decoration:underline; }
+@media (max-width:900px) { .glance-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:420px) { .glance-value { font-size:1.05rem; } }
 /* Nav phone links */
 .nav-phone-desktop { font-weight:600; color:#c8cdd4 !important; font-size:0.95rem; }
 .nav-phone-mobile { display:none; font-weight:700; color:#c8cdd4; font-size:0.85rem; text-decoration:none; }
@@ -3462,7 +3541,7 @@ PROJECTS = [
     # No town supplied for this one, so it carries none (no area link, no location claim).
     {"slug": "project-20", "label": "Roof Access Scaffold", "location": "", "area_slug": "",
      "desc": "Access provided for a local solar company to install new solar.",
-     "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
+     "category": "roofing", "service_slug": "solar-panel-scaffolding", "w": 960, "h": 1280},
 ]
 
 # Founder-supplied photos processed from images/originals/ (see generate_media_assets).
@@ -3584,12 +3663,17 @@ SERVICE_CARD_PHOTO = {
     "residential-scaffolding": "project-7",
     "domestic-scaffolding": "project-17",
     "roof-scaffolding": "project-14",
-    "commercial-scaffolding": "project-8",
+    "commercial-scaffolding": "project-18",
     "loading-bay-scaffolding": "project-4",
-    "scaffold-supply-erection": "project-13",
+    "scaffold-supply-erection": "project-9",
     "temporary-roofing": "project-10",
     "emergency-scaffolding": "project-3",
     "dismantling-scaffolding": "project-12",
+    "roof-replacement-scaffolding": "project-8",
+    "solar-panel-scaffolding": "project-16",
+    "chimney-scaffolding": "project-15",
+    "render-scaffolding": "project-11",
+    "extension-loft-scaffolding": "project-13",
 }
 _CARD_PHOTO_WIDTH = {  # native widths from PROJECTS / UNTAGGED_PHOTOS
     **{p["slug"]: p["w"] for p in PROJECTS},
@@ -4485,6 +4569,155 @@ SERVICE_DETAIL: dict[str, dict] = {
         ],
         "cta_label": "Need a complete scaffold supply and erection package?",
     },
+    # ── "Jobs We Scaffold": job-specific pages. Homeowner price ranges reuse the
+    # published /guides/scaffolding-cost-essex figures; timings are the typical
+    # industry ranges for each job (not Axis guarantees); safety statements are
+    # taken from HSE guidance and linked at the foot of each page.
+    "roof-replacement-scaffolding": {
+        "h1": "Roof Replacement Scaffolding in Essex",
+        "who_for_detail": "Homeowners and roofers re-roofing houses, bungalows and flats across South Essex — full re-roofs, partial re-roofs and re-roofs with new fascias, soffits and guttering.",
+        "at_a_glance": [("Typical re-roof on site", "2–5 working days"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£800–£1,800")],
+        "whats_included": [
+            "Full-perimeter or single-elevation scaffold, designed around your roof",
+            "Edge protection at the eaves, with boarded platforms, guardrails and toe boards",
+            "A safe place to land tiles and materials at roof level",
+            "Scaffold built to suit your roofer's start date",
+            "Inspection certificate handed over, with routine checks while the scaffold is up",
+            "Prompt strike and clear-up, plus highway licence support where one is needed",
+        ],
+        "safety": [
+            ("Sloping roofs need scaffold", "HSE guidance is that sloping roofs require scaffolding to prevent people or materials falling from the edge, with edge protection at the eaves — to the front and rear on terraced houses."),
+            ("Ladders are for minutes, not days", "HSE only accepts secured ladders and roof ladders for jobs lasting minutes. A re-roof is days of work, which is why no reputable roofer will do one from a ladder."),
+            ("Every roof is treated as fragile", "HSE says all roofs should be treated as fragile until a competent person confirms they are not — another reason the working platform sits at the eaves, not on the roof."),
+            ("Checked while it is up", "A scaffold should be inspected before first use and at least every 7 days after that, and again after bad weather or alteration. We hand over an inspection certificate on every job."),
+        ],
+        "timeline": "A typical domestic re-roof takes two to five working days on site once the scaffold is up, so the scaffold is normally in place for two to four weeks to allow for weather and snagging. If the roofers overrun, call us early and we will agree how to extend the hire.",
+        "pricing": "A full-perimeter scaffold for a re-roof on a standard semi-detached or detached house in Essex typically costs <strong>£800–£1,800</strong>. If only one slope or elevation needs access, a single-elevation scaffold is typically <strong>£400–£900</strong>. A highway licence, where needed, is an additional cost. Every job is quoted individually after we have assessed it.",
+        "photo_slugs": ["project-7", "project-1"],
+        "faqs": [
+            ("How long does scaffolding stay up for a roof replacement?", "Typically two to four weeks for a standard domestic re-roof: about a day to erect, two to five working days of roofing, and a margin for weather and snagging. Tell us your roofer's dates and we will plan the hire around them."),
+            ("Does my roofer arrange the scaffold, or do I?", "Either can. Many roofers ask us directly; homeowners can also book us and pass the details to their roofer. Call " + NAP["phone"] + " with the address and dates."),
+            ("Do I need a full-perimeter scaffold for a re-roof?", "If the whole roof is being replaced, access is normally needed at the eaves on every side the roof drains to. If only one slope is being done, a single-elevation scaffold may be enough. We will tell you what the job needs when we assess it."),
+            ("Can you erect scaffold over a pavement for my roof job?", "Yes, with a highway licence. The licence is applied for by the scaffolding contractor; see our guide to scaffold licences for Essex Highways and Southend timescales."),
+        ],
+        "cta_label": "Planning a roof replacement?",
+    },
+    "solar-panel-scaffolding": {
+        "h1": "Solar Panel Scaffolding in Essex",
+        "who_for_detail": "Homeowners and solar installers across South Essex who need safe, compliant roof-edge access for installing, inspecting or repairing solar panels.",
+        "at_a_glance": [("Typical panel install", "1–3 days on site"), ("Scaffold usually up for", "Days, not weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£400–£900")],
+        "whats_included": [
+            "Scaffold to eaves height on the elevation(s) the panels are going on",
+            "Boarded working platform with guardrails and toe boards",
+            "Erected to suit your installer's start date",
+            "Inspection certificate handed over before use",
+            "Struck promptly once the installer has finished roof work",
+            "Highway licence support where scaffold is on or over a pavement",
+        ],
+        "safety": [
+            ("Edge protection is required", "HSE guidance is that sloping roofs require scaffolding to prevent people or materials falling from the edge, with edge protection fitted at the eaves."),
+            ("Panels take hours or days, not minutes", "HSE only accepts secured ladders and roof ladders for tasks lasting minutes. Carrying and fixing panels and rails is far longer, and heavy, work at the roof edge."),
+            ("Assume the roof is fragile", "HSE says all roofs should be treated as fragile until a competent person confirms they are not. A scaffold platform at the eaves keeps people off the roof surface while materials are passed up."),
+            ("Inspected before use", "A scaffold should be inspected before first use and at least every 7 days after that. We hand over an inspection certificate on every job."),
+        ],
+        "timeline": "Most home solar installations take one to three days on site. The scaffold normally goes up shortly before the install date and comes down once the installer has finished roof work, so it is usually in place for days rather than weeks. Give us the install date and we will work back from it.",
+        "pricing": "Solar panels on a pitched roof normally need a single-elevation scaffold, which in Essex typically costs <strong>£400–£900</strong> depending on height and access. If panels are going on more than one elevation, the price rises with the extra scaffold. A highway licence, where needed, is an additional cost, and we confirm everything in your quote.",
+        "photo_slugs": ["project-20"],
+        "faqs": [
+            ("Do I need scaffolding to install solar panels?", "On a pitched roof, almost always. HSE guidance is that sloping roofs need scaffold edge protection, and a solar install takes far longer than the minutes for which ladders are acceptable."),
+            ("Who arranges the scaffold: me or the solar installer?", "Either. Some installers arrange it themselves; you can also book us directly. We work with homeowners and installers — call " + NAP["phone"] + " with the address and install date."),
+            ("How long does the scaffold stay up?", "Typically for days rather than weeks: most home installs take one to three days on site. If your installer needs a second visit, tell us and we will agree how long to leave it up."),
+            ("Do I need a licence if the scaffold is on my pavement?", "Yes. A licence is required if any scaffold is on or over a public pavement or road. The contractor applies for it, and we will tell you at quotation stage whether your job needs one."),
+        ],
+        "cta_label": "Booked your solar install?",
+    },
+    "chimney-scaffolding": {
+        "h1": "Chimney Scaffolding in Essex",
+        "who_for_detail": "Homeowners, roofers and builders needing safe access to a chimney stack for repointing, flaunching, lead flashing, rebuilds or removal.",
+        "at_a_glance": [("Typical repointing job", "1–3 days"), ("Scaffold usually up for", "1–2 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£350–£600")],
+        "whats_included": [
+            "A boarded platform and guardrails around the stack, so the work can be done two-handed",
+            "Scaffold to roof level on the elevation the stack sits on",
+            "Edge protection at the eaves below the stack",
+            "Inspection certificate handed over before use",
+            "Prompt strike once the repair is finished",
+            "Highway licence support where one is needed",
+        ],
+        "safety": [
+            ("Sloping roofs need scaffold", "HSE guidance is that sloping roofs require scaffolding to prevent people or materials falling from the edge, with edge protection at the eaves."),
+            ("A ladder is not a work platform", "HSE only accepts secured ladders and roof ladders for tasks lasting minutes. Repointing or rebuilding a stack means hours of two-handed work at height."),
+            ("Don't climb on a fragile roof", "HSE says all roofs should be treated as fragile until a competent person confirms they are not. A platform at the stack avoids walking across the roof surface."),
+            ("Taller stacks need more planning", "Height and awkward roof pitches can change the scaffold needed. We assess this before quoting so the price reflects the real job."),
+        ],
+        "timeline": "Chimney repointing typically takes one to three days once the scaffold is up; rebuilds and removals can take longer, up to a week or two including materials. The scaffold is normally up for one to two weeks.",
+        "pricing": "A chimney scaffold in Essex typically costs <strong>£350–£600</strong> for a single-stack access platform, usually on a one to two week hire. Taller stacks and difficult access cost more, and a highway licence, where needed, is additional. We confirm the price when we assess the job.",
+        "photo_slugs": ["project-5", "project-14"],
+        "faqs": [
+            ("How much does chimney scaffolding cost in Essex?", "Typically £350–£600 for a single-stack access platform on a one to two week hire. Height, access and any licence can change that, so we quote each job after assessing it."),
+            ("Can a roofer repoint a chimney from a ladder?", "For anything more than a few minutes' work, no. HSE only accepts ladders for tasks lasting minutes; repointing and rebuilds need a stable working platform."),
+            ("How long will the scaffold need to stay up?", "Normally one to two weeks. Repointing often takes one to three days once access is in place; a rebuild takes longer. Tell us the scope and we will plan the hire."),
+            ("Is a chimney scaffold a different thing from a roof scaffold?", "It is smaller. A chimney scaffold gives access to the stack itself, while a full roof scaffold goes around the perimeter for re-roofing. We will advise which your job needs."),
+        ],
+        "cta_label": "Need access to a chimney?",
+    },
+    "render-scaffolding": {
+        "h1": "Render and Painting Scaffolding in Essex",
+        "who_for_detail": "Homeowners, renderers and decorators working on external walls — new render, render repairs, pebbledash removal, masonry paint and exterior decoration.",
+        "at_a_glance": [("Typical render job", "4 days to 3 weeks"), ("Scaffold usually up for", "2–4 weeks"), ("Erection", "Half a day to a day"), ("Typical price", "£400–£1,800")],
+        "whats_included": [
+            "Full-width boarded platforms across the elevation, so the finish can be worked continuously",
+            "Guardrails and toe boards at every working lift",
+            "Scaffold planned around your renderer's or decorator's schedule",
+            "Inspection certificate handed over before use",
+            "Prompt strike and clear-up",
+            "Highway licence support where one is needed",
+        ],
+        "safety": [
+            ("Work at height needs planning", "The Work at Height Regulations 2005 require work at height to be planned, supervised and carried out by competent people using suitable equipment. A boarded scaffold platform is the collective protection for wall work."),
+            ("Both hands free", "Rendering and painting need both hands, which is why a ladder is the wrong tool for anything beyond a small patch."),
+            ("Tell us your finish", "Scaffold ties fix to the building. Tell us your renderer's plans before we start so tie positions can be planned around the finish being applied."),
+            ("Inspected before use", "A scaffold should be inspected before first use and at least every 7 days after that. We hand over an inspection certificate on every job."),
+        ],
+        "timeline": "Rendering a house typically takes anywhere from four days for a small elevation to two to three weeks for a large detached house, and cement-based render usually needs 7–14 days to dry before painting. Scaffold is normally in place for two to four weeks; if the job needs to stay up longer for drying, tell us and we will agree it.",
+        "pricing": "A single-elevation scaffold for render or painting in Essex typically costs <strong>£400–£900</strong>. Wrapping the whole house is typically <strong>£800–£1,800</strong>. A highway licence, where needed, is additional, and a longer hire for drying time adds to the cost. We quote each job after assessing it.",
+        "photo_slugs": ["project-12", "project-10"],
+        "faqs": [
+            ("How long does scaffolding need to stay up for rendering?", "Typically two to four weeks. A house render usually takes anything from four days to three weeks, and cement-based render typically needs 7–14 days to dry before painting. Tell us the plan and we will agree the hire."),
+            ("Do I need scaffolding for exterior painting?", "For anything above a ladder's reach and more than a small patch, yes. Painting a full elevation needs a stable platform with both hands free."),
+            ("How much does render scaffolding cost?", "Typically £400–£900 for a single elevation and £800–£1,800 for a whole house in Essex, plus any licence cost. Longer hires cost more."),
+            ("Will the scaffold ties mark my walls?", "Ties fix to the building, so tell us what finish is going on. We will plan the positions with your renderer or decorator."),
+        ],
+        "cta_label": "Rendering or painting your home?",
+    },
+    "extension-loft-scaffolding": {
+        "h1": "Extension and Loft Conversion Scaffolding in Essex",
+        "who_for_detail": "Homeowners and builders running house extensions, loft conversions and dormer builds who need scaffold for the full build, from walls to roof.",
+        "at_a_glance": [("Typical build", "6–12+ weeks"), ("Scaffold usually up for", "4–8 weeks"), ("Erection", "Half a day to a day, longer for large runs"), ("Typical price", "£500–£1,200")],
+        "whats_included": [
+            "Side, rear or full scaffold designed around the extension or dormer",
+            "Edge protection and boarded lifts up to eaves height and above",
+            "A loading platform where materials need to reach roof level",
+            "Alterations as the build progresses",
+            "Inspection certificate handed over, with routine checks through the hire",
+            "Highway licence support where one is needed",
+        ],
+        "safety": [
+            ("Roof work needs edge protection", "HSE guidance is that sloping roofs require scaffolding to prevent people or materials falling from the edge, with edge protection at the eaves."),
+            ("Planned work at height", "The Work at Height Regulations 2005 require work at height to be planned, supervised and carried out by competent people with suitable equipment. On a build, that applies to every trade."),
+            ("Long hires need regular checks", "A scaffold should be inspected before first use, at least every 7 days, and after bad weather or alteration. That matters most on a multi-week build."),
+            ("Tell us the build stages", "Scaffold often needs altering as walls rise or a dormer goes in. Tell us the programme so we can plan the alterations."),
+        ],
+        "timeline": "Scaffold for an extension is typically up for four to eight weeks, and a whole loft conversion typically takes six to twelve weeks or more depending on type. Tell us your builder's programme and we will plan the erection, any alterations and the strike around it.",
+        "pricing": "Scaffold for a house extension in Essex typically costs <strong>£500–£1,200</strong> for a side or rear scaffold on a four to eight week hire. Loft conversions that need a full wrap, or builds that run longer, cost more. A highway licence, where needed, is additional. We quote each job after assessing it.",
+        "photo_slugs": ["project-13", "project-6"],
+        "faqs": [
+            ("How long does scaffolding stay up for an extension?", "Typically four to eight weeks, depending on how quickly the build progresses. Tell us your builder's programme and we will plan the hire."),
+            ("Do I need scaffolding for a loft conversion?", "Yes. Loft conversions involve roof-level work, so edge protection and a safe platform are needed, plus somewhere to land materials. We will tell you what your build needs."),
+            ("Can the scaffold be altered during the build?", "Yes. Walls rise and dormers go in, so alterations are normal. Tell us early when your builder needs a change."),
+            ("How much does extension scaffolding cost?", "Typically £500–£1,200 for a side or rear scaffold on a four to eight week hire, plus any licence cost. Longer hires and full wraps cost more."),
+        ],
+        "cta_label": "Planning an extension or loft conversion?",
+    },
 }
 
 
@@ -4528,7 +4761,47 @@ def service_detail_body(service: dict) -> str:
     else:
         cta_buttons = f'<a class="btn btn-light" href="tel:{NAP["phone_e164"]}">{NAP["phone"]}</a><a class="btn btn-dark" href="/quote">Request a Quote</a>'
 
-    related = [p for p in PROJECTS if p["service_slug"] == slug][:3]
+    photo_slugs = detail.get("photo_slugs")
+    if photo_slugs:
+        by_slug = {p["slug"]: p for p in PROJECTS}
+        related = [by_slug[x] for x in photo_slugs if x in by_slug]
+    else:
+        related = [p for p in PROJECTS if p["service_slug"] == slug][:3]
+
+    glance_html = ""
+    if detail.get("at_a_glance"):
+        glance_html = '<section class="glance-strip"><div class="container"><ul class="glance-grid">' + "".join(
+            f'<li class="glance-card"><span class="glance-label">{label}</span><strong class="glance-value">{value}</strong></li>'
+            for label, value in detail["at_a_glance"]
+        ) + '</ul><p class="glance-note">Typical figures for this type of job. Your quote confirms the real ones.</p></div></section>'
+    safety_html = ""
+    if detail.get("safety"):
+        safety_html = f"""
+<section class="section section-dark hex-texture">
+  <div class="container">
+    <h2>Safety and Regulations</h2>
+    <p class="section-intro">What the rules say about this job, and how a properly built scaffold meets them.</p>
+    <div class="decision-grid">{"".join(f'<div class="decision-card"><h3>{t}</h3><p>{d}</p></div>' for t, d in detail["safety"])}</div>
+    <p class="source-note">Sources: <a href="https://www.hse.gov.uk/construction/safetytopics/roofwork.htm" target="_blank" rel="noopener">HSE &mdash; roof work</a> &middot; <a href="https://www.hse.gov.uk/construction/faq-scaffold.htm" target="_blank" rel="noopener">HSE &mdash; scaffolding</a> &middot; <a href="https://www.legislation.gov.uk/uksi/2005/735/contents" target="_blank" rel="noopener">Work at Height Regulations 2005</a></p>
+  </div>
+</section>
+"""
+    timeline_html = ""
+    if detail.get("timeline"):
+        timeline_html = f"""
+<section class="section section-light hex-texture">
+  <div class="container">
+    <h2>How Long Does It Take?</h2>
+    <p class="direct-answer">{detail["timeline"]}</p>
+  </div>
+</section>
+"""
+    siblings = ""
+    if slug in SERVICES_BY_SLUG and slug in SERVICE_GROUPS_BY_KEY["jobs"]["slugs"]:
+        sib = [x for x in SERVICE_GROUPS_BY_KEY["jobs"]["slugs"] if x != slug]
+        siblings = '<section class="section hex-texture"><div class="container"><h2>Other Jobs We Scaffold</h2><ul class="area-pills">' + "".join(
+            f'<li><a class="area-pill-link" href="/services/{x}">{SERVICES_BY_SLUG[x]["name"]}</a></li>' for x in sib
+        ) + '</ul></div></section>'
 
     # Where a real, tagged project photo exists for this service, "Who Is
     # This For?" becomes a split-grid with that photo — real proof reaches
@@ -4547,8 +4820,8 @@ def service_detail_body(service: dict) -> str:
     </div>
     <div>
       <img src="/images/{proof_photo['slug']}.webp" srcset="{proof_srcset}" sizes="(max-width: 900px) 100vw, 50vw"
-           alt="{proof_photo['label']} in {proof_photo['location']}, Essex — real Axis Scaffolding project photograph"
-           width="{proof_photo['w']}" height="{proof_photo['h']}" loading="lazy" decoding="async" class="rounded-image">
+           alt="{proof_photo['label']}{(' in ' + proof_photo['location']) if proof_photo.get('location') else ''}, Essex — real Axis Scaffolding project photograph"
+           width="{proof_photo['w']}" height="{proof_photo['h']}" loading="lazy" decoding="async" class="rounded-image proof-photo">
     </div>
   </div>
 </section>
@@ -4565,6 +4838,7 @@ def service_detail_body(service: dict) -> str:
 
     return (
         inner_hero(path, h1, f"{service['summary']} Free, no-obligation quotes — call {NAP['phone']} or complete the form below.")
+        + glance_html
         + who_for_section
         + (f"""
 <section class="section hex-texture">
@@ -4574,6 +4848,8 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """ if included_html else "")
+        + safety_html
+        + timeline_html
         + (f"""
 <section class="section section-light hex-texture">
   <div class="container">
@@ -4608,6 +4884,7 @@ def service_detail_body(service: dict) -> str:
   </div>
 </section>
 """ if (related[1:] if proof_photo else related) else "")()
+        + siblings
         + f"""
 <section class="section hex-texture">
   <div class="container">
@@ -5240,7 +5517,7 @@ def generate_pages() -> None:
 <section class="section section-light hex-texture">
   <div class="container direct-answer">
     <h2>The Short Answer</h2>
-    <p>Residential scaffolding in Essex typically costs <strong>£350–£600</strong> for smaller single-elevation domestic jobs and <strong>£800–£2,500+</strong> for full roof scaffolding on larger properties. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
+    <p>Residential scaffolding in Essex typically costs <strong>£350–£600</strong> for smaller single-elevation domestic jobs and <strong>£800–£1,800</strong> for full roof scaffolding on a standard semi-detached or detached house. Commercial and multi-storey scaffolding is priced individually. Every job is different — the only reliable figure is a quote from a scaffolder who has assessed your specific project.</p>
     <div class="hero-cta-row" style="margin-top:1.5rem;">
       <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
       <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
@@ -5317,7 +5594,7 @@ def generate_pages() -> None:
         "guides/scaffolding-cost-essex/index.html",
         render_page(
             title="How Much Does Scaffolding Cost in Essex? | Axis Scaffolding",
-            desc="Scaffolding cost guide for Essex homeowners and contractors — typical price ranges for domestic, roof, chimney and commercial jobs. Free quotes.",
+            desc="Scaffolding cost guide for Essex homeowners and contractors — typical price ranges for domestic, roof, chimney and extension jobs. Free quotes.",
             path="/guides/scaffolding-cost-essex",
             body=cost_guide_body,
             breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), ("Scaffolding Cost Essex", "/guides/scaffolding-cost-essex")],
@@ -5838,6 +6115,11 @@ def generate_robots_sitemap() -> None:
         ("/services/dismantling-scaffolding", "0.7", "monthly"),
         ("/services/loading-bay-scaffolding", "0.7", "monthly"),
         ("/services/scaffold-supply-erection", "0.7", "monthly"),
+        ("/services/roof-replacement-scaffolding", "0.8", "monthly"),
+        ("/services/solar-panel-scaffolding", "0.8", "monthly"),
+        ("/services/chimney-scaffolding", "0.8", "monthly"),
+        ("/services/render-scaffolding", "0.7", "monthly"),
+        ("/services/extension-loft-scaffolding", "0.7", "monthly"),
         ("/gallery", "0.7", "monthly"),
         ("/about", "0.7", "monthly"),
         ("/contact", "0.8", "monthly"),
