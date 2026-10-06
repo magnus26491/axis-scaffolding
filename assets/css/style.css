@@ -223,6 +223,7 @@ textarea:focus-visible {
   margin:0 0 0.3rem; color:var(--silver); font-size:0.72rem; font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
 }
+.nav-sub-group + .nav-sub-group { border-left:1px solid var(--border-strong); padding-left:1.5rem; }
 .nav-sub-cols { columns:2; column-gap:1.75rem; }
 .nav-sub-foot {
   grid-column:1 / -1; display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.6rem; padding-top:0.7rem;
@@ -299,8 +300,8 @@ textarea:focus-visible {
   /* Colour/hover/sweep are on the shared .btn-primary,.cta-pill rules
      above — this just supplies the pill-specific box model, since
      .cta-pill is used standalone (not combined with .btn) in the nav. */
-  padding: 0.65rem 1.4rem !important; border-radius: 9999px !important;
-  text-decoration: none !important; display: inline-block !important;
+  padding: 0 1.5rem !important; border-radius: 9999px !important; height:44px; line-height:1;
+  text-decoration: none !important; display: inline-flex !important; align-items:center; justify-content:center;
 }
 
 /* ── HERO ── */
@@ -1401,6 +1402,7 @@ body.lightbox-open { overflow:hidden; }
   .nav-sub::before { display:none; }
   .nav-item.open > .nav-sub { display:block; }
   .nav-sub-services.nav-sub { grid-template-columns:1fr; }
+  .nav-sub-group + .nav-sub-group { border-left:0; padding-left:0; }
   .nav-sub a:not(.cta-pill) { width:100%; font-size:var(--text-base); padding:0.55rem 0; border-bottom:0; white-space:normal; }
   .nav-sub-cols { columns:1; }
   .nav-sub-heading { margin-top:0.9rem; }
