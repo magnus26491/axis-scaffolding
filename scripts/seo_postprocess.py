@@ -44,6 +44,8 @@ LEGACY_SERVICE_TARGETS = {
     "services/dismantling.html": "/services/dismantling-scaffolding",
     "services/loading-bays.html": "/services/loading-bay-scaffolding",
     "services/temporary-roofs.html": "/services/temporary-roofing",
+    # Domestic merged into Residential & Domestic (one page, one URL).
+    "services/domestic-scaffolding/index.html": "/services/residential-scaffolding",
 }
 
 # This is the single source of truth for every legacy redirect stub — the
@@ -112,7 +114,9 @@ def write_redirects() -> None:
         f"https://www.axisscaffolding.co.uk/* {SITE}/:splat 301!",
     ]
     lines.extend(f"/{src} {target} 301" for src, target in LEGACY_TOP_TARGETS.items())
-    lines.extend(f"/{src} {target} 301" for src, target in LEGACY_SERVICE_TARGETS.items())
+    lines.extend(
+        f"/{src.removesuffix('/index.html')} {target} 301" for src, target in LEGACY_SERVICE_TARGETS.items()
+    )
     lines.extend(
         f"/areas/{slug}.html {target} 301"
         for slug, target in LEGACY_AREA_TARGETS.items()

@@ -58,7 +58,7 @@ FAQS = [
     (
         "cost",
         "How much does scaffolding cost in Essex?",
-        "Residential scaffolding in Essex typically starts from around £300–£500 for smaller access jobs, rising to £1,500 or more for full roof scaffolds on larger properties. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
+        "Residential scaffolding in Essex typically costs £350–£600 for a chimney scaffold, £400–£900 for a single-elevation scaffold and £800–£1,800 for a full roof scaffold on a standard semi-detached or detached house. The final price depends on scaffold size, height, number of elevations, site access, duration and whether a highway licence is required. We provide clear, itemised quotations — call 01702 820468 or use the quote form for a no-obligation price.",
     ),
     (
         "speed",
@@ -83,7 +83,7 @@ FAQS = [
     (
         "difference-residential-domestic",
         "What is the difference between residential and domestic scaffolding?",
-        "At Axis Scaffolding, residential scaffolding typically refers to larger home projects — extensions, full roof replacements, multi-storey properties — while domestic scaffolding covers shorter-term access for occupied homes undertaking repairs, painting or chimney work. Both are handled by the same CISRS-qualified team. If you're unsure which applies, just describe your job and we'll advise.",
+        "There is no difference in the service: both mean scaffolding for homes, and they share one page and one team. We use \"residential\" for larger projects such as extensions and full re-roofs, and \"domestic\" for shorter-term access for repairs, painting, guttering or chimney work. Describe your job and we will tell you what it needs.",
     ),
     (
         "driveway",
@@ -102,13 +102,13 @@ FAQS_BY_SLUG = {slug: (q, a) for slug, q, a in FAQS}
 SERVICES = [
     {
         "slug": "residential-scaffolding",
-        "name": "Residential Scaffolding",
-        "title": "Residential Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Residential scaffolding in Essex for extensions, roof replacements and exterior works. CISRS-qualified team based in Rayleigh. Free quotes — call 01702 820468.",
-        "summary": "Safe, tidy scaffold systems for extensions, full roof replacements, rendering and exterior home improvements across South Essex.",
-        "who_for": "Homeowners undertaking extensions, roof replacements, chimney repairs, rendering and other major exterior works.",
+        "name": "Residential & Domestic Scaffolding",
+        "title": "Residential & Domestic Scaffolding Essex | Axis Scaffolding Ltd",
+        "desc": "Residential and domestic scaffolding in Essex: extensions, re-roofs, repairs, painting and chimney work. CISRS-qualified, Rayleigh-based. Free quotes — 01702 820468.",
+        "summary": "Safe, tidy scaffold for homes across South Essex, from extensions and full re-roofs to short-term access for repairs, painting and chimney work.",
+        "who_for": "Homeowners needing scaffold for extensions, roof replacements, repairs, painting, chimney work, rendering and other exterior works.",
         "audience": "Homeowners",
-        "card_blurb": "Extensions, full roof replacements and larger exterior work.",
+        "card_blurb": "Scaffold for any job on your home, big or small.",
     },
     {
         "slug": "commercial-scaffolding",
@@ -119,16 +119,6 @@ SERVICES = [
         "who_for": "Builders, developers, principal contractors, property managers and commercial premises requiring planned scaffold access.",
         "audience": "Builders & Developers",
         "card_blurb": "Planned scaffold packages for sites, offices, retail and schools.",
-    },
-    {
-        "slug": "domestic-scaffolding",
-        "name": "Domestic Scaffolding",
-        "title": "Domestic Scaffolding Essex | Axis Scaffolding Ltd",
-        "desc": "Domestic scaffolding in Essex for occupied homes, repairs and short-term access. CISRS-qualified team in Rayleigh, South Essex. Free quotes — call 01702 820468.",
-        "summary": "Short-term scaffold access for occupied homes needing repairs, painting, chimney work or maintenance across South Essex.",
-        "who_for": "Homeowners requiring shorter-term scaffold access for repairs, maintenance, painting or chimney work on occupied properties.",
-        "audience": "Homeowners",
-        "card_blurb": "Short-term access for repairs, painting or chimney work.",
     },
     {
         "slug": "roof-scaffolding",
@@ -268,7 +258,7 @@ SERVICE_GROUPS = [
         "key": "home-property",
         "name": "Home & Property",
         "intro": "Scaffolding for your home — from larger improvement projects to shorter repair work.",
-        "slugs": ["residential-scaffolding", "domestic-scaffolding", "roof-scaffolding"],
+        "slugs": ["residential-scaffolding", "roof-scaffolding"],
     },
     {
         "key": "jobs",
@@ -328,14 +318,13 @@ GUIDES = [
 # exists verbatim in FAQS; nothing new is written for this.
 SERVICE_GENERAL_FAQ_SLUGS = {
     "residential-scaffolding": ["difference-residential-domestic", "cost", "licence"],
-    "domestic-scaffolding": ["difference-residential-domestic", "cost"],
     "roof-scaffolding": ["cost", "speed"],
     "commercial-scaffolding": ["cisrs", "coverage"],
     "temporary-roofing": ["speed"],
     "emergency-scaffolding": ["speed"],
     "dismantling-scaffolding": ["coverage"],
     "loading-bay-scaffolding": ["cisrs"],
-    "scaffold-supply-erection": ["cost", "cisrs"],
+    "scaffold-supply-erection": ["cisrs"],
     "roof-replacement-scaffolding": ["cost", "speed"],
     "solar-panel-scaffolding": ["speed"],
     "chimney-scaffolding": ["cost"],
@@ -3561,7 +3550,7 @@ PROJECTS = [
      "category": "roofing", "service_slug": "roof-scaffolding", "w": 1080, "h": 1440},
     {"slug": "project-6", "label": "Domestic Scaffolding", "location": "Chelmsford", "area_slug": "chelmsford",
      "desc": "Rear-elevation scaffold for extension construction access.",
-     "category": "residential", "service_slug": "domestic-scaffolding", "w": 640, "h": 800},
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 640, "h": 800},
     {"slug": "project-7", "label": "Residential Scaffolding", "location": "Wickford", "area_slug": "wickford",
      "desc": "Full scaffold erected for a complete re-roofing project.",
      "category": "residential", "service_slug": "residential-scaffolding", "w": 640, "h": 800},
@@ -3570,7 +3559,7 @@ PROJECTS = [
      "category": "roofing", "service_slug": "roof-scaffolding", "w": 960, "h": 1280},
     {"slug": "project-9", "label": "Domestic Scaffolding", "location": "Leigh-on-Sea", "area_slug": "leigh-on-sea",
      "desc": "Single-elevation domestic scaffold for fascia and soffit replacement.",
-     "category": "residential", "service_slug": "domestic-scaffolding", "w": 960, "h": 1280},
+     "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
     {"slug": "project-10", "label": "Residential Scaffolding", "location": "Thundersley", "area_slug": "thundersley",
      "desc": "Full perimeter scaffold for a complete exterior renovation project.",
      "category": "residential", "service_slug": "residential-scaffolding", "w": 960, "h": 1280},
@@ -3715,7 +3704,6 @@ SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 #    chosen to visibly fit; the rest are generic scaffold photography.
 SERVICE_CARD_PHOTO = {
     "residential-scaffolding": "project-7",
-    "domestic-scaffolding": "project-17",
     "roof-scaffolding": "project-14",
     "commercial-scaffolding": "project-18",
     "loading-bay-scaffolding": "project-4",
@@ -4400,8 +4388,8 @@ def inner_hero(path_items: list[tuple[str, str]], h1: str, intro: str) -> str:
 
 SERVICE_DETAIL: dict[str, dict] = {
     "residential-scaffolding": {
-        "h1": "Residential Scaffolding in Essex",
-        "who_for_detail": "Homeowners planning extensions, full roof replacements, rendering, chimney repairs or major exterior improvements on houses and flats across South Essex.",
+        "h1": "Residential and Domestic Scaffolding in Essex",
+        "who_for_detail": "Homeowners across South Essex who need scaffold for a job on their home: extensions, full roof replacements, rendering and major exterior work, or shorter-term access for repairs, painting, guttering, fascias and chimney work on an occupied property.",
         "whats_included": [
             "Site assessment and scaffold design tailored to your property",
             "Installation by CISRS-qualified operatives",
@@ -4409,8 +4397,9 @@ SERVICE_DETAIL: dict[str, dict] = {
             "Routine safety checks throughout the hire period",
             "Prompt dismantling and full site clearance on completion",
             "Highway licence application support where a pavement licence is required",
+            "Scaffold designed to minimise impact on your property and neighbours",
         ],
-        "pricing": "Residential scaffolding in Essex typically starts from £300–£500 for smaller access jobs (chimney, single elevation) and rises to £1,200–£2,000+ for full four-elevation roof scaffolds on larger detached properties. Pricing depends on scaffold height, footprint, number of elevations, access constraints, duration and whether a highway licence is needed.",
+        "pricing": "Scaffold for homes in Essex typically costs <strong>£350–£600</strong> for a chimney scaffold, <strong>£400–£900</strong> for a single elevation, <strong>£500–£1,200</strong> for a side or rear extension scaffold and <strong>£800–£1,800</strong> for a full roof scaffold on a standard semi-detached or detached house. Pricing depends on height, footprint, number of elevations, access, duration and whether a highway licence is needed.",
         "process_steps": [
             ("Tell us about your project", "Call 01702 820468 or complete the quote form with your address, the work being done and your required dates."),
             ("We assess and quote", "We evaluate access, scaffold type, height and any licence requirements. You receive a clear, itemised quote — usually same day."),
@@ -4419,7 +4408,8 @@ SERVICE_DETAIL: dict[str, dict] = {
             ("Dismantling and clear-up", "Once works are complete, we return promptly to dismantle and remove all scaffold materials."),
         ],
         "faqs": [
-            ("How much does residential scaffolding cost in Essex?", "For most homes in South Essex, expect £300–£500 for a single-elevation access scaffold and £1,200–£2,000+ for a full roof scaffold on a larger property. We provide itemised, no-obligation quotes."),
+            ("How much does residential scaffolding cost in Essex?", "For most homes in South Essex, expect £400–£900 for a single-elevation scaffold, £350–£600 for a chimney scaffold and £800–£1,800 for a full roof scaffold on a standard semi-detached or detached house. We provide itemised, no-obligation quotes."),
+            ("Do you notify neighbours before erecting scaffold?", "We recommend homeowners notify immediate neighbours before erection, particularly where scaffold is close to boundaries. We work tidily and efficiently to minimise any inconvenience."),
             ("Do I need a licence for scaffolding on my driveway?", "A licence is only required if scaffold overhangs or occupies a public highway (road or pavement). Scaffold within your private property boundary does not require a licence. We advise on this when we quote."),
             ("How long does it take to erect residential scaffolding?", "Most standard residential scaffolds are erected in half a day to a full day depending on size. We aim to fit your builder or roofer's schedule."),
             ("Will you protect my driveway and garden?", "Yes. Base plates and scaffold boards are used to distribute load. If you have a block-paved or resin driveway, let us know when you enquire so we can plan appropriately."),
@@ -4454,31 +4444,6 @@ SERVICE_DETAIL: dict[str, dict] = {
         ],
         "cta_label": "Need a scaffold package for your site?",
     },
-    "domestic-scaffolding": {
-        "h1": "Domestic Scaffolding in Essex",
-        "who_for_detail": "Homeowners in occupied properties requiring short-term scaffold access for routine repairs, painting, chimney work, guttering replacement or fascia and soffit maintenance.",
-        "whats_included": [
-            "Site survey to confirm scaffold type and safe access route",
-            "Installation by CISRS-qualified operatives",
-            "Scaffold designed to minimise impact on the property and neighbours",
-            "Safety checks throughout the hire period",
-            "Prompt dismantling and removal on completion",
-        ],
-        "pricing": "Domestic scaffolding for shorter-term access jobs in Essex typically starts from around £300 for a simple single-elevation setup. Chimney scaffolds, two-elevation setups or scaffolds with difficult access will cost more. We provide clear, no-obligation quotes.",
-        "process_steps": [
-            ("Describe your job", "Call 01702 820468 or use the quote form. Tell us the property address, what work is being done and your required dates."),
-            ("We assess and quote", "We confirm scaffold type, safe access and any constraints. You receive a clear quote — usually same day."),
-            ("Installation", "Our team erects the scaffold efficiently, minimising disruption to you, your family and neighbours."),
-            ("Work proceeds", "Your tradesperson completes the work with safe scaffold access throughout."),
-            ("Dismantling", "We return promptly to dismantle and clear once your work is done."),
-        ],
-        "faqs": [
-            ("What is domestic scaffolding?", "Domestic scaffolding refers to shorter-term access scaffold erected at an occupied home for maintenance, repair or cosmetic work. It typically covers one or two elevations for a limited hire period."),
-            ("How quickly can you erect domestic scaffolding?", "Most domestic scaffolding jobs in South Essex can be scheduled within 2–5 working days of a quote being approved."),
-            ("Do you notify neighbours before erecting scaffold?", "We recommend homeowners notify immediate neighbours before erection, particularly where scaffold is close to boundaries. We work tidily and efficiently to minimise any inconvenience."),
-        ],
-        "cta_label": "Need domestic scaffold access?",
-    },
     "roof-scaffolding": {
         "h1": "Roof Scaffolding in Essex",
         "who_for_detail": "Homeowners and roofing contractors requiring safe scaffold access to pitched or flat roofs for repairs, replacement, chimney work, ridge tiles, guttering or fascia and soffit replacement.",
@@ -4490,7 +4455,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             "Safety checks throughout the hire period",
             "Dismantling and site clearance on completion",
         ],
-        "pricing": "Roof scaffolding in Essex typically starts from £400–£600 for a single-pitch access scaffold on a standard semi-detached property, rising to £1,000–£2,000+ for detached houses, hipped roofs or properties requiring access to multiple elevations. Chimney scaffolds are priced individually based on height and access.",
+        "pricing": "Roof scaffolding in Essex typically costs <strong>£400–£900</strong> for a single-elevation access scaffold, <strong>£800–£1,800</strong> for a full-perimeter scaffold on a standard semi-detached or detached house, and <strong>£350–£600</strong> for a chimney scaffold. Hipped roofs, tall properties and difficult access cost more, and a highway licence, where needed, is additional.",
         "process_steps": [
             ("Tell us about the roof job", "Call us or complete the quote form with your address, roof type and the work being carried out. A site visit may be required for complex roofs."),
             ("Quotation", "We confirm the scaffold design, height, number of elevations and any special requirements. You receive a clear, itemised quote."),
@@ -6298,7 +6263,6 @@ def generate_robots_sitemap() -> None:
         ("/services", "0.8", "monthly"),
         ("/services/residential-scaffolding", "0.8", "monthly"),
         ("/services/commercial-scaffolding", "0.8", "monthly"),
-        ("/services/domestic-scaffolding", "0.8", "monthly"),
         ("/services/roof-scaffolding", "0.8", "monthly"),
         ("/services/temporary-roofing", "0.8", "monthly"),
         ("/services/emergency-scaffolding", "0.8", "monthly"),
