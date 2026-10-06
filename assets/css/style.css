@@ -208,7 +208,7 @@ textarea:focus-visible {
   transition:opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
 .nav-sub::before { content:""; position:absolute; left:0; right:0; top:-16px; height:16px; }
-.nav-sub-services { width:900px; display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem 1.5rem; }
+.nav-sub-services { width:max-content; max-width:calc(100vw - 2rem); display:grid; grid-template-columns:repeat(4,auto); gap:0.5rem 1.5rem; }
 .nav-sub-areas { width:430px; }
 .nav-sub-about { right:0; left:auto; }
 .nav-sub ul { list-style:none; margin:0; padding:0; }
@@ -220,13 +220,20 @@ textarea:focus-visible {
 .nav-sub a:not(.cta-pill)::after { display:none; }
 .nav-sub a:not(.cta-pill):hover, .nav-sub a:not(.cta-pill):focus-visible { color:var(--silver); text-decoration:underline; }
 .nav-sub-heading {
-  margin:0 0 0.3rem; color:var(--silver); font-size:0.72rem; font-weight:700;
+  margin:0 0 0.55rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-strong);
+  color:var(--silver); font-size:0.72rem; font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
 }
+.nav-group-toggle {
+  display:block; width:100%; background:none; border:0; padding:0; margin:0; color:inherit; font:inherit;
+  letter-spacing:inherit; text-transform:inherit; text-align:left; cursor:default; pointer-events:none;
+}
+.nav-group-toggle svg { display:none; }
 .nav-sub-group + .nav-sub-group { border-left:1px solid var(--border-strong); padding-left:1.5rem; }
-@media (min-width:769px) and (max-width:1100px) {
+@media (min-width:769px) and (max-width:1419px) {
   .nav-sub-services { width:560px; grid-template-columns:repeat(2,1fr); }
   .nav-sub-group:nth-child(3) { border-left:0; padding-left:0; }
+  .nav-sub-group:nth-child(n+3) { border-top:1px solid var(--border-strong); padding-top:1rem; margin-top:0.4rem; }
 }
 .nav-sub-cols { columns:2; column-gap:1.75rem; }
 .nav-sub-foot {
@@ -1336,6 +1343,8 @@ body.lightbox-open { overflow:hidden; }
   .site-cta-bar .site-cta-quote { background:#151515; color:#fff; }
   .site-cta-bar svg { margin:0; }
   body:has(.site-cta-bar) { padding-bottom:calc(56px + env(safe-area-inset-bottom)); }
+  /* Cookie banner sits above the sticky Call/WhatsApp/Quote bar, not over it. */
+  body:has(.site-cta-bar) .cookie-bar { bottom:calc(56px + env(safe-area-inset-bottom) + 2px); }
 }
 .mobile-cta-bar {
   display:none; position:fixed; bottom:0; left:0; right:0;
@@ -1422,8 +1431,13 @@ body.lightbox-open { overflow:hidden; }
   .nav-sub-group + .nav-sub-group { border-left:0; padding-left:0; }
   .nav-sub a:not(.cta-pill) { width:100%; font-size:var(--text-base); padding:0.55rem 0; border-bottom:0; white-space:normal; }
   .nav-sub-cols { columns:1; }
-  .nav-sub-heading { margin-top:0.9rem; }
-  .nav-sub-heading:first-child { margin-top:0.4rem; }
+  .nav-sub-heading { margin:0; padding:0; border-bottom:1px solid var(--border); font-size:0.8rem; }
+  .nav-sub-group:first-child .nav-sub-heading { margin-top:0.2rem; }
+  .nav-group-toggle { display:flex; align-items:center; justify-content:space-between; min-height:44px; pointer-events:auto; cursor:pointer; }
+  .nav-group-toggle svg { display:block; transition:transform 0.2s ease; }
+  .nav-sub-group.open .nav-group-toggle svg { transform:rotate(180deg); }
+  .nav-groups-js .nav-sub-group > ul { display:none; padding:0.2rem 0 0.5rem 0.5rem; }
+  .nav-groups-js .nav-sub-group.open > ul { display:block; }
   /* leave room under the drawer content for the sticky Call/WhatsApp/Quote bar */
   .site-nav { padding-bottom:calc(var(--space-6) + 84px); }
   /* Three in-flow children (logo, phone, toggle) — .site-nav is fixed and

@@ -171,6 +171,34 @@
     const toggle = item.querySelector('.nav-sub-toggle');
     if (toggle) toggle.addEventListener('click', () => item.classList.remove('nav-suppress'));
   });
+  // Mobile drawer: each Services group becomes its own collapsible sub-section.
+  const groupToggles = Array.from(document.querySelectorAll('.nav-group-toggle'));
+  if (groupToggles.length) {
+    const mqMobile = window.matchMedia('(max-width:768px)');
+    const syncGroups = () => {
+      groupToggles.forEach((b) => {
+        const g = b.closest('.nav-sub-group');
+        if (mqMobile.matches) {
+          b.removeAttribute('tabindex');
+          b.setAttribute('aria-expanded', g.classList.contains('open') ? 'true' : 'false');
+        } else {
+          b.setAttribute('tabindex', '-1');
+          b.removeAttribute('aria-expanded');
+          g.classList.remove('open');
+        }
+      });
+    };
+    const menuEl = document.getElementById('site-menu');
+    if (menuEl) menuEl.classList.add('nav-groups-js');
+    groupToggles.forEach((b) => b.addEventListener('click', () => {
+      if (!mqMobile.matches) return;
+      const g = b.closest('.nav-sub-group');
+      const open = g.classList.toggle('open');
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }));
+    mqMobile.addEventListener('change', syncGroups);
+    syncGroups();
+  }
   if (menuToggle && siteMenu) {
     menuToggle.addEventListener('click', () => {
       const open = siteMenu.classList.toggle('open');
