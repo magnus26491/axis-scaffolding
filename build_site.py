@@ -310,6 +310,36 @@ GUIDES = [
         "title": "Scaffolding for Roof and Solar Panel Work",
         "summary": "What HSE guidance says about edge protection, fragile roofs and ladders, and what that means for a re-roof or solar install.",
     },
+    {
+        "slug": "scaffolding-hire-essex",
+        "title": "Scaffolding Hire in Essex: How It Works",
+        "summary": "What a scaffold hire includes, how long a hire period lasts, extra-week costs and why scaffold is erected for you.",
+    },
+    {
+        "slug": "choose-a-scaffolding-company",
+        "title": "How to Choose a Scaffolding Company: 8 Questions to Ask",
+        "summary": "Qualifications, insurance, inspections, licences, quotes and reviews: what to ask before you book.",
+    },
+    {
+        "slug": "how-long-does-scaffolding-stay-up",
+        "title": "How Long Does Scaffolding Stay Up?",
+        "summary": "Typical erection and hire times for a re-roof, solar install, chimney, render and extension.",
+    },
+    {
+        "slug": "commercial-industrial-scaffolding-essex",
+        "title": "Commercial and Industrial Scaffolding in Essex",
+        "summary": "Surveys, RAMS, inspections, loading bays and programme planning for builders, developers and property managers.",
+    },
+    {
+        "slug": "emergency-scaffolding-storm-damage",
+        "title": "Storm Damage and Emergency Scaffolding: What to Do",
+        "summary": "What to do first when a roof or building needs urgent access, and what to tell a scaffolder.",
+    },
+    {
+        "slug": "safe-scaffold-homeowner-checklist",
+        "title": "What a Safe Scaffold Looks Like: A Homeowner's Checklist",
+        "summary": "The basics you can check yourself, what the law says about inspection, and what to do if something looks wrong.",
+    },
 ]
 
 # Curated, per-service selection from the general FAQs (see FAQS below)
@@ -3807,6 +3837,36 @@ GUIDE_FAQS: dict[str, list[tuple[str, str]]] = {
         ("Do you quote for free?", "Yes. Axis Scaffolding gives free, no-obligation quotes. Call " + NAP["phone"] + " or use the online quote form."),
         ("Why can't you give an exact price without seeing the job?", "Every property is different. The only reliable figure is a quote from a scaffolder who has assessed your specific project."),
     ],
+    "scaffolding-hire-essex": [
+        ("Can I hire scaffolding and erect it myself?", "Not from Axis Scaffolding. We do not generally supply materials for self-erection. HSE says scaffolds should be designed, erected, altered and dismantled only by competent people under a competent supervisor."),
+        ("How long can I hire scaffolding for?", "Hire is usually priced for a set period, often two to four weeks for a domestic job, with longer periods for builds such as extensions. Extra weeks typically cost around £50–£150 each."),
+        ("Is erection and dismantling included in the hire?", "Yes. Our hire includes qualified erection, an inspection certificate at handover, routine checks through the hire period and dismantling when your work is finished."),
+    ],
+    "choose-a-scaffolding-company": [
+        ("How do I check a scaffolder is qualified?", "Ask to see their CISRS card and check it on the NOCN card checker. CISRS is the scaffolders' training and record scheme."),
+        ("What insurance should a scaffolding company have?", "Public liability insurance, and you should ask to see evidence. Essex Highways requires £10 million public liability from scaffold licence applicants. Axis holds £10 million."),
+        ("What should a scaffolding quote include?", "The scaffold being supplied, the hire period, the extra-week rate, any highway licence cost and dismantling. Axis quotes are clear, itemised and no-obligation."),
+    ],
+    "how-long-does-scaffolding-stay-up": [
+        ("How long does it take to put scaffolding up?", "Most standard house scaffolds are erected in half a day to a full day, depending on size. Larger or more complex runs take longer."),
+        ("How long does scaffolding stay up for a roof replacement?", "Typically two to four weeks for a standard domestic re-roof, including time either side for weather and snagging."),
+        ("What happens if my job overruns?", "Tell us as early as you can. Extra weeks typically cost around £50–£150 each, and we will agree how to extend the hire with you before it runs on."),
+    ],
+    "commercial-industrial-scaffolding-essex": [
+        ("Do you provide RAMS for commercial scaffolding?", "Yes. Risk assessments and method statements are available on request and can be tailored to your principal contractor's requirements."),
+        ("Do you work on industrial buildings?", "Yes. We provide scaffold access for commercial premises including offices, retail units, schools and industrial buildings, quoted individually after a site survey."),
+        ("Can loading bays be added to a commercial scaffold?", "Yes. Loading bays can be integrated into a scaffold at any stage where materials need to be handled at height."),
+    ],
+    "emergency-scaffolding-storm-damage": [
+        ("What should I do first if my roof is storm damaged?", "Keep people away from the damaged area, stay off the roof, take photos from the ground and call a scaffolder early. HSE says all roofs should be treated as fragile."),
+        ("Do you offer emergency scaffolding?", "Yes. Axis Scaffolding prioritises urgent enquiries. Call " + NAP["phone"] + " and tell us the address, what needs access and whether scaffold will be on a pavement."),
+        ("Does emergency scaffolding cost more?", "Out-of-hours and same-day attendance may carry a premium. We give you a clear indication of cost and availability when you call."),
+    ],
+    "safe-scaffold-homeowner-checklist": [
+        ("How do I know a scaffold is safe?", "A properly built scaffold has guardrails and toe boards, fully boarded platforms, firm footing and a record of inspection, and has been erected by competent people."),
+        ("Do I have to check the scaffold myself?", "No. A competent person must inspect it. HSE says a scaffold from which a person might fall 2 metres or more needs an inspection on completion and at least weekly. Ask for the inspection record."),
+        ("What should I do if a scaffold looks damaged?", "Do not use it, keep people away and call the scaffolder. A scaffold may need inspecting after bad weather and must be inspected after any modification."),
+    ],
     "scaffold-inspection-requirements": [
         ("How often does a scaffold have to be inspected?", "HSE says the law requires inspection of scaffolding from which a person might fall 2 metres or more, with a report by a competent person on completion and at least weekly after that. It may also need inspecting after bad weather, and always after any modification."),
         ("Does a scaffold have to have a tag on it?", "No. HSE says tag systems are not a legal requirement; the legal duty is the inspection and the report. A visible tag is a useful way to show people it has been inspected."),
@@ -3852,7 +3912,9 @@ def guide_closing(slug: str) -> str:
 
 
 def related_guides_section(current_slug: str) -> str:
-    others = [g for g in GUIDES if g["slug"] != current_slug]
+    slugs = [g["slug"] for g in GUIDES]
+    k = slugs.index(current_slug)
+    others = [GUIDES[(k + n) % len(GUIDES)] for n in (1, 2, 3)]
     cards = "".join(
         f"""
 <article class="service-card">
@@ -4321,6 +4383,15 @@ def homepage() -> str:
       <li>Temporary roofing requirement</li>
     </ul>
     <p>We provide free, no-obligation quotations. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or complete the quote form below.</p>
+  </div>
+</section>
+
+<section class="section section-light hex-texture" aria-labelledby="guides-heading">
+  <div class="container">
+    <h2 id="guides-heading">Scaffolding Guides for Essex Homeowners and Trades</h2>
+    <p class="section-intro">Plain-English answers before you book: what it costs, how scaffold hire works, how to choose a company and what the law requires.</p>
+    <div class="services-grid">{"".join(f'<article class="service-card"><h3>{GUIDES_BY_SLUG[g]["title"]}</h3><p>{GUIDES_BY_SLUG[g]["summary"]}</p><a href="/guides/{g}">Read Guide &rarr;</a></article>' for g in ["scaffolding-cost-essex", "scaffolding-hire-essex", "choose-a-scaffolding-company"])}</div>
+    <p class="centered"><a class="btn btn-outline-orange" href="/guides">All Guides &rarr;</a></p>
   </div>
 </section>
 
@@ -5334,11 +5405,22 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
     )
 
 
+def area_title(area_name: str) -> str:
+    return f"Scaffolding in {area_name} \u2013 Local Scaffolders | Axis"
+
+
+def area_desc(area_name: str) -> str:
+    return (
+        f"Local {area_name} scaffolders: homes, roofs and commercial. CISRS-qualified, fully insured, "
+        f"{APPROVED_RATING['ratingValue']} from {APPROVED_RATING['reviewCount']} Google reviews. Free quote: {NAP['phone']}."
+    )
+
+
 def generate_pages() -> None:
     write(
         "index.html",
         render_page(
-            title="Scaffolding in Rayleigh and Essex | Axis Scaffolding Ltd",
+            title="Scaffolding Company in Rayleigh & Essex | Axis Scaffolding",
             desc="Rayleigh-based, CISRS-qualified scaffolders for homes, roofers and commercial sites across South Essex. 5.0 from 31 Google reviews. Free quotes: 01702 820468.",
             path="/",
             body=homepage(),
@@ -5865,6 +5947,206 @@ def generate_pages() -> None:
         ),
     )
 
+    # ── Six further guides: each answers one question a customer actually asks,
+    # using only facts already published on the site or verified against HSE /
+    # Essex Highways / CISRS pages (see the "Sources" line where one applies).
+    def _cta_row() -> str:
+        return f"""<div class="hero-cta-row" style="margin-top:1.5rem;">
+      <a class="btn btn-primary" href="/quote">Get a Free Quote</a>
+      <a class="btn btn-outline" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
+    </div>"""
+
+    def _cards(items: list[tuple[str, str]]) -> str:
+        return '<div class="decision-grid">' + "".join(
+            f'<div class="decision-card"><h3>{t}</h3><p>{d}</p></div>' for t, d in items
+        ) + "</div>"
+
+    def _src(*links: tuple[str, str]) -> str:
+        return '<p class="source-note">Sources checked October 2026: ' + " &middot; ".join(
+            f'<a href="{u}" target="_blank" rel="noopener">{t}</a>' for t, u in links
+        ) + "</p>"
+
+    def _guide(slug: str, crumb: str, h1: str, hero: str, meta_title: str, meta_desc: str, answer: str, dark: str, light: str) -> None:
+        body = (
+            inner_hero([("Home", "/"), ("Guides", "/guides"), (crumb, f"/guides/{slug}")], h1, hero)
+            + f"""
+<section class="section section-light hex-texture">
+  <div class="container direct-answer">
+    <h2>The Short Answer</h2>
+    {answer}
+  </div>
+</section>
+
+<section class="section section-dark hex-texture">
+  <div class="container">
+    {dark}
+  </div>
+</section>
+
+<section class="section section-light hex-texture">
+  <div class="container">
+    {light}
+    {_cta_row()}
+  </div>
+</section>
+"""
+            + guide_closing(slug)
+            + related_guides_section(slug)
+        )
+        write(
+            f"guides/{slug}/index.html",
+            render_page(
+                title=meta_title, desc=meta_desc, path=f"/guides/{slug}", body=body,
+                breadcrumb_items=[("Home", "/"), ("Guides", "/guides"), (crumb, f"/guides/{slug}")],
+            ),
+        )
+
+    _guide(
+        "scaffolding-hire-essex", "Scaffolding Hire in Essex",
+        "Scaffolding Hire in Essex: How It Works",
+        "What scaffolding hire actually includes, how long a hire period lasts and what to ask before you book.",
+        "Scaffolding Hire in Essex: How It Works | Axis",
+        "Scaffolding hire in Essex explained: what is included, typical hire periods, extra-week costs and why scaffold is erected by qualified scaffolders.",
+        "<p>In Essex, scaffolding hire normally means the scaffold is <strong>supplied, erected, inspected and dismantled for you</strong> by qualified scaffolders, for an agreed hire period. At Axis Scaffolding we hire scaffold as a complete, erected service. We do not generally supply materials for self-erection, because scaffold must be erected, altered and dismantled by competent people.</p>",
+        f"""<h2>What Is Included in a Hire?</h2>
+    {_cards([
+        ("Supply", "The scaffold tube, fittings, boards, guardrails and toe boards for your job, sized to your property."),
+        ("Erection", "CISRS-qualified operatives erect it to the agreed specification. A standard house is typically half a day to a full day."),
+        ("Inspection", "A scaffold inspection certificate is handed over, with routine checks through the hire period."),
+        ("Dismantling", "We return to strike and clear the scaffold when your work is finished, and the dismantle is part of the hire."),
+    ])}
+    <h2>How Long Is a Hire Period?</h2>
+    <p>Hire is usually priced for a set period, often two to four weeks for a domestic job, with longer periods for builds such as extensions. If your job overruns, extra weeks typically cost around &pound;50&ndash;&pound;150 each, so tell us your contractor's dates when you enquire and we will plan the hire around them. See <a href="/guides/how-long-does-scaffolding-stay-up">how long scaffolding stays up for each type of job</a>.</p>""",
+        f"""<h2>Can I Hire Scaffold and Put It Up Myself?</h2>
+    <p>Not from us. HSE says scaffolds should be designed, erected, altered and dismantled only by competent people, under the direction of a competent supervisor. That is why our hire includes qualified erection and dismantling.</p>
+    <h2>What Is Not Included?</h2>
+    <p>A highway licence, where scaffold is on or over a pavement, is a separate cost, and the scaffolding contractor applies for it (see our <a href="/guides/highway-licence-scaffolding">licence guide</a>). Extra weeks and alterations during the hire are quoted separately.</p>
+    <h2>Scaffolding Hire Near You</h2>
+    <p>We are based in Rayleigh and cover <a href="/areas/rayleigh">Rayleigh</a>, <a href="/areas/southend">Southend</a>, <a href="/areas/benfleet">Benfleet</a>, <a href="/areas/basildon">Basildon</a>, <a href="/areas/chelmsford">Chelmsford</a> and the rest of <a href="/areas">South Essex</a>. For typical prices, see the <a href="/guides/scaffolding-cost-essex">scaffolding cost guide</a>.</p>
+    {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"))}""",
+    )
+
+    _guide(
+        "choose-a-scaffolding-company", "Choosing a Scaffolding Company",
+        "How to Choose a Scaffolding Company: 8 Questions to Ask",
+        "A short checklist to separate qualified, insured scaffolders from the rest before you accept a quote.",
+        "How to Choose a Scaffolding Company: 8 Questions | Axis",
+        "Eight questions to ask any scaffolding company in Essex before you book: qualifications, insurance, inspections, licences, quotes and reviews.",
+        "<p>Ask for proof, not promises: <strong>CISRS cards</strong> for the people erecting the scaffold, evidence of <strong>public liability insurance</strong>, a <strong>scaffold inspection certificate</strong> at handover, who will handle any <strong>highway licence</strong>, and a written, itemised quote. A good scaffolder will answer all of it without hesitation.</p>",
+        f"""<h2>The 8 Questions</h2>
+    {_cards([
+        ("1. Are your scaffolders CISRS-qualified?", "CISRS cards show training in scaffolding. You can check a card on the <a href='https://cardchecker.nocn.org/' target='_blank' rel='noopener'>NOCN card checker</a>."),
+        ("2. What insurance do you hold?", "Ask to see public liability cover. Essex Highways requires &pound;10 million public liability from anyone applying for a scaffold licence. Axis holds &pound;10 million."),
+        ("3. Who inspects the scaffold?", "HSE says a competent person must inspect a scaffold from which a person might fall 2 metres or more, on completion and at least weekly. We hand over an inspection certificate on every job."),
+        ("4. Will I need a licence, and who applies?", "If scaffold is on or over a pavement or road, a licence is needed, and the contractor applies. Essex Highways states 15 working days; Southend-on-Sea City Council asks for 28 days' notice."),
+        ("5. Is the quote itemised and in writing?", "It should state the scaffold, hire period, extra-week rate, and any licence cost. Ours are clear, itemised and no-obligation."),
+        ("6. What happens if the job overruns?", "Ask the weekly rate for extra time before you agree. Typical extra weeks run around &pound;50&ndash;&pound;150."),
+        ("7. Who dismantles it, and when?", "Dismantling should be included and scheduled with you. Ours is part of the hire."),
+        ("8. What do other customers say?", "Read recent reviews. Axis has 5.0 from 31 Google reviews, which you can read on our Google profile."),
+    ])}""",
+        f"""<h2>Why Local Matters</h2>
+    <p>A scaffolder based nearby can respond quickly, knows local access and parking, and is easier to reach if something changes mid-job. We are based in Rayleigh and aim to respond to quote requests the same working day.</p>
+    <p>Related: <a href="/guides/scaffold-inspection-requirements">what the law requires for scaffold inspections</a>, <a href="/guides/scaffolding-cost-essex">what scaffolding costs in Essex</a>, and <a href="/about">about Axis Scaffolding</a>.</p>
+    {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"), ("NOCN card checker", "https://cardchecker.nocn.org/"))}""",
+    )
+
+    _guide(
+        "commercial-industrial-scaffolding-essex", "Commercial and Industrial Scaffolding",
+        "Commercial and Industrial Scaffolding in Essex: What a Contractor Needs",
+        "What builders, developers and property managers should expect from a scaffolding contractor on a commercial or industrial job.",
+        "Commercial and Industrial Scaffolding Essex | Axis",
+        "Commercial and industrial scaffolding in Essex: surveys, RAMS, inspections, loading bays and programme planning for builders, developers and property managers.",
+        "<p>A commercial or industrial scaffold should come with a <strong>site survey, risk assessments and method statements (RAMS)</strong>, qualified erection, <strong>inspections and a handover certificate</strong>, and a programme that matches yours. Axis Scaffolding provides RAMS on request and quotes commercial and industrial work individually after a survey.</p>",
+        f"""<h2>What a Commercial Job Needs</h2>
+    {_cards([
+        ("Site survey and design", "Access, scale and loading are assessed before a quotation, so the scaffold is designed for the building, not guessed."),
+        ("RAMS", "Risk assessments and method statements are available on request, and can be tailored to your principal contractor's requirements."),
+        ("Inspections and handover", "HSE says a scaffold from which a person might fall 2 metres or more needs a competent person's inspection on completion and at least weekly. We hand over an inspection certificate."),
+        ("Loading bays and access", "Where materials must reach height, loading bays can be integrated at any stage of the scaffold."),
+        ("Programme and hire", "Long-term hire can match your programme, with planned erection and strike dates."),
+        ("Licences", "If scaffold is on or over a pavement, a highway licence is needed and the contractor applies for it."),
+    ])}""",
+        f"""<h2>Who We Work With</h2>
+    <p>Builders, principal contractors, developers, property managers and the owners of offices, retail units, schools and industrial buildings. Commercial and industrial jobs are priced individually after a survey, because size, height, access and duration vary so much.</p>
+    <p>See our <a href="/services/commercial-scaffolding">commercial scaffolding</a>, <a href="/services/loading-bay-scaffolding">loading bay</a> and <a href="/services/scaffold-supply-erection">supply and erection</a> pages, or our <a href="/contractors">builders and contractors</a> page. We cover <a href="/areas/southend">Southend</a>, <a href="/areas/chelmsford">Chelmsford</a>, <a href="/areas/basildon">Basildon</a>, <a href="/areas/rayleigh">Rayleigh</a> and the rest of <a href="/areas">Essex</a>.</p>
+    {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"), ("Work at Height Regulations 2005", "https://www.legislation.gov.uk/uksi/2005/735/regulation/12"))}""",
+    )
+
+    _guide(
+        "emergency-scaffolding-storm-damage", "Emergency Scaffolding",
+        "Storm Damage and Emergency Scaffolding: What to Do",
+        "If your roof or building has been damaged and needs urgent access, here is what to do first and what to tell us.",
+        "Emergency Scaffolding After Storm Damage: What to Do | Axis",
+        "Storm-damaged roof or urgent access needed in Essex? What to do first, what to tell a scaffolder, and how Axis Scaffolding handles urgent enquiries.",
+        "<p>Stay off the roof, keep people away from the damaged area, and <strong>call a scaffolder as early as you can</strong>. Axis Scaffolding prioritises urgent enquiries. Tell us the address, what needs access, and whether the scaffold will need to go over a pavement, and we will tell you what is possible and how quickly.</p>",
+        f"""<h2>What to Do First</h2>
+    {_cards([
+        ("Keep people clear", "Keep people and pets away from the damaged area and from anything that could fall."),
+        ("Stay off the roof", "HSE says all roofs should be treated as fragile until a competent person has confirmed they are not. Do not climb up to look."),
+        ("Take photos from the ground", "Photographs of the damage help your roofer, builder and insurer, and help us understand what access is needed."),
+        ("Call early", "Urgent access can need planning, especially if it goes over a pavement. The earlier you call, the more options you have."),
+    ])}
+    <h2>What to Tell Us When You Call</h2>
+    <ul class="usp-list">
+      <li>The address and a rough idea of the building (house, flat, shop, unit)</li>
+      <li>Which part is damaged (roof, chimney, wall, gable) and how high it is</li>
+      <li>Whether scaffold will be on or over a pavement or road</li>
+      <li>Who is doing the repair, and when they can start</li>
+      <li>Any access issues: narrow driveway, gates, parking</li>
+    </ul>""",
+        f"""<h2>What Happens Next</h2>
+    <p>We assess access and the scaffold needed, give you a clear quote, and schedule erection as quickly as the job allows. Out-of-hours and same-day attendance may carry a premium. Once the repair is complete we dismantle and clear the scaffold. If a temporary roof is needed to keep the weather out, see <a href="/services/temporary-roofing">temporary roofing</a>.</p>
+    <p>More detail on our <a href="/services/emergency-scaffolding">emergency scaffolding service</a>, or read what <a href="/guides/scaffolding-for-roof-and-solar-work">HSE guidance says about roof work</a>.</p>
+    {_src(("HSE &mdash; roof work", "https://www.hse.gov.uk/construction/safetytopics/roofwork.htm"))}""",
+    )
+
+    _guide(
+        "how-long-does-scaffolding-stay-up", "How Long Scaffolding Stays Up",
+        "How Long Does Scaffolding Stay Up? Typical Times by Job",
+        "A realistic guide to erection time and hire length for the most common jobs on a home.",
+        "How Long Does Scaffolding Stay Up? By Job | Axis",
+        "How long does scaffolding stay up? Typical erection and hire times for a re-roof, solar install, chimney, render and extension, and what makes a job run longer.",
+        "<p>Most scaffolds go up in <strong>half a day to a day</strong>. How long they stay up depends on the job: a solar install is usually days, a chimney repair one to two weeks, a re-roof or render two to four weeks, and an extension four to eight weeks. These are typical figures, not guarantees; your quote confirms the real ones.</p>",
+        f"""<h2>Typical Times by Job</h2>
+    {_cards([
+        ("Solar panel install", "The install itself typically takes one to three days, so the scaffold is up for days rather than weeks. <a href='/services/solar-panel-scaffolding'>Solar scaffolding</a>."),
+        ("Chimney repair", "Repointing typically takes one to three days once access is in place, and the scaffold is usually up for one to two weeks. <a href='/services/chimney-scaffolding'>Chimney scaffolding</a>."),
+        ("Roof replacement", "A typical domestic re-roof takes two to five working days on site; the scaffold is normally up for two to four weeks. <a href='/services/roof-replacement-scaffolding'>Roof replacement scaffolding</a>."),
+        ("Rendering and painting", "Rendering typically takes four days to three weeks and cement-based render usually needs 7&ndash;14 days to dry before painting. Scaffold is normally up two to four weeks. <a href='/services/render-scaffolding'>Render scaffolding</a>."),
+        ("Extension", "Scaffold is typically up for four to eight weeks, and a loft conversion typically takes six to twelve weeks or more. <a href='/services/extension-loft-scaffolding'>Extension and loft scaffolding</a>."),
+    ])}""",
+        f"""<h2>What Makes a Job Run Longer?</h2>
+    <ul class="usp-list">
+      <li>Bad weather, which can stop roofing, rendering and brickwork</li>
+      <li>Problems found once work starts, such as rotted timbers</li>
+      <li>Materials or trades arriving late</li>
+      <li>Changes to the scope, such as an extra elevation</li>
+    </ul>
+    <h2>What Happens If It Overruns?</h2>
+    <p>Tell us as early as you can. Extra weeks typically cost around &pound;50&ndash;&pound;150 each, and we will agree how to extend the hire with you before it runs on. For more on hire, see <a href="/guides/scaffolding-hire-essex">scaffolding hire in Essex</a>, and for prices see the <a href="/guides/scaffolding-cost-essex">cost guide</a>.</p>""",
+    )
+
+    _guide(
+        "safe-scaffold-homeowner-checklist", "Safe Scaffold Checklist",
+        "What a Safe Scaffold Looks Like: A Homeowner's Checklist",
+        "You are not expected to inspect a scaffold, but you can check the basics and know what to ask for.",
+        "What a Safe Scaffold Looks Like: Homeowner Checklist | Axis",
+        "A plain-English checklist for homeowners: what a properly built scaffold has, what the law says about inspection, and what to do if something looks wrong.",
+        "<p>A properly built scaffold has <strong>guardrails and toe boards, fully boarded platforms, and a record of inspection</strong>, and it has been erected by competent people. HSE says a scaffold from which a person might fall 2 metres or more must be inspected on completion and at least weekly. If something looks wrong, do not use it, and call the scaffolder.</p>",
+        f"""<h2>What You Can See</h2>
+    {_cards([
+        ("Guardrails and toe boards", "Working platforms should have guardrails and toe boards. Our scaffolds are built with scaffold boards, guardrails and toe boards."),
+        ("Boarded platforms", "Platforms should be fully boarded, without gaps or loose boards."),
+        ("Firm footing", "Base plates and boards spread the load on the ground. On block-paved or resin driveways, tell us when you enquire so we can plan."),
+        ("A record of inspection", "You should be given an inspection certificate at handover. A visible tag is useful but is not a legal requirement; the written inspection is."),
+    ])}""",
+        f"""<h2>What to Do If Something Looks Wrong</h2>
+    <p>If a board is loose, a guardrail is missing or the scaffold has been knocked or damaged, do not use it. Keep people away and call the scaffolder. HSE says a scaffold may need inspecting after bad weather and must be inspected after any modification.</p>
+    <h2>Please Do Not Alter It Yourself</h2>
+    <p>Only competent people should erect, alter or dismantle a scaffold. If a trade needs a change, such as an extra lift or a moved board, ask the scaffolder to make it. Read more in our guide to <a href="/guides/scaffold-inspection-requirements">scaffold inspections</a>, or see <a href="/guides/choose-a-scaffolding-company">how to choose a scaffolding company</a>.</p>
+    {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"))}""",
+    )
+
     # ── Guides hub ───────────────────────────────────────────────────────────
     # Three genuine, differentiated guides (need? / cost? / licence?) with
     # no prior hub or cross-linking — this closes that gap rather than
@@ -6051,8 +6333,8 @@ def generate_pages() -> None:
         write(
             f"areas/{area_data['slug']}/index.html",
             render_page(
-                title=f"Scaffolding in {area_name} | Axis Scaffolding Essex",
-                desc=area_data["desc"],
+                title=area_title(area_name),
+                desc=area_desc(area_name),
                 path=f"/areas/{area_data['slug']}",
                 body=area_page_body(area_name, area_data),
                 breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
@@ -6080,8 +6362,8 @@ def generate_pages() -> None:
         write(
             f"areas/{area_data['slug']}/index.html",
             render_page(
-                title=f"Scaffolding in {area_name} | Axis Scaffolding Essex",
-                desc=area_data["desc"],
+                title=area_title(area_name),
+                desc=area_desc(area_name),
                 path=f"/areas/{area_data['slug']}",
                 body=expansion_area_page_body(area_name, area_data),
                 breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{area_data['slug']}")],
@@ -6290,6 +6572,12 @@ def generate_robots_sitemap() -> None:
         ("/guides/highway-licence-scaffolding", "0.7", "monthly"),
         ("/guides/scaffold-inspection-requirements", "0.7", "monthly"),
         ("/guides/scaffolding-for-roof-and-solar-work", "0.7", "monthly"),
+        ("/guides/scaffolding-hire-essex", "0.7", "monthly"),
+        ("/guides/choose-a-scaffolding-company", "0.7", "monthly"),
+        ("/guides/how-long-does-scaffolding-stay-up", "0.7", "monthly"),
+        ("/guides/commercial-industrial-scaffolding-essex", "0.7", "monthly"),
+        ("/guides/emergency-scaffolding-storm-damage", "0.7", "monthly"),
+        ("/guides/safe-scaffold-homeowner-checklist", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
     ]
