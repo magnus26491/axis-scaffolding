@@ -107,7 +107,7 @@ jobs:
               "Wickford": "wickford", "Hadleigh": "hadleigh", "Leigh-on-Sea": "leigh-on-sea",
               "Thundersley": "thundersley", "Hockley": "hockley", "Rochford": "rochford",
           }.items():
-              if f'href="/areas/{slug}">{name}</a>' not in homepage:
+              if f'href="/areas/{slug}/">{name}</a>' not in homepage:
                   errors.append(f"Homepage area link missing for: {name}")
 
           # Check sitemap does not contain noindex pages.
@@ -116,10 +116,11 @@ jobs:
           if noindex_in_sitemap:
               errors.append(f"Noindex pages in sitemap: {noindex_in_sitemap}")
 
-          # Sitemap URLs should match the site's canonical non-trailing-slash strategy.
+          # Sitemap URLs must use the trailing-slash form GitHub Pages actually serves
+          # (the bare form 301-redirects, so listing it creates "page with redirect").
           for loc in re.findall(r"<loc>(.*?)</loc>", sitemap):
-              if loc != "https://www.axisscaffoldingessex.co.uk/" and loc.endswith("/"):
-                  errors.append(f"Trailing-slash sitemap URL conflicts with canonical strategy: {loc}")
+              if not loc.endswith("/"):
+                  errors.append(f"Sitemap URL is not in the served trailing-slash form: {loc}")
 
           # Preferred canonical hostname is WWW. The bare (non-www) hostname is a valid
           # *redirect source* (GitHub Pages, via CNAME, 301s it to the www host) but must

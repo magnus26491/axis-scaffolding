@@ -69,6 +69,20 @@ LEGACY_TOP_TARGETS = {
 }
 
 
+# GitHub Pages serves every folder page at "/x/" and 301-redirects "/x" to it.
+# Canonical URLs, sitemap URLs and internal links therefore use the trailing-
+# slash form, so none of them points at a URL that itself redirects.
+_ABS_URL = re.compile(
+    r"(" + re.escape(SITE) + r"/[A-Za-z0-9_\-/]*[A-Za-z0-9_\-])(?=[\"'<\s#?,)\\])"
+)
+_REL_HREF = re.compile(r"(href=[\"'])(/[A-Za-z0-9_\-/]*[A-Za-z0-9_\-])(?=[#?\"'])")
+
+
+def add_trailing_slashes(text: str) -> str:
+    text = _ABS_URL.sub(r"\1/", text)
+    return _REL_HREF.sub(r"\1\2/", text)
+
+
 def clean_metadata(html: str) -> str:
     html = re.sub(r'\s*<meta name="google-site-verification" content="REPLACE_WITH_GSC_CODE">', "", html)
     html = re.sub(r'\s*<meta name="revisit-after" content="30 days">', "", html)
@@ -87,7 +101,12 @@ def fix_homepage(html: str) -> str:
     return html
 
 
+def _slash(target: str) -> str:
+    return target if target.endswith("/") else target + "/"
+
+
 def normalise_legacy_redirect_page(path: Path, target: str) -> None:
+    target = _slash(target)
     target_url = SITE + target
     html = f'''<!doctype html>
 <html lang="en-GB">
@@ -113,12 +132,12 @@ def write_redirects() -> None:
         f"{OLD_SITE}/* {SITE}/:splat 301!",
         f"https://www.axisscaffolding.co.uk/* {SITE}/:splat 301!",
     ]
-    lines.extend(f"/{src} {target} 301" for src, target in LEGACY_TOP_TARGETS.items())
+    lines.extend(f"/{src} {_slash(target)} 301" for src, target in LEGACY_TOP_TARGETS.items())
     lines.extend(
-        f"/{src.removesuffix('/index.html')} {target} 301" for src, target in LEGACY_SERVICE_TARGETS.items()
+        f"/{src.removesuffix('/index.html')} {_slash(target)} 301" for src, target in LEGACY_SERVICE_TARGETS.items()
     )
     lines.extend(
-        f"/areas/{slug}.html {target} 301"
+        f"/areas/{slug}.html {_slash(target)} 301"
         for slug, target in LEGACY_AREA_TARGETS.items()
     )
     (ROOT / "_redirects").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -129,19 +148,19 @@ def update_sitemap() -> None:
     if not path.exists():
         return
     xml = path.read_text(encoding="utf-8")
-    xml = re.sub(r"(<loc>" + re.escape(SITE) + r"/[^<]*?)/</loc>", r"\1</loc>", xml)
 
+    xml = add_trailing_slashes(xml)
     existing = set(re.findall(r"<loc>(.*?)</loc>", xml))
     additions = []
     for slug in ("brentwood", "loughton", "london"):
-        url = f"{SITE}/areas/{slug}"
+        url = f"{SITE}/areas/{slug}/"
         if url not in existing and (ROOT / "areas" / slug / "index.html").exists():
             additions.append(
                 f"  <url><loc>{url}</loc><lastmod>2026-08-26</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>"
             )
     if additions:
         xml = xml.replace("</urlset>", "\n" + "\n".join(additions) + "\n</urlset>")
-    path.write_text(xml, encoding="utf-8")
+    path.write_text(add_trailing_slashes(xml), encoding="utf-8")
 
 
 def main() -> None:
@@ -154,7 +173,12 @@ def main() -> None:
             html = fix_homepage(html)
         if len(html_path.parts) >= 3 and html_path.parts[-3] == "areas" and html_path.name == "index.html":
             html = fix_area_page(html)
+        html = add_trailing_slashes(html)
         html_path.write_text(html, encoding="utf-8")
+
+    llms = ROOT / "llms.txt"
+    if llms.exists():
+        llms.write_text(add_trailing_slashes(llms.read_text(encoding="utf-8")), encoding="utf-8")
 
     for slug, target in LEGACY_AREA_TARGETS.items():
         normalise_legacy_redirect_page(ROOT / "areas" / f"{slug}.html", target)
