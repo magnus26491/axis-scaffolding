@@ -49,3 +49,11 @@ Only facts already on the site or verified against HSE, Essex Highways, Southend
 ## 5. How to measure
 
 Track monthly in Search Console: impressions, clicks, CTR and average position for the queries named above, plus calls and WhatsApp messages. Titles and descriptions typically need a few weeks to be re-crawled; new pages need longer. Judge success on clicks and enquiries, not impressions.
+
+## 6. Indexing finding (Search Console coverage export, 29 October 2026)
+
+Of about 129 URLs Google knows, 41 are indexed and 88 are not. The biggest buckets: 49 "Page with redirect", 13 "Alternative page with proper canonical tag", 20 "Discovered, currently not indexed", 4 "noindex" (intended: legal pages, thank-you, landing pages), 3 "Crawled, currently not indexed", 1 "404".
+
+Cause of the first two: GitHub Pages serves every page at the trailing-slash URL and 301-redirects the bare URL to it, but the site's canonical tags, sitemap and internal links all used the bare URL. Google was told to index a URL that itself redirects, and the page it landed on said the redirecting URL was canonical. Fixed by making canonicals, sitemap, `llms.txt`, redirect stubs and internal links use the trailing-slash form, so every URL points at itself.
+
+After deploy: resubmit the sitemap, then in Search Console open Pages and click "Validate fix" on the redirect and canonical rows. Expect weeks, not days, for the counts to settle. The 20 "discovered, not indexed" pages are mostly new and low-authority-site crawl delay; links, reviews and the actions in section 3 are what move those.
