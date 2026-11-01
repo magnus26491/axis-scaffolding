@@ -230,6 +230,26 @@ SERVICES = [
         "audience": "Homeowners & Builders",
         "card_blurb": "Scaffold for the whole build, from walls to roof.",
     },
+    {
+        "slug": "industrial-scaffolding",
+        "name": "Industrial Scaffolding",
+        "title": "Industrial Scaffolding Essex | Axis Scaffolding",
+        "desc": "Industrial scaffolding in Essex for units, warehouses and workshops: survey, RAMS, inspections and loading bays from CISRS-qualified scaffolders. Call 01702 820468.",
+        "summary": "Planned scaffold access for industrial buildings: survey, RAMS, inspections, loading bays and programme-led erection and strike.",
+        "who_for": "Builders, contractors, property managers and business owners needing scaffold on industrial units, warehouses and workshops.",
+        "audience": "Industrial & Trade",
+        "card_blurb": "Planned access for industrial units, warehouses and workshops.",
+    },
+    {
+        "slug": "access-specialist-scaffolding",
+        "name": "Access and Specialist Scaffolding",
+        "title": "Access and Specialist Scaffolding Essex | Axis Scaffolding",
+        "desc": "Access and specialist scaffolding in Essex for awkward, one-off and specialised jobs, with bespoke design where needed. CISRS-qualified. Call 01702 820468.",
+        "summary": "Scaffold access for awkward, restricted and one-off jobs, with a bespoke design where a standard scaffold will not do.",
+        "who_for": "Homeowners, trades and businesses whose job has restricted access, a shopfront or pavement, a specialist structure or an unusual brief.",
+        "audience": "Specialist Jobs",
+        "card_blurb": "Awkward, restricted or one-off access, designed to fit.",
+    },
 ]
 
 # Phase 6 — customer-facing service groups. This is a navigation/UX
@@ -270,13 +290,13 @@ SERVICE_GROUPS = [
         "key": "commercial-trade",
         "name": "Commercial & Trade",
         "intro": "Scaffolding for builders, roofers and commercial projects.",
-        "slugs": ["commercial-scaffolding", "loading-bay-scaffolding", "scaffold-supply-erection"],
+        "slugs": ["commercial-scaffolding", "industrial-scaffolding", "loading-bay-scaffolding", "scaffold-supply-erection"],
     },
     {
         "key": "specialist",
         "name": "Specialist",
         "intro": "For temporary protection, urgent access and scaffold removal.",
-        "slugs": ["temporary-roofing", "emergency-scaffolding", "dismantling-scaffolding"],
+        "slugs": ["access-specialist-scaffolding", "temporary-roofing", "emergency-scaffolding", "dismantling-scaffolding"],
     },
 ]
 
@@ -365,6 +385,8 @@ SERVICE_GENERAL_FAQ_SLUGS = {
     "chimney-scaffolding": ["cost"],
     "render-scaffolding": ["cost"],
     "extension-loft-scaffolding": ["cost", "speed"],
+    "industrial-scaffolding": ["cisrs", "coverage"],
+    "access-specialist-scaffolding": ["cisrs", "speed"],
 }
 
 
@@ -388,6 +410,8 @@ def _build_service_guide_map() -> dict[str, str]:
             mapping[slug] = "highway-licence-scaffolding"
     for slug in ("roof-replacement-scaffolding", "solar-panel-scaffolding", "chimney-scaffolding"):
         mapping[slug] = "scaffolding-for-roof-and-solar-work"
+    mapping["industrial-scaffolding"] = "commercial-industrial-scaffolding-essex"
+    mapping["access-specialist-scaffolding"] = "types-of-scaffolding"
     return mapping
 
 
@@ -3657,6 +3681,15 @@ HOME_RECENT_PROJECTS = ["project-1", "project-2", "project-5", "project-6", "pro
 # nothing matching that label or a temporary weatherproof roof. Flagged
 # during live-site review; genuine Axis work, but its real job/location
 # needs confirming before it can carry a specific claim again.
+# project-4 may be shown on the specialist access page with a caption that says
+# only what is visible (an access scaffold inside a hangar, around an aircraft) —
+# no location or customer claim, per the note above.
+EXTRA_PAGE_PHOTOS = {
+    "project-4": {"slug": "project-4", "label": "Specialist Access Scaffold", "location": "", "area_slug": "",
+                  "desc": "Specialist access scaffold built around an aircraft inside a hangar.",
+                  "category": "commercial", "service_slug": "access-specialist-scaffolding", "w": 640, "h": 800},
+}
+
 UNTAGGED_PHOTOS = [
     {"slug": "project-4", "w": 640, "h": 800},
     {"slug": "project-15", "w": 1536, "h": 2048},
@@ -3751,8 +3784,7 @@ SERVICES_BY_SLUG = {svc["slug"]: svc for svc in SERVICES}
 SERVICE_CARD_PHOTO = {
     "residential-scaffolding": "project-7",
     "roof-scaffolding": "project-14",
-    "commercial-scaffolding": "project-18",
-    "loading-bay-scaffolding": "project-4",
+    "commercial-scaffolding": "project-11",
     "scaffold-supply-erection": "project-9",
     "temporary-roofing": "project-10",
     "emergency-scaffolding": "project-3",
@@ -3760,10 +3792,16 @@ SERVICE_CARD_PHOTO = {
     "roof-replacement-scaffolding": "project-8",
     "solar-panel-scaffolding": "project-16",
     "chimney-scaffolding": "project-15",
-    "render-scaffolding": "project-11",
+    "render-scaffolding": "project-17",
     "extension-loft-scaffolding": "project-13",
+    "access-specialist-scaffolding": "project-4",
+    # Stock photograph (Pexels, photo 39078620; free to use, no attribution needed),
+    # used ONLY as a decorative card strip until a real Axis industrial job photo is
+    # supplied. It is never captioned or presented as Axis work.
+    "industrial-scaffolding": "stock-industrial",
 }
 _CARD_PHOTO_WIDTH = {  # native widths from PROJECTS / UNTAGGED_PHOTOS
+    "stock-industrial": 900,
     **{p["slug"]: p["w"] for p in PROJECTS},
     **{u["slug"]: u["w"] for u in UNTAGGED_PHOTOS},
 }
@@ -4842,6 +4880,84 @@ SERVICE_DETAIL: dict[str, dict] = {
         ],
         "cta_label": "Planning an extension or loft conversion?",
     },
+    "industrial-scaffolding": {
+        "h1": "Industrial Scaffolding in Essex",
+        "who_for_detail": "Builders, contractors, property managers and business owners who need scaffold on industrial units, warehouses and workshops, whether for roof and cladding work, refurbishment, maintenance or an extension.",
+        "at_a_glance": [("Pricing", "Quoted individually after a site survey"), ("Paperwork", "RAMS available on request"), ("Inspection", "Certificate at handover, then at least weekly"), ("Programme", "Planned erection and strike dates")],
+        "whats_included": [
+            "Pre-contract site survey and scaffold design for the building, not a guess",
+            "Risk assessments and method statements (RAMS) available on request",
+            "Installation by CISRS-qualified operatives",
+            "Loading bays where materials must be landed at height",
+            "Scaffold inspection certificate at handover, with routine checks through the hire",
+            "Long-term hire to match your programme, with alterations as the job progresses",
+            "Bespoke scaffold design for specialised jobs where a standard configuration will not do",
+            "Emergency calls taken out of hours",
+        ],
+        "safety": [
+            ("Planned, supervised, competent", "The Work at Height Regulations 2005 require work at height to be properly planned, supervised and carried out by competent people, after the risks are assessed. A scaffold built for the building and its loads is part of that plan."),
+            ("Inspected on completion and at least weekly", "HSE says the law requires inspection of scaffolding from which a person might fall 2 metres or more, with a report by a competent person on completion and at least weekly after that, and after bad weather or any modification."),
+            ("Assume the roof is fragile", "HSE says all roofs should be treated as fragile until a competent person has confirmed they are not, and that no sheeted roof, ridge or purlin should be assumed to support a person's weight. Industrial roofs are often sheeted, so access is planned from outside and below."),
+            ("Paperwork your site manager expects", "RAMS are available on request and can be tailored to your principal contractor's requirements. Tell us your site rules when you enquire."),
+        ],
+        "timeline": "Industrial scaffolds are planned to your programme: we agree erection, any alterations and the strike date up front. Smaller scaffolds on a unit go up in a day or two; larger or complex runs take longer, and we confirm this after the survey.",
+        "pricing": "Industrial scaffolding is priced individually. Size, height, access, loading, duration and documentation vary too much for a standard figure, so we survey the site and give you a clear, itemised quotation.",
+        "photo_slugs": ["project-19", "project-2"],
+        "process_steps": [
+            ("Tell us about the site", "Call 01702 820468 or send the site address, the work being done and your programme."),
+            ("Survey and design", "We visit, assess access, height and loading, and design the scaffold. RAMS are provided on request."),
+            ("Quotation", "You receive a clear, itemised quotation aligned to your programme."),
+            ("Erection and handover", "CISRS-qualified operatives erect to specification and hand over an inspection certificate."),
+            ("Checks, alterations and strike", "The scaffold is checked through the hire, altered as the job progresses and struck on the agreed date."),
+        ],
+        "faqs": [
+            ("Do you provide industrial scaffolding in Essex?", "Yes. We provide scaffold access for industrial buildings, including units, warehouses and workshops, across Essex. Call " + NAP["phone"] + " with the site address."),
+            ("Do you provide RAMS for industrial jobs?", "Yes. Risk assessments and method statements are available on request and can be tailored to your principal contractor's requirements."),
+            ("How is industrial scaffolding priced?", "Individually, after a site survey. There is no standard rate because size, height, access, loading and duration vary so much."),
+            ("How often is an industrial scaffold inspected?", "HSE says a scaffold from which a person might fall 2 metres or more needs inspecting on completion and at least weekly, and after bad weather or modification. We hand over an inspection certificate and check the scaffold routinely through the hire."),
+            ("Can you design a scaffold for an unusual industrial job?", "Yes, for specialised jobs where a standard scaffold will not do, we can provide a bespoke design. Standard jobs do not need one."),
+        ],
+        "cta_label": "Planning scaffold for an industrial site?",
+        "cta_is_phone": True,
+    },
+    "access-specialist-scaffolding": {
+        "h1": "Access and Specialist Scaffolding in Essex",
+        "who_for_detail": "Homeowners, trades and businesses whose job does not suit a standard scaffold: restricted access, a shopfront or pavement, a walkway or handrail, access to a roof or around an unusual structure, or any one-off brief.",
+        "at_a_glance": [("Best for", "Awkward, restricted or one-off access"), ("Design", "Bespoke for specialised jobs"), ("Paperwork", "Inspection certificate; RAMS on request"), ("Pricing", "Quoted after we assess the job")],
+        "whats_included": [
+            "A site assessment of access, height, ground and what the scaffold must carry",
+            "Bespoke scaffold design where a standard configuration will not do",
+            "Shopfront and pavement access, with highway licence support where one is needed",
+            "Walkways, handrails and stair access for people to reach work areas",
+            "Roof access for solar installation, roofing and chimney work",
+            "Loading bays and temporary roofs where the job needs them",
+            "Installation by CISRS-qualified operatives, with an inspection certificate at handover",
+        ],
+        "safety": [
+            ("Plan the access first", "The Work at Height Regulations 2005 require work at height to be properly planned, supervised and carried out by competent people. For awkward jobs the planning is most of the job."),
+            ("Inspected on completion and at least weekly", "HSE says a scaffold from which a person might fall 2 metres or more needs a report by a competent person on completion and at least weekly, and after bad weather or modification."),
+            ("Edge protection on roofs", "HSE says sloping roofs require scaffolding to prevent people or materials falling from the edge, with edge protection at the eaves."),
+            ("Pavement scaffolds need a licence", "Scaffold on or over a pavement needs a licence from the highway authority, applied for by the contractor: Essex Highways, Southend-on-Sea City Council or Thurrock Council depending on where the job is."),
+        ],
+        "timeline": "Specialist jobs vary, so we give timings after we have assessed the job. Tell us the date you need access by and what the scaffold must do, and we will say what is possible.",
+        "pricing": "Access and specialist scaffolding is priced individually once we have assessed access, height and duration, because no two specialised jobs are the same.",
+        "photo_slugs": ["project-4", "project-18", "project-3"],
+        "process_steps": [
+            ("Describe the job", "Call 01702 820468 or send photos and the address. Tell us what needs access and by when."),
+            ("We assess", "We look at access, ground, height and loading, and decide whether a standard scaffold will do or a bespoke design is needed."),
+            ("Clear quote", "You receive an itemised, no-obligation quote."),
+            ("Built and handed over", "CISRS-qualified operatives erect the scaffold and hand over an inspection certificate."),
+            ("Checked and struck", "The scaffold is checked through the hire and dismantled when you finish."),
+        ],
+        "faqs": [
+            ("What is access scaffolding?", "Scaffold that gives people a safe working platform and a safe way up to reach work at height. Most house and commercial scaffolds are access scaffolds."),
+            ("What counts as specialist scaffolding?", "Jobs where a standard scaffold will not do: restricted access, shopfronts and pavements, walkways and handrails, access around an unusual structure, or a one-off brief. Specialised jobs can have a bespoke design."),
+            ("Do you offer bespoke scaffold designs?", "Yes, for specialised jobs only. Standard jobs use standard configurations and do not need a bespoke design."),
+            ("Can you scaffold a shopfront or a pavement?", "Yes, with a highway licence where scaffold is on or over the pavement. The contractor applies for the licence and we will tell you at quotation stage whether you need one."),
+            ("Can you send someone to assess an awkward job?", "Yes. Call " + NAP["phone"] + " or send photos and the address, and we will tell you what the job needs."),
+        ],
+        "cta_label": "Got an awkward or specialised job?",
+    },
 }
 
 
@@ -4887,7 +5003,7 @@ def service_detail_body(service: dict) -> str:
 
     photo_slugs = detail.get("photo_slugs")
     if photo_slugs:
-        by_slug = {p["slug"]: p for p in PROJECTS}
+        by_slug = {**{p["slug"]: p for p in PROJECTS}, **EXTRA_PAGE_PHOTOS}
         related = [by_slug[x] for x in photo_slugs if x in by_slug]
     else:
         related = [p for p in PROJECTS if p["service_slug"] == slug][:3]
@@ -5271,7 +5387,9 @@ AREA_NAME_ALIASES = {"South Benfleet": "Benfleet"}
 
 AREA_SERVICE_LINKS = [
     ("Domestic and residential scaffolding", "/services/residential-scaffolding"),
-    ("Commercial and industrial scaffolding", "/services/commercial-scaffolding"),
+    ("Commercial scaffolding", "/services/commercial-scaffolding"),
+    ("Industrial scaffolding", "/services/industrial-scaffolding"),
+    ("Access and specialist scaffolding", "/services/access-specialist-scaffolding"),
     ("Roof replacement scaffolding", "/services/roof-replacement-scaffolding"),
     ("Solar panel scaffolding", "/services/solar-panel-scaffolding"),
     ("Chimney scaffolding", "/services/chimney-scaffolding"),
@@ -6224,7 +6342,7 @@ def generate_pages() -> None:
     ])}""",
         f"""<h2>Who We Work With</h2>
     <p>Builders, principal contractors, developers, property managers and the owners of offices, retail units, schools and industrial buildings. Commercial and industrial jobs are priced individually after a survey, because size, height, access and duration vary so much.</p>
-    <p>See our <a href="/services/commercial-scaffolding">commercial scaffolding</a>, <a href="/services/loading-bay-scaffolding">loading bay</a> and <a href="/services/scaffold-supply-erection">supply and erection</a> pages, or our <a href="/contractors">builders and contractors</a> page. We cover <a href="/areas/southend">Southend</a>, <a href="/areas/chelmsford">Chelmsford</a>, <a href="/areas/basildon">Basildon</a>, <a href="/areas/rayleigh">Rayleigh</a> and the rest of <a href="/areas">Essex</a>.</p>
+    <p>See our <a href="/services/commercial-scaffolding">commercial scaffolding</a>, <a href="/services/industrial-scaffolding">industrial scaffolding</a>, <a href="/services/loading-bay-scaffolding">loading bay</a> and <a href="/services/scaffold-supply-erection">supply and erection</a> pages, or our <a href="/contractors">builders and contractors</a> page. We cover <a href="/areas/southend">Southend</a>, <a href="/areas/chelmsford">Chelmsford</a>, <a href="/areas/basildon">Basildon</a>, <a href="/areas/rayleigh">Rayleigh</a> and the rest of <a href="/areas">Essex</a>.</p>
     {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"), ("Work at Height Regulations 2005", "https://www.legislation.gov.uk/uksi/2005/735/regulation/12"))}""",
     )
 
@@ -6328,7 +6446,7 @@ def generate_pages() -> None:
       <li>The roof is coming off in bad-weather months: ask about a temporary roof</li>
       <li>A short, light task a few metres up: a ladder or tower may do, but HSE says ladders are for tasks lasting minutes</li>
     </ul>
-    <p>Not sure? Read <a href="/guides/do-i-need-scaffolding">do I need scaffolding?</a>, or describe your job on <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> and we will tell you. Types, sizes and loading for tube-and-fitting scaffolds are set out in the NASC's TG20 guidance, which scaffolders work from.</p>
+    <p>Awkward or one-off job? See <a href="/services/access-specialist-scaffolding">access and specialist scaffolding</a>. Not sure? Read <a href="/guides/do-i-need-scaffolding">do I need scaffolding?</a>, or describe your job on <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> and we will tell you. Types, sizes and loading for tube-and-fitting scaffolds are set out in the NASC's TG20 guidance, which scaffolders work from.</p>
     {_src(("HSE &mdash; roof work", "https://www.hse.gov.uk/construction/safetytopics/roofwork.htm"), ("NASC &mdash; TG20 guide", "https://nasc.org.uk/product/tg20-21-operational-guide-hard-copy.html"))}""",
     )
 
@@ -6763,6 +6881,8 @@ def generate_robots_sitemap() -> None:
         ("/services/chimney-scaffolding", "0.8", "monthly"),
         ("/services/render-scaffolding", "0.7", "monthly"),
         ("/services/extension-loft-scaffolding", "0.7", "monthly"),
+        ("/services/industrial-scaffolding", "0.8", "monthly"),
+        ("/services/access-specialist-scaffolding", "0.8", "monthly"),
         ("/gallery", "0.7", "monthly"),
         ("/about", "0.7", "monthly"),
         ("/contact", "0.8", "monthly"),
