@@ -94,3 +94,22 @@ Earlier changes already cover hire, solar, chimney, emergency, inspection and th
 ## 4. Why this works as one plan
 
 The same pages feed both channels. A page that matches the search (a town page for a town search, the solar page for a solar search) ranks better, converts better, and lifts Google's Ads quality score, which lowers cost per click. That is why the order is: tracking first, then structure, then spend.
+
+## 5. Search Console export, 16 months to 1 November 2026
+
+| Measure | Value |
+|---|---|
+| Clicks / impressions | 139 / 61.4k (UK: 128 clicks) |
+| Brand query "axis scaffolding" | 32 clicks, 21% CTR, but average position 4.0 (it should be 1) |
+| Impressions by position | 1-3: 6.3k · 4-10: 8.0k · 11-20: 3.7k · 21-50: 32.5k · 51+: 7.5k |
+| Devices | desktop 83 clicks, mobile 54, tablet 2 (similar CTR) |
+| Host Google shows | non-www 72.6k impressions, www 16.5k, **http://www 2.9k** |
+
+Findings:
+
+1. **HTTPS is not enforced.** `http://www.axisscaffoldingessex.co.uk/` answers 200 (checked 1 November 2026) and Google is showing it, at position 2.26 with 2,942 impressions. Enforcing HTTPS in GitHub Pages settings is a one-click fix.
+2. **Google still shows the non-www address** for most impressions. The bare host redirects correctly to www, and the canonical fix on 29 October points everything at www, so this should consolidate over the coming weeks. Nothing more to do in code.
+3. **Rayleigh ranks 1 to 3 for dozens of long, odd queries and gets almost no clicks** ("rental scaffolding material rayleigh" 1.1, "industrial scaffolding companies rayleigh" 1.07). Most of this looks like automated or tool-generated search traffic, not customers. Do not chase it. Only "scaffolding rayleigh" (3 clicks at position 3.6) is real demand.
+4. **The real opportunity is pages 2 to 4.** 69% of impressions are at position 21 or lower: "scaffolding essex" 2,525 impressions at 31, "commercial scaffolding essex" 963 at 32, "domestic scaffolding essex" 911 at 26, "scaffolding southend" 899 at 35, "scaffolders benfleet" 574 at 24.
+5. **Close to page one:** "temporary roofing benfleet" (10.1), "scaffolding for roofing contractors essex" (10.6), "commercial scaffolding rochford" (11.4), "temporary roofing essex" (12.2), "specialist scaffolding in wickford" (12.6), "scaffolding rochford" (13.1, 200 impressions), "scaffolding canvey island" (16.1, 312 impressions). Small boosts (links, reviews, a sharper page) can tip these onto page one.
+6. **Best-ranking pages are the smaller towns** (Loughton 19-20, Rochford 24, Wickford 27, gallery 21). The big ones (Southend 43, Chelmsford 50, Brentwood 42-44) need authority, not rewording.
