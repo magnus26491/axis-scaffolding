@@ -152,7 +152,7 @@ def update_sitemap() -> None:
     xml = add_trailing_slashes(xml)
     existing = set(re.findall(r"<loc>(.*?)</loc>", xml))
     additions = []
-    for slug in ("brentwood", "loughton", "london"):
+    for slug in ("brentwood", "loughton", "london", "westcliff-on-sea", "shoebury", "laindon", "pitsea", "hawkwell", "billericay", "maldon", "colchester", "grays"):
         url = f"{SITE}/areas/{slug}/"
         if url not in existing and (ROOT / "areas" / slug / "index.html").exists():
             additions.append(

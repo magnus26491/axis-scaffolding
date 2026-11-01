@@ -113,3 +113,12 @@ Findings:
 4. **The real opportunity is pages 2 to 4.** 69% of impressions are at position 21 or lower: "scaffolding essex" 2,525 impressions at 31, "commercial scaffolding essex" 963 at 32, "domestic scaffolding essex" 911 at 26, "scaffolding southend" 899 at 35, "scaffolders benfleet" 574 at 24.
 5. **Close to page one:** "temporary roofing benfleet" (10.1), "scaffolding for roofing contractors essex" (10.6), "commercial scaffolding rochford" (11.4), "temporary roofing essex" (12.2), "specialist scaffolding in wickford" (12.6), "scaffolding rochford" (13.1, 200 impressions), "scaffolding canvey island" (16.1, 312 impressions). Small boosts (links, reviews, a sharper page) can tip these onto page one.
 6. **Best-ranking pages are the smaller towns** (Loughton 19-20, Rochford 24, Wickford 27, gallery 21). The big ones (Southend 43, Chelmsford 50, Brentwood 42-44) need authority, not rewording.
+
+## 6. Owner answers (1 November 2026) and what they change
+
+- **Coverage:** Axis works everywhere in Essex. Pages added for Westcliff-on-Sea, Shoebury, Laindon, Pitsea, Hawkwell, Billericay, Maldon, Colchester and Grays. Colchester and Maldon are therefore **in area**: keep those Ads keywords (and their conversions) rather than pausing them. Scaffold licences for these towns come from Essex Highways, Southend-on-Sea City Council (Westcliff, Shoebury) or Thurrock Council (Grays).
+- **Value of a lead:** about £1,000 per job and, conservatively, 1 in 2 calls becomes a job, so a call is worth about £500 of revenue. Current cost is about £20 per call and £68 per counted conversion. Even if only the 21 counted conversions were real, that is roughly 10 jobs (about £10,500) from £1,430 of spend, around 7 pounds of revenue per pound spent. The limit on growth is volume, not cost: impressions fell 42% and clicks 36% on the previous period.
+- **What that means for Ads:** raise the daily budget and bids rather than trimming. A sensible ceiling for a counted conversion is £150 to £200 until margin is known (the owner should confirm margin per job). Judge by cost per job won, using the call log.
+- **Bespoke design:** available for specialised jobs only. The commercial page and commercial guide now say so; standard jobs are not described as bespoke.
+- **Emergencies:** emergency calls are taken out of hours. Stated on the emergency page and the emergency guide. The site still makes no "24-hour" claim.
+- **Case studies:** details to follow from Ashley (town, work done, photo, customer quote), then one page per job.
