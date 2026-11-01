@@ -530,7 +530,7 @@ def local_business_schema() -> dict:
 
 def _area_served() -> list[dict]:
     places = [{"@type": "City", "name": name} for name in AREA_DATA]
-    places += [{"@type": "City", "name": n} for n in ("Brentwood", "Loughton")]
+    places += [{"@type": "City", "name": n} for n in ("Brentwood", "Loughton", *MORE_ESSEX_TOWNS)]
     places += [
         {"@type": "AdministrativeArea", "name": "London"},
         {"@type": "AdministrativeArea", "name": "Essex"},
@@ -604,8 +604,11 @@ def service_faqs(slug: str) -> list[tuple[str, str]]:
 
 
 def _area_licence_answer(area_name: str) -> str:
-    if area_name == "Southend-on-Sea":
+    authority = AREA_AUTHORITY.get(area_name, "essex")
+    if authority == "southend":
         who = "Southend-on-Sea City Council, which asks for at least 28 days' notice"
+    elif authority == "thurrock":
+        who = "Thurrock Council, which is the highway authority there rather than Essex County Council"
     else:
         who = "Essex Highways (Essex County Council), which states 15 working days to process an application"
     return (f"Yes, if any scaffold stands on or projects over a public pavement or road. In {area_name} the licence comes from {who}. "
@@ -620,7 +623,7 @@ def area_faqs(area_name: str) -> list[tuple[str, str]]:
         (
             f"Do you provide scaffolding in {area_name}?",
             f"Yes. Axis Scaffolding Ltd is based in Rayleigh, Essex, and provides domestic, residential, roof and commercial "
-            f"scaffolding in {area_name} and across South Essex. Call {NAP['phone']} or request a quote online to confirm your exact location.",
+            f"scaffolding in {area_name} and across Essex. Call {NAP['phone']} or request a quote online to confirm your exact location.",
         ),
         (f"How much does scaffolding cost in {area_name}?", FAQS_BY_SLUG["cost"][1]),
         (f"How quickly can scaffolding be erected in {area_name}?", FAQS_BY_SLUG["speed"][1]),
@@ -655,7 +658,7 @@ def _auto_page_schemas(title: str, desc: str, path: str) -> list[dict]:
         if faqs:
             out.append(faq_page_schema(faqs))
     elif len(parts) == 2 and parts[0] == "areas":
-        name = next((n for n, d in AREA_DATA.items() if d["slug"] == parts[1]), None)
+        name = next((n for n, d in {**AREA_DATA, **MORE_ESSEX_TOWNS}.items() if d["slug"] == parts[1]), None)
         if name:
             out.append(faq_page_schema(area_faqs(name)))
     elif len(parts) == 2 and parts[0] == "guides":
@@ -3792,8 +3795,13 @@ SERVICE_CARD_PHOTO = {
     "render-scaffolding": "project-17",
     "extension-loft-scaffolding": "project-13",
     "access-specialist-scaffolding": "project-4",
+    # Stock photograph (Pexels, photo 39078620; free to use, no attribution needed),
+    # used ONLY as a decorative card strip until a real Axis industrial job photo is
+    # supplied. It is never captioned or presented as Axis work.
+    "industrial-scaffolding": "stock-industrial",
 }
 _CARD_PHOTO_WIDTH = {  # native widths from PROJECTS / UNTAGGED_PHOTOS
+    "stock-industrial": 900,
     **{p["slug"]: p["w"] for p in PROJECTS},
     **{u["slug"]: u["w"] for u in UNTAGGED_PHOTOS},
 }
@@ -3901,7 +3909,7 @@ GUIDE_FAQS: dict[str, list[tuple[str, str]]] = {
     ],
     "emergency-scaffolding-storm-damage": [
         ("What should I do first if my roof is storm damaged?", "Keep people away from the damaged area, stay off the roof, take photos from the ground and call a scaffolder early. HSE says all roofs should be treated as fragile."),
-        ("Do you offer emergency scaffolding?", "Yes. Axis Scaffolding prioritises urgent enquiries. Call " + NAP["phone"] + " and tell us the address, what needs access and whether scaffold will be on a pavement."),
+        ("Do you offer emergency scaffolding?", "Yes. Axis Scaffolding prioritises urgent enquiries and takes emergency calls out of hours. Call " + NAP["phone"] + " and tell us the address, what needs access and whether scaffold will be on a pavement."),
         ("Does emergency scaffolding cost more?", "Out-of-hours and same-day attendance may carry a premium. We give you a clear indication of cost and availability when you call."),
     ],
     "types-of-scaffolding": [
@@ -4545,6 +4553,7 @@ SERVICE_DETAIL: dict[str, dict] = {
             "Pre-contract site survey and scaffold design",
             "Risk assessments and method statements (RAMS) available on request",
             "Installation by CISRS-qualified operatives to TG20 or bespoke design",
+            "Bespoke scaffold design for specialised jobs where a standard configuration will not do",
             "Loading bay scaffold integration where materials handling is required",
             "Regular statutory inspections and handover certificates",
             "Long-term hire arrangements to match project programmes",
@@ -4623,7 +4632,7 @@ SERVICE_DETAIL: dict[str, dict] = {
         "h1": "Emergency Scaffolding in Essex",
         "who_for_detail": "Anyone facing an urgent structural access need — storm-damaged roofs, structural instability, post-incident protection or emergency access requirements that cannot wait for a standard scheduling window.",
         "whats_included": [
-            "Priority response for urgent enquiries — call 01702 820468",
+            "Priority response for urgent enquiries — call 01702 820468, including out of hours",
             "Rapid site assessment to determine the scaffold required",
             "Same-day or next-day erection where operatives are available",
             "Temporary propping, debris protection and access scaffold as required",
@@ -5346,6 +5355,33 @@ EXPANSION_AREA_DATA: dict[str, dict] = {
 }
 
 
+# Further Essex towns Axis serves (owner-confirmed: "everywhere in Essex"). Pages
+# carry only facts that apply to the place: postcode, district, and the council
+# that issues scaffold licences there. No invented local detail.
+MORE_ESSEX_TOWNS: dict[str, dict] = {
+    "Westcliff-on-Sea": {"slug": "westcliff-on-sea", "postcode": "SS0", "district": "Southend-on-Sea", "authority": "southend",
+                         "nearby": ["Southend-on-Sea", "Leigh-on-Sea", "Rochford"]},
+    "Shoebury": {"slug": "shoebury", "postcode": "SS3", "district": "Southend-on-Sea", "authority": "southend",
+                 "nearby": ["Southend-on-Sea", "Rochford", "Westcliff-on-Sea"]},
+    "Laindon": {"slug": "laindon", "postcode": "SS15", "district": "Basildon", "authority": "essex",
+                "nearby": ["Basildon", "Pitsea", "Wickford", "Billericay"]},
+    "Pitsea": {"slug": "pitsea", "postcode": "SS13", "district": "Basildon", "authority": "essex",
+               "nearby": ["Basildon", "Benfleet", "Laindon", "Wickford"]},
+    "Hawkwell": {"slug": "hawkwell", "postcode": "SS5", "district": "Rochford", "authority": "essex",
+                 "nearby": ["Rochford", "Hockley", "Rayleigh"]},
+    "Billericay": {"slug": "billericay", "postcode": "CM11 / CM12", "district": "Basildon", "authority": "essex",
+                   "nearby": ["Basildon", "Wickford", "Laindon", "Chelmsford"]},
+    "Maldon": {"slug": "maldon", "postcode": "CM9", "district": "Maldon", "authority": "essex",
+               "nearby": ["Chelmsford", "Wickford"]},
+    "Colchester": {"slug": "colchester", "postcode": "CO1 to CO4", "district": "Colchester", "authority": "essex",
+                   "nearby": ["Chelmsford", "Maldon"]},
+    "Grays": {"slug": "grays", "postcode": "RM16 / RM17", "district": "Thurrock", "authority": "thurrock",
+              "nearby": ["Basildon", "Brentwood", "Laindon"]},
+}
+AREA_AUTHORITY = {n: d["authority"] for n, d in MORE_ESSEX_TOWNS.items()}
+AREA_AUTHORITY["Southend-on-Sea"] = "southend"
+
+
 AREA_NAME_ALIASES = {"South Benfleet": "Benfleet"}
 
 
@@ -5461,6 +5497,8 @@ def area_page_body(area_name: str, data: dict) -> str:
 
 
 def _expansion_nearby_slug(name: str) -> str | None:
+    if name in MORE_ESSEX_TOWNS:
+        return MORE_ESSEX_TOWNS[name]["slug"]
     if name in EXPANSION_AREA_DATA:
         return EXPANSION_AREA_DATA[name]["slug"]
     target = AREA_DATA.get(AREA_NAME_ALIASES.get(name, name))
@@ -5547,6 +5585,87 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
   <div class="container cta-banner-inner">
     <div>
       <h2>Need Scaffolding in {area_name}?</h2>
+      <p>Call our team for a free no-obligation quote.</p>
+    </div>
+    <div class="hero-cta-row">
+      <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
+      <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
+    </div>
+  </div>
+</section>
+"""
+    )
+
+
+
+def essex_town_page_body(town: str, d: dict) -> str:
+    nearby = " &bull; ".join(
+        f'<a href="/areas/{_expansion_nearby_slug(n)}">{n}</a>' for n in d["nearby"] if _expansion_nearby_slug(n)
+    )
+    auth = d["authority"]
+    if auth == "southend":
+        licence = (f"{town} is in Southend-on-Sea, so scaffold on or over a pavement needs a licence from Southend-on-Sea City Council. "
+                   "The council asks for at least 28 days' notice and requires a licence for any projection over the highway at any height. "
+                   "The licence is applied for by the scaffolding contractor.")
+    elif auth == "thurrock":
+        licence = (f"{town} is in Thurrock, where the highway authority is Thurrock Council rather than Essex County Council. "
+                   "If scaffold will be on or over a pavement or road, a licence from the council is needed and the contractor applies for it. "
+                   "We will tell you at quotation stage whether your job needs one.")
+    else:
+        licence = (f"{town} is in the {d['district']} area, where Essex County Council (Essex Highways) is the highway authority. "
+                   "Scaffold on or over a pavement needs a licence, applied for by the scaffolding contractor, and Essex Highways states 15 working days to process an application.")
+    return (
+        inner_hero(
+            [("Home", "/"), ("Areas", "/areas"), (town, f"/areas/{d['slug']}")],
+            f"Scaffolding in {town}, Essex",
+            f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
+            "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes.",
+        )
+        + f"""
+<section class="section section-light hex-texture">
+  <div class="container direct-answer">
+    <h2>Scaffolders in {town}</h2>
+    <p>Yes, we cover {town}. We are CISRS-qualified and fully insured, based in <a href="/areas/rayleigh">Rayleigh</a>, and rated 5.0 from {APPROVED_RATING['reviewCount']} Google reviews. Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or request a free quote and we will confirm timings for your address.</p>
+  </div>
+</section>
+
+<section class="section section-dark hex-texture">
+  <div class="container">
+    <h2>Every Job We Scaffold in {town}</h2>
+    {area_service_links(town)}
+    <p>Typical prices are in our <a href="/guides/scaffolding-cost-essex">scaffolding cost guide</a>, and typical times in <a href="/guides/how-long-does-scaffolding-stay-up">how long scaffolding stays up</a>.</p>
+  </div>
+</section>
+
+<section class="section hex-texture">
+  <div class="container">
+    <h2>Pavement Licences in {town}</h2>
+    <p>{licence}</p>
+    <p>See our <a href="/guides/highway-licence-scaffolding">scaffold licence guide</a> for how it works.</p>
+    <h2>Nearby Areas We Also Cover</h2>
+    <p>{nearby}</p>
+    <p>We cover all of Essex. <a href="/areas">See every area</a> or <a href="/contact">contact us</a> to confirm your location.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Get a Free Quote in {town}</h2>
+    {quote_form(f'area-{d["slug"]}', f'Request a Free Quote — {town}')}
+  </div>
+</section>
+
+<section class="section section-light faq-wrap">
+  <div class="container">
+    <h2>Scaffolding in {town}: Common Questions</h2>
+    {faq_accordion(area_faqs(town), id_prefix=f'faq-{d["slug"]}')}
+  </div>
+</section>
+
+<section class="cta-banner hex-texture">
+  <div class="container cta-banner-inner">
+    <div>
+      <h2>Need Scaffolding in {town}?</h2>
       <p>Call our team for a free no-obligation quote.</p>
     </div>
     <div class="hero-cta-row">
@@ -6219,6 +6338,7 @@ def generate_pages() -> None:
         ("Loading bays and access", "Where materials must reach height, loading bays can be integrated at any stage of the scaffold."),
         ("Programme and hire", "Long-term hire can match your programme, with planned erection and strike dates."),
         ("Licences", "If scaffold is on or over a pavement, a highway licence is needed and the contractor applies for it."),
+        ("Bespoke design", "For specialised jobs where a standard scaffold configuration will not do, a bespoke scaffold design can be produced. Standard jobs do not need one."),
     ])}""",
         f"""<h2>Who We Work With</h2>
     <p>Builders, principal contractors, developers, property managers and the owners of offices, retail units, schools and industrial buildings. Commercial and industrial jobs are priced individually after a survey, because size, height, access and duration vary so much.</p>
@@ -6232,7 +6352,7 @@ def generate_pages() -> None:
         "If your roof or building has been damaged and needs urgent access, here is what to do first and what to tell us.",
         "Emergency Scaffolding After Storm Damage: What to Do | Axis",
         "Storm-damaged roof or urgent access needed in Essex? What to do first, what to tell a scaffolder, and how Axis Scaffolding handles urgent enquiries.",
-        "<p>Stay off the roof, keep people away from the damaged area, and <strong>call a scaffolder as early as you can</strong>. Axis Scaffolding prioritises urgent enquiries. Tell us the address, what needs access, and whether the scaffold will need to go over a pavement, and we will tell you what is possible and how quickly.</p>",
+        "<p>Stay off the roof, keep people away from the damaged area, and <strong>call a scaffolder as early as you can</strong>. Axis Scaffolding prioritises urgent enquiries and takes emergency calls out of hours. Tell us the address, what needs access, and whether the scaffold will need to go over a pavement, and we will tell you what is possible and how quickly.</p>",
         f"""<h2>What to Do First</h2>
     {_cards([
         ("Keep people clear", "Keep people and pets away from the damaged area and from anything that could fall."),
@@ -6451,6 +6571,16 @@ def generate_pages() -> None:
         ),
     )
 
+    for town, d in MORE_ESSEX_TOWNS.items():
+        write(
+            f"areas/{d['slug']}/index.html",
+            render_page(
+                title=area_title(town), desc=area_desc(town), path=f"/areas/{d['slug']}",
+                body=essex_town_page_body(town, d),
+                breadcrumb_items=[("Home", "/"), ("Areas", "/areas"), (town, f"/areas/{d['slug']}")],
+            ),
+        )
+
     # ── Areas hub ────────────────────────────────────────────────────────────
     # Was a hand-authored, frozen-in-time static file using an outdated nav/
     # footer/cookie-bar template (no "For Builders"/"Projects" nav items, a
@@ -6476,6 +6606,14 @@ def generate_pages() -> None:
     <h2>Also Serving</h2>
     <p class="section-intro">Beyond our core South Essex coverage above, we also regularly take on work in these areas.</p>
     <ul class="area-pills">{expansion_area_pills()}</ul>
+  </div>
+</section>
+
+<section class="section section-light hex-texture">
+  <div class="container">
+    <h2>More Towns Across Essex</h2>
+    <p class="section-intro">We work everywhere in Essex. These towns have their own pages too.</p>
+    <ul class="area-pills">{"".join(f'<li><a class="area-pill-link" href="/areas/{d["slug"]}">{n}</a></li>' for n, d in MORE_ESSEX_TOWNS.items())}</ul>
   </div>
 </section>
 

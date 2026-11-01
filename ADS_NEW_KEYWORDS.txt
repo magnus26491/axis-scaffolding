@@ -1,0 +1,179 @@
+# AD GROUP: Near me  (landing page: homepage)
+[scaffolding near me]
+"scaffolders near me"
+"scaffolding companies near me"
+"scaffolding company near me"
+[local scaffolders]
+"local scaffolders near me"
+[scaffold firms near me]
+
+# AD GROUP: Towns  (landing page: /areas/[town]/ — set each town's keywords to its own page)
+[scaffolding rayleigh]
+"scaffolders rayleigh"
+"scaffolding company rayleigh"
+[scaffolding southend]
+"scaffolders southend"
+"scaffolding company southend"
+[scaffolding southend-on-sea]
+"scaffolders southend-on-sea"
+"scaffolding company southend-on-sea"
+[scaffolding benfleet]
+"scaffolders benfleet"
+"scaffolding company benfleet"
+[scaffolding basildon]
+"scaffolders basildon"
+"scaffolding company basildon"
+[scaffolding chelmsford]
+"scaffolders chelmsford"
+"scaffolding company chelmsford"
+[scaffolding wickford]
+"scaffolders wickford"
+"scaffolding company wickford"
+[scaffolding hadleigh]
+"scaffolders hadleigh"
+"scaffolding company hadleigh"
+[scaffolding leigh-on-sea]
+"scaffolders leigh-on-sea"
+"scaffolding company leigh-on-sea"
+[scaffolding canvey island]
+"scaffolders canvey island"
+"scaffolding company canvey island"
+[scaffolding thundersley]
+"scaffolders thundersley"
+"scaffolding company thundersley"
+[scaffolding hockley]
+"scaffolders hockley"
+"scaffolding company hockley"
+[scaffolding rochford]
+"scaffolders rochford"
+"scaffolding company rochford"
+[scaffolding westcliff-on-sea]
+"scaffolders westcliff-on-sea"
+"scaffolding company westcliff-on-sea"
+[scaffolding shoebury]
+"scaffolders shoebury"
+"scaffolding company shoebury"
+[scaffolding laindon]
+"scaffolders laindon"
+"scaffolding company laindon"
+[scaffolding pitsea]
+"scaffolders pitsea"
+"scaffolding company pitsea"
+[scaffolding hawkwell]
+"scaffolders hawkwell"
+"scaffolding company hawkwell"
+[scaffolding billericay]
+"scaffolders billericay"
+"scaffolding company billericay"
+[scaffolding maldon]
+"scaffolders maldon"
+"scaffolding company maldon"
+[scaffolding colchester]
+"scaffolders colchester"
+"scaffolding company colchester"
+[scaffolding grays]
+"scaffolders grays"
+"scaffolding company grays"
+[scaffolding brentwood]
+"scaffolders brentwood"
+"scaffolding company brentwood"
+[scaffolding loughton]
+"scaffolders loughton"
+"scaffolding company loughton"
+
+# AD GROUP: Essex-wide  (landing page: homepage)
+[scaffolding essex]
+"scaffolders essex"
+"scaffolding company essex"
+"scaffolding contractors essex"
+"scaffolding services essex"
+"local scaffolders essex"
+"domestic scaffolding essex"
+"residential scaffolding essex"
+"house scaffolding essex"
+
+# AD GROUP: Solar  (landing page: /services/solar-panel-scaffolding/)
+"solar panel scaffolding essex"
+"solar installation scaffolding essex"
+"scaffolding for solar panels essex"
+"solar panel scaffolding rayleigh"
+"solar panel scaffolding southend"
+"solar panel scaffolding basildon"
+"solar panel scaffolding chelmsford"
+"solar panel scaffolding benfleet"
+"solar panel scaffolding wickford"
+"solar panel scaffolding canvey island"
+
+# AD GROUP: Roof and chimney  (landing pages: /services/roof-replacement-scaffolding/ , /services/chimney-scaffolding/)
+"roof scaffolding essex"
+"roof replacement scaffolding essex"
+"scaffolding for roofers essex"
+"scaffolding for roofing contractors essex"
+"roof repair scaffolding essex"
+"chimney scaffolding essex"
+"chimney scaffold essex"
+
+# AD GROUP: Extension, loft and render  (landing pages: /services/extension-loft-scaffolding/ , /services/render-scaffolding/)
+"extension scaffolding essex"
+"loft conversion scaffolding essex"
+"scaffolding for extensions essex"
+"scaffolding for loft conversion"
+"render scaffolding essex"
+"scaffolding for rendering essex"
+
+# AD GROUP: Temporary roofing  (landing page: /services/temporary-roofing/)
+"temporary roofing essex"
+"temporary roof scaffolding essex"
+"temporary roofs essex"
+"scaffolders for temporary roofs essex"
+"temporary roofing rayleigh"
+"temporary roofing benfleet"
+"temporary roofing basildon"
+"temporary roofing southend"
+"temporary roofing wickford"
+
+# AD GROUP: Emergency  (landing page: /services/emergency-scaffolding/)
+[emergency scaffolding]
+"emergency scaffolding essex"
+"urgent scaffolding essex"
+"emergency scaffolders essex"
+"emergency scaffolding southend"
+"emergency scaffolding basildon"
+"emergency scaffolding chelmsford"
+"emergency scaffolding rayleigh"
+
+# AD GROUP: Commercial and industrial  (landing page: /services/commercial-scaffolding/)
+"commercial scaffolding essex"
+"commercial scaffolders essex"
+"industrial scaffolding essex"
+"scaffolding for builders essex"
+"scaffolding contractors for developers essex"
+"commercial scaffolding southend"
+"commercial scaffolding rayleigh"
+"commercial scaffolding basildon"
+"commercial scaffolding chelmsford"
+"commercial scaffolding benfleet"
+"commercial scaffolding wickford"
+"commercial scaffolding rochford"
+"industrial scaffolding southend"
+"industrial scaffolding basildon"
+"industrial scaffolding rayleigh"
+
+# AD GROUP: Hire, erected for you  (landing page: /guides/scaffolding-hire-essex/)
+"scaffolding hire essex"
+"scaffold hire essex"
+"scaffolding for hire essex"
+"scaffolding hire rayleigh"
+"scaffolding hire southend"
+"scaffolding hire benfleet"
+"scaffolding hire basildon"
+"scaffolding hire chelmsford"
+"scaffolding hire wickford"
+"scaffolding hire colchester"
+"scaffolding hire maldon"
+
+# CAMPAIGN: London  (landing page: /areas/london/ — separate campaign and budget)
+"scaffolding london"
+"scaffolders london"
+"scaffolding company london"
+"scaffolding east london"
