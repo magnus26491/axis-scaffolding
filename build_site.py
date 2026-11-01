@@ -336,6 +336,11 @@ GUIDES = [
         "summary": "What to do first when a roof or building needs urgent access, and what to tell a scaffolder.",
     },
     {
+        "slug": "types-of-scaffolding",
+        "title": "Types of Scaffolding: Which One Does Your Job Need?",
+        "summary": "Independent, chimney, loading bay, birdcage, tower and temporary roof scaffolds explained, with what each is used for.",
+    },
+    {
         "slug": "safe-scaffold-homeowner-checklist",
         "title": "What a Safe Scaffold Looks Like: A Homeowner's Checklist",
         "summary": "The basics you can check yourself, what the law says about inspection, and what to do if something looks wrong.",
@@ -1507,6 +1512,10 @@ textarea:focus-visible {
 .source-note a { color:#c8cdd4; text-decoration:underline; }
 @media (max-width:900px) { .glance-grid { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:420px) { .glance-value { font-size:1.05rem; } }
+.area-service-list { list-style:none; margin:0 0 2rem; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.6rem 2rem; }
+.area-service-list li { border-bottom:1px solid var(--border); padding:0.5rem 0; }
+.area-service-list a { font-weight:600; }
+@media (max-width:640px) { .area-service-list { grid-template-columns:1fr; } }
 /* Nav phone links */
 .nav-phone-desktop { font-weight:600; color:#c8cdd4 !important; font-size:0.95rem; }
 .nav-phone-mobile { display:none; font-weight:700; color:#c8cdd4; font-size:0.85rem; text-decoration:none; }
@@ -3862,6 +3871,11 @@ GUIDE_FAQS: dict[str, list[tuple[str, str]]] = {
         ("Do you offer emergency scaffolding?", "Yes. Axis Scaffolding prioritises urgent enquiries. Call " + NAP["phone"] + " and tell us the address, what needs access and whether scaffold will be on a pavement."),
         ("Does emergency scaffolding cost more?", "Out-of-hours and same-day attendance may carry a premium. We give you a clear indication of cost and availability when you call."),
     ],
+    "types-of-scaffolding": [
+        ("What type of scaffold is used on a house?", "Most house jobs use an independent tied scaffold: a freestanding frame built against the building and tied to it, used for roof, wall and extension work."),
+        ("Can I use a scaffold tower for roof work?", "A tower suits short, light tasks. For roof work HSE says sloping roofs need scaffolding to prevent falls from the edge, so a proper scaffold with edge protection is needed."),
+        ("What is a chimney scaffold?", "A smaller scaffold that gives a stable working platform around a chimney stack, used for repointing, flashing repairs and rebuilds."),
+    ],
     "safe-scaffold-homeowner-checklist": [
         ("How do I know a scaffold is safe?", "A properly built scaffold has guardrails and toe boards, fully boarded platforms, firm footing and a record of inspection, and has been erected by competent people."),
         ("Do I have to check the scaffold myself?", "No. A competent person must inspect it. HSE says a scaffold from which a person might fall 2 metres or more needs an inspection on completion and at least weekly. Ask for the inspection record."),
@@ -5224,6 +5238,29 @@ EXPANSION_AREA_DATA: dict[str, dict] = {
 AREA_NAME_ALIASES = {"South Benfleet": "Benfleet"}
 
 
+AREA_SERVICE_LINKS = [
+    ("Domestic and residential scaffolding", "/services/residential-scaffolding"),
+    ("Commercial and industrial scaffolding", "/services/commercial-scaffolding"),
+    ("Roof replacement scaffolding", "/services/roof-replacement-scaffolding"),
+    ("Solar panel scaffolding", "/services/solar-panel-scaffolding"),
+    ("Chimney scaffolding", "/services/chimney-scaffolding"),
+    ("Extension and loft scaffolding", "/services/extension-loft-scaffolding"),
+    ("Render and painting scaffolding", "/services/render-scaffolding"),
+    ("Temporary roofing scaffolding", "/services/temporary-roofing"),
+    ("Emergency scaffolding", "/services/emergency-scaffolding"),
+    ("Scaffolding hire", "/guides/scaffolding-hire-essex"),
+]
+
+
+def area_service_links(area_name: str) -> str:
+    """Keyword-anchored links from each town page to the job pages: lets a
+    visitor (and a search engine) see exactly which jobs we do in that town."""
+    items = "".join(
+        f'<li><a href="{href}">{label} in {area_name}</a></li>' for label, href in AREA_SERVICE_LINKS
+    )
+    return f'<ul class="area-service-list">{items}</ul>'
+
+
 def area_page_body(area_name: str, data: dict) -> str:
     # Link to the real area page, not /contact — every "nearby" name here
     # is a genuine AREA_DATA entry (or a known alias of one, e.g. "South
@@ -5273,6 +5310,8 @@ def area_page_body(area_name: str, data: dict) -> str:
 <section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Services in {area_name}</h2>
+    <p class="section-intro">Every job we scaffold in {area_name}:</p>
+    {area_service_links(area_name)}
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
@@ -5352,6 +5391,8 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
 <section class="section section-light hex-texture">
   <div class="container">
     <h2>Our Scaffolding Services</h2>
+    <p class="section-intro">Every job we scaffold in {area_name}:</p>
+    {area_service_links(area_name)}
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
@@ -5710,7 +5751,7 @@ def generate_pages() -> None:
     write(
         "guides/scaffolding-cost-essex/index.html",
         render_page(
-            title="How Much Does Scaffolding Cost in Essex? | Axis Scaffolding",
+            title="Scaffolding Prices in Essex: 2026 Cost Guide | Axis",
             desc="Scaffolding cost guide for Essex homeowners and contractors — typical price ranges for domestic, roof, chimney and extension jobs. Free quotes.",
             path="/guides/scaffolding-cost-essex",
             body=cost_guide_body,
@@ -5765,7 +5806,7 @@ def generate_pages() -> None:
     write(
         "guides/do-i-need-scaffolding/index.html",
         render_page(
-            title="Do I Need Scaffolding? | Axis Scaffolding Essex",
+            title="How to Tell If You Need Scaffolding | Axis Scaffolding",
             desc="Find out whether your building or repair project needs scaffolding. Practical guidance on when scaffold is required and when a ladder may be sufficient.",
             path="/guides/do-i-need-scaffolding",
             body=need_scaffold_body,
@@ -6145,6 +6186,35 @@ def generate_pages() -> None:
     <h2>Please Do Not Alter It Yourself</h2>
     <p>Only competent people should erect, alter or dismantle a scaffold. If a trade needs a change, such as an extra lift or a moved board, ask the scaffolder to make it. Read more in our guide to <a href="/guides/scaffold-inspection-requirements">scaffold inspections</a>, or see <a href="/guides/choose-a-scaffolding-company">how to choose a scaffolding company</a>.</p>
     {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"))}""",
+    )
+
+
+    _guide(
+        "types-of-scaffolding", "Types of Scaffolding",
+        "Types of Scaffolding: Which One Does Your Job Need?",
+        "The main types of scaffold used on homes and commercial buildings in Essex, what each is for and how to tell which you need.",
+        "Types of Scaffolding Explained: Which Do You Need? | Axis",
+        "Independent, chimney, birdcage, loading bay, tower and temporary roof scaffolds explained in plain English, with what each is used for on homes and commercial sites.",
+        "<p>Most house jobs use an <strong>independent tied scaffold</strong>, a freestanding frame built against the building. Smaller or specialist jobs use a <strong>chimney scaffold</strong>, a <strong>loading bay</strong>, a <strong>birdcage</strong> for interiors, a <strong>tower</strong> for short tasks, or a <strong>temporary roof</strong> over a roof job. We assess your job and tell you which one it needs.</p>",
+        f"""<h2>The Main Types</h2>
+    {_cards([
+        ("Independent tied scaffold", "A freestanding frame built against the building and tied to it. This is the usual scaffold for houses: roof replacements, rendering, extensions and repairs. <a href='/services/residential-scaffolding'>Residential and domestic scaffolding</a>."),
+        ("Chimney scaffold", "A smaller scaffold giving a working platform around a chimney stack for repointing, flashing or rebuilds. <a href='/services/chimney-scaffolding'>Chimney scaffolding</a>."),
+        ("Loading bay", "A platform built into the scaffold so materials can be landed at height safely. <a href='/services/loading-bay-scaffolding'>Loading bay scaffolding</a>."),
+        ("Birdcage", "A scaffold built inside a building, wide and low, for work on ceilings and high interior spaces."),
+        ("Tower", "A freestanding tower for short, light tasks. A tower is not suitable for a roof job or any sustained work at the roof edge."),
+        ("Temporary roof", "A scaffold-supported weatherproof roof over a building while its own roof is off. <a href='/services/temporary-roofing'>Temporary roofing</a>."),
+    ])}""",
+        f"""<h2>How to Tell Which You Need</h2>
+    <ul class="usp-list">
+      <li>Work on a house roof, walls or an extension: an independent tied scaffold</li>
+      <li>Only a chimney stack: a chimney scaffold</li>
+      <li>Materials need to reach height on a site: add a loading bay</li>
+      <li>The roof is coming off in bad-weather months: ask about a temporary roof</li>
+      <li>A short, light task a few metres up: a ladder or tower may do, but HSE says ladders are for tasks lasting minutes</li>
+    </ul>
+    <p>Not sure? Read <a href="/guides/do-i-need-scaffolding">do I need scaffolding?</a>, or describe your job on <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> and we will tell you. Types, sizes and loading for tube-and-fitting scaffolds are set out in the NASC's TG20 guidance, which scaffolders work from.</p>
+    {_src(("HSE &mdash; roof work", "https://www.hse.gov.uk/construction/safetytopics/roofwork.htm"), ("NASC &mdash; TG20 guide", "https://nasc.org.uk/product/tg20-21-operational-guide-hard-copy.html"))}""",
     )
 
     # ── Guides hub ───────────────────────────────────────────────────────────
@@ -6578,6 +6648,7 @@ def generate_robots_sitemap() -> None:
         ("/guides/commercial-industrial-scaffolding-essex", "0.7", "monthly"),
         ("/guides/emergency-scaffolding-storm-damage", "0.7", "monthly"),
         ("/guides/safe-scaffold-homeowner-checklist", "0.7", "monthly"),
+        ("/guides/types-of-scaffolding", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
     ]
