@@ -4326,7 +4326,7 @@ def homepage() -> str:
   <div class="hero-overlay"></div>
   <div class="container hero-content">
     <h1>Scaffolding in Essex for Homes, Roofers, Builders &amp; Commercial Projects</h1>
-    <p>Safe, fully qualified scaffolding across South Essex and surrounding areas. Free quotes. Fast response.</p>
+    <p>Safe, fully qualified scaffolding across Essex and surrounding areas. Free quotes. Fast response.</p>
     <div class="hero-cta-row">
       <a class="btn btn-primary btn-hero-call" href="tel:{NAP['phone_e164']}">Call {NAP['phone']}</a>
       <a class="btn btn-outline" href="/quote">Get a Free Quote</a>
