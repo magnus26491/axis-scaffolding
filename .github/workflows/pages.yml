@@ -32,7 +32,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install Pillow
+        run: pip install Pillow rjsmin rcssmin
 
       - name: Build site
         run: python3 build_site.py
