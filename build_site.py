@@ -1208,7 +1208,7 @@ def generate_media_assets() -> None:
         src = ROOT / f"assets/images/job{idx}.jpg"
         if src.exists():
             with Image.open(src) as im:
-                im.convert("RGB").save(ROOT / f"images/project-{idx}.webp", format="WEBP", quality=85)
+                im.convert("RGB").save(ROOT / f"images/project-{idx}.webp", format="WEBP", quality=66)
 
     # Newer project photos: the founder's original is archived in images/originals/
     # and turned into {slug}.webp plus 480/768 variants (never wider than the source).
@@ -1246,7 +1246,7 @@ def generate_media_assets() -> None:
                 if orig_w >= w:
                     h = round(orig_h * w / orig_w)
                     rgb.resize((w, h), Image.LANCZOS).save(
-                        ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=74
+                        ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=(64 if w <= 768 else 74)
                     )
 
     og = Image.new("RGB", (1200, 630), "#0d0d0d")
@@ -1338,11 +1338,23 @@ def generate_css() -> None:
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Metric-matched fallbacks: the system font is scaled to Poppins/Inter's width and
+   line metrics so the web-font swap does not move text (fixes the h1 layout shift). */
+@font-face { font-family:'Poppins Fallback'; font-weight:400 900;
+  src:local('Arial Bold'),local('Arial-BoldMT'),local('Liberation Sans Bold'),local('Arimo Bold'),local('Helvetica Bold');
+  size-adjust:104.5%; ascent-override:100.5%; descent-override:33.5%; line-gap-override:9.6%; }
+@font-face { font-family:'Inter Fallback'; font-weight:400 500;
+  src:local('Arial'),local('ArialMT'),local('Liberation Sans'),local('Arimo'),local('Helvetica');
+  size-adjust:106%; ascent-override:86%; descent-override:21.5%; line-gap-override:0%; }
+@font-face { font-family:'Inter Fallback'; font-weight:600 900;
+  src:local('Arial Bold'),local('Arial-BoldMT'),local('Liberation Sans Bold'),local('Arimo Bold'),local('Helvetica Bold');
+  size-adjust:106%; ascent-override:86%; descent-override:21.5%; line-gap-override:0%; }
+
 html, body {
   margin: 0; padding: 0;
   background-color: #000000 !important;
   color: #d1d5db;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter','Inter Fallback',system-ui,sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -1356,7 +1368,7 @@ html, body {
 .skip-link:focus { left: 0; top: 0; }
 
 h1,h2,h3,h4,h5,h6 {
-  font-family: 'Poppins','Inter',sans-serif;
+  font-family: 'Poppins','Poppins Fallback',sans-serif;
   color: #ffffff; margin: 0 0 1rem; line-height: 1.2;
   letter-spacing: -0.01em;
 }
@@ -1541,7 +1553,7 @@ textarea:focus-visible {
 .glance-grid { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
 .glance-card { background:var(--surface); border:1px solid var(--border-strong); border-top:2px solid var(--silver); border-radius:12px; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.35rem; }
 .glance-label { color:var(--silver); font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
-.glance-value { color:#fff; font-size:1.2rem; line-height:1.25; font-family:'Poppins',sans-serif; }
+.glance-value { color:#fff; font-size:1.2rem; line-height:1.25; font-family:'Poppins','Poppins Fallback',sans-serif; }
 .glance-note { margin:0.9rem 0 0; color:#9ca3af; font-size:0.85rem; text-align:center; }
 .proof-photo { width:100%; max-height:520px; object-fit:cover; object-position:center 35%; }
 .source-note { margin-top:1.5rem; font-size:0.85rem; color:#9ca3af; }
@@ -1756,7 +1768,7 @@ textarea:focus-visible {
   padding:0 var(--space-8); border-left:1px solid var(--border);
 }
 .trust-item:first-child { border-left:none; }
-.trust-number,.trust-static { font-family:'Poppins',sans-serif; font-size:1.9rem; font-weight:700; color:#ffffff; letter-spacing:-0.02em; }
+.trust-number,.trust-static { font-family:'Poppins','Poppins Fallback',sans-serif; font-size:1.9rem; font-weight:700; color:#ffffff; letter-spacing:-0.02em; }
 .trust-label { color:#9ca3af; font-size:var(--text-xs); text-align:center; text-transform:uppercase; letter-spacing:0.04em; }
 @media (max-width:768px) {
   .trust-item { padding:0 var(--space-4); }
@@ -2130,7 +2142,7 @@ body.lightbox-open { overflow:hidden; }
   font-style:italic; margin:0 0 1.25rem; padding:0; border:none;
 }
 .reviewer-info { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; flex-wrap:wrap; }
-.reviewer-name { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:0.9rem; }
+.reviewer-name { color:#ffffff; font-family:'Poppins','Poppins Fallback',sans-serif; font-weight:600; font-size:0.9rem; }
 .review-source { display:flex; align-items:center; gap:0.35rem; color:#9ca3af; font-size:0.78rem; }
 .review-source img { width:16px; height:16px; display:inline-block; }
 .review-summary { margin:0.25rem 0 1.5rem; color:#d1d5db; font-size:1rem; }
@@ -2243,7 +2255,7 @@ body.lightbox-open { overflow:hidden; }
 .quote-wizard-card select option { background:#0a0a0a; color:#ffffff; }
 .quote-wizard-card textarea { min-height:110px; }
 .quote-wizard-card fieldset { border:none; padding:0; margin:0 0 1.5rem; }
-.quote-wizard-card legend { font-family:'Poppins',sans-serif; font-size:1.2rem; font-weight:600; color:#fff; padding:0; margin:0 0 1rem; }
+.quote-wizard-card legend { font-family:'Poppins','Poppins Fallback',sans-serif; font-size:1.2rem; font-weight:600; color:#fff; padding:0; margin:0 0 1rem; }
 .quote-wizard-card input[type="file"] { color:var(--text-secondary); }
 .quote-help-text { color:var(--text-muted); font-size:0.9rem; margin:0 0 0.75rem; }
 
@@ -2444,7 +2456,7 @@ body.lightbox-open { overflow:hidden; }
 }
 .connect-inner { max-width:800px; margin:0 auto; }
 .connect-section h2 {
-  font-family:'Poppins',sans-serif;
+  font-family:'Poppins','Poppins Fallback',sans-serif;
   font-size:clamp(1.8rem,3vw,2.4rem);
   font-weight:700; color:#ffffff; margin:0 0 1rem;
 }
@@ -2456,7 +2468,7 @@ body.lightbox-open { overflow:hidden; }
 }
 .social-card svg { width:36px; height:36px; fill:#ffffff; transition:transform 0.2s ease; }
 .social-card:hover svg { transform: scale(1.1); }
-.social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
+.social-card span { color:#ffffff; font-family:'Poppins','Poppins Fallback',sans-serif; font-weight:600; font-size:1rem; }
 .social-card small { color:#9ca3af; font-size:0.78rem; }
 
 /* ── COOKIE BAR ──
@@ -2570,7 +2582,7 @@ body.lightbox-open { overflow:hidden; }
 .process-num {
   flex-shrink:0; width:2.5rem; height:2.5rem;
   background:linear-gradient(135deg,#e8eaed,#9ba3ab);
-  color:#000; font-family:'Poppins',sans-serif;
+  color:#000; font-family:'Poppins','Poppins Fallback',sans-serif;
   font-weight:700; font-size:1rem; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
 }
