@@ -6,6 +6,11 @@ from pathlib import Path
 from typing import Iterable
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+try:  # pure-python minifiers; CI installs them (see pages.yml). Without them output is just unminified.
+    import rcssmin
+    import rjsmin
+except ImportError:  # pragma: no cover
+    rcssmin = rjsmin = None
 
 
 ROOT = Path(__file__).parent
@@ -797,7 +802,7 @@ def nav() -> str:
   <div class="container nav-wrap">
     <a class="logo-wrap" href="/" aria-label="Axis Scaffolding Ltd homepage">
       <span class="logo-circle logo-circle-nav">
-        <img src="/images/logo.webp" alt="Axis Scaffolding Ltd logo" width="64" height="64" loading="lazy" decoding="async">
+        <img src="/images/logo-160w.webp" alt="Axis Scaffolding Ltd logo" width="64" height="64" loading="lazy" decoding="async">
       </span>
     </a>
     <a class="nav-phone-mobile" href="tel:{NAP['phone_e164']}" aria-label="Call Axis Scaffolding">{NAP['phone']}</a>
@@ -833,7 +838,7 @@ def footer() -> str:
     <section>
       <h2>Brand</h2>
       <span class="logo-circle logo-circle-footer">
-        <img src="/images/logo.webp" alt="Axis Scaffolding Ltd logo" width="80" height="80" loading="lazy" decoding="async">
+        <img src="/images/logo-160w.webp" alt="Axis Scaffolding Ltd logo" width="80" height="80" loading="lazy" decoding="async">
       </span>
       <p>Reliable scaffolding across Essex.</p>
       <div class="footer-social-links">
@@ -866,7 +871,7 @@ def footer() -> str:
     <p>Registered Company Address: Arterial Road, Rayleigh, England, SS6 7XT</p>
     <p>© 2026. The content on this website is owned by us and our licensors. Do not copy any content (including images) without our consent.</p>
     <div class="footer-legal-links">
-      <button id="axis-footer-cookie-btn" style="background:none; border:none; color:#6b7280; font-size:0.8rem; cursor:pointer; text-decoration:underline; padding:0;">Cookie Settings</button>
+      <button id="axis-footer-cookie-btn" style="background:none; border:none; color:#9ca3af; font-size:0.8rem; cursor:pointer; text-decoration:underline; padding:0;">Cookie Settings</button>
       <a href="/cookie-policy">Cookie Policy</a>
       <a href="/privacy-policy">Privacy Policy</a>
       <a href="/terms-and-conditions">Terms &amp; Conditions</a>
@@ -986,7 +991,7 @@ def quote_form(prefix: str, title: str) -> str:
       </select>
     </p>
     <button type="submit" class="btn btn-primary btn-full">Get My Free Quote</button>
-    <p class="form-note" style="font-size:0.82rem; color:#6b7280; margin-top:0.5rem;">We aim to respond within one working day. For urgent enquiries call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</p>
+    <p class="form-note" style="font-size:0.82rem; color:#9ca3af; margin-top:0.5rem;">We aim to respond within one working day. For urgent enquiries call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>.</p>
     <p class="form-message" aria-live="polite"></p>
   </form>
 </section>
@@ -1191,6 +1196,10 @@ def generate_media_assets() -> None:
     with Image.open(src_logo) as logo_img:
         logo_rgb = logo_img.convert("RGB")
         logo_rgb.save(ROOT / "images/logo.webp", format="WEBP", quality=90)
+        lw, lh = logo_rgb.size
+        logo_rgb.resize((160, round(lh * 160 / lw)), Image.LANCZOS).save(
+            ROOT / "images/logo-160w.webp", format="WEBP", quality=88
+        )
         logo_rgb.save(ROOT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
         logo_rgb.resize((32, 32)).save(ROOT / "favicon-32x32.png", format="PNG")
         logo_rgb.resize((180, 180)).save(ROOT / "apple-touch-icon.png", format="PNG")
@@ -1214,7 +1223,7 @@ def generate_media_assets() -> None:
             for w in (480, 768):
                 if w0 > w:
                     rgb.resize((w, round(h0 * w / w0)), Image.LANCZOS).save(
-                        ROOT / f"images/{slug}-{w}w.webp", format="WEBP", quality=85
+                        ROOT / f"images/{slug}-{w}w.webp", format="WEBP", quality=72
                     )
 
     hero_src = ROOT / "assets/images/job1.jpg"
@@ -1232,12 +1241,12 @@ def generate_media_assets() -> None:
                 base_h = round(orig_h * HERO_MAX_W / orig_w)
                 rgb = rgb.resize((HERO_MAX_W, base_h), Image.LANCZOS)
                 orig_w, orig_h = rgb.size
-            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=85)
+            rgb.save(ROOT / "images/hero-bg.webp", format="WEBP", quality=74)
             for w in (480, 768, 1024, 1440):
                 if orig_w >= w:
                     h = round(orig_h * w / orig_w)
                     rgb.resize((w, h), Image.LANCZOS).save(
-                        ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=85
+                        ROOT / f"images/hero-bg-{w}w.webp", format="WEBP", quality=74
                     )
 
     og = Image.new("RGB", (1200, 630), "#0d0d0d")
@@ -2122,7 +2131,7 @@ body.lightbox-open { overflow:hidden; }
 }
 .reviewer-info { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; flex-wrap:wrap; }
 .reviewer-name { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:0.9rem; }
-.review-source { display:flex; align-items:center; gap:0.35rem; color:#6b7280; font-size:0.78rem; }
+.review-source { display:flex; align-items:center; gap:0.35rem; color:#9ca3af; font-size:0.78rem; }
 .review-source img { width:16px; height:16px; display:inline-block; }
 .review-summary { margin:0.25rem 0 1.5rem; color:#d1d5db; font-size:1rem; }
 .review-summary strong { color:#ffffff; }
@@ -2292,7 +2301,7 @@ body.lightbox-open { overflow:hidden; }
 .quote-wizard-nav { display:flex; justify-content:space-between; gap:0.75rem; margin-top:0.5rem; }
 .quote-wizard-nav .quote-next,
 .quote-wizard-nav .quote-submit { margin-left:auto; }
-.quote-wizard-card .form-note { font-size:0.82rem; color:#6b7280; margin-top:0.75rem; }
+.quote-wizard-card .form-note { font-size:0.82rem; color:#9ca3af; margin-top:0.75rem; }
 
 /* ── CTA BANNER ── */
 .cta-banner {
@@ -2398,12 +2407,12 @@ body.lightbox-open { overflow:hidden; }
   text-align:center; padding:1.2rem 0 2rem;
   border-top:1px solid rgba(255,255,255,0.06); margin-top:2rem;
 }
-.footer-bottom p { color:#6b7280; margin-bottom:0.65rem; }
+.footer-bottom p { color:#9ca3af; margin-bottom:0.65rem; }
 .footer-legal-links { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
 .agency-credit { margin-top:1rem; }
 .agency-credit-link {
   display:inline-flex; align-items:center; gap:0.5rem;
-  color:#6b7280; font-size:0.8rem; text-decoration:none;
+  color:#9ca3af; font-size:0.8rem; text-decoration:none;
 }
 .agency-credit-link:hover { color:#9ca3af; }
 .agency-logo-box { display:inline-flex; width:20px; height:20px; flex-shrink:0; }
@@ -2448,7 +2457,7 @@ body.lightbox-open { overflow:hidden; }
 .social-card svg { width:36px; height:36px; fill:#ffffff; transition:transform 0.2s ease; }
 .social-card:hover svg { transform: scale(1.1); }
 .social-card span { color:#ffffff; font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; }
-.social-card small { color:#6b7280; font-size:0.78rem; }
+.social-card small { color:#9ca3af; font-size:0.78rem; }
 
 /* ── COOKIE BAR ──
    Kept deliberately compact — this is a legal/consent control, not a
@@ -2739,7 +2748,7 @@ body.lightbox-open { overflow:hidden; }
   #mouse-glow { display:none !important; }
 }
 """
-    write("assets/css/style.css", css)
+    write("assets/css/style.css", rcssmin.cssmin(css) if rcssmin else css)
 
 
 def generate_js() -> None:
@@ -2764,7 +2773,7 @@ def generate_js() -> None:
       window.location.replace(nextUrl);
     }, 2200);
   }
-  setHeaderState();
+  window.requestAnimationFrame(setHeaderState);
   window.addEventListener('scroll', setHeaderState, { passive: true });
 
   // ── HERO PARALLAX ──
@@ -3467,7 +3476,7 @@ def generate_js() -> None:
       panel.innerHTML = '<p class="cookie-prefs-title">Cookie Preferences</p>' +
         '<div>' +
         '<label class="cookie-prefs-row">' +
-        '<span>Necessary <span style="color:#6b7280;font-size:0.75rem;">(always on)</span></span>' +
+        '<span>Necessary <span style="color:#9ca3af;font-size:0.75rem;">(always on)</span></span>' +
         '<input type="checkbox" checked disabled></label>' +
         '<label class="cookie-prefs-row">' +
         '<span>Analytics</span><input type="checkbox" id="axis-pref-analytics"></label>' +
@@ -3593,7 +3602,7 @@ def generate_js() -> None:
 })();
 // ── END MOUSE GLOW ────────────────────────
 """
-    write("assets/js/main.js", js)
+    write("assets/js/main.js", rjsmin.jsmin(js) if rjsmin else js)
 
 
 CATEGORY_LABELS = {"residential": "Residential", "roofing": "Roofing", "commercial": "Commercial"}
@@ -4261,7 +4270,7 @@ APPROVED_RATING: dict | None = {"ratingValue": "5.0", "reviewCount": "31", "sour
 def _testimonial_card(t: dict) -> str:
     return f"""
 <div class="testimonial-card">
-  <div class="review-stars" aria-label="5 out of 5 stars">
+  <div class="review-stars" role="img" aria-label="5 out of 5 stars">
     <span aria-hidden="true">★★★★★</span>
   </div>
   <blockquote class="review-text">
