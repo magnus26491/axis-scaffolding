@@ -5,7 +5,7 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-QUALITY_BY_WIDTH = {480: 58, 768: 64}
+QUALITY_BY_WIDTH = {480: 58, 768: 56}
 for full in sorted((ROOT / "images").glob("project-*.webp")) + [ROOT / "images/stock-industrial.webp"]:
     if "w.webp" in full.name and full.stem.split("-")[-1].endswith("w"):
         continue
