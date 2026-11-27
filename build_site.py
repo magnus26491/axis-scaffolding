@@ -687,6 +687,7 @@ def head_tags(
     include_faq_schema: bool = False,
     preload_hero: bool = False,
     extra_schemas: list[dict] | None = None,
+    robots: str = "index, follow",
 ) -> str:
     canonical = SITE + path
     schemas = [local_business_schema(), website_schema(), webpage_schema(title, desc, path)]
@@ -716,7 +717,7 @@ def head_tags(
   <title>{title}</title>
   <meta name="description" content="{desc}">
   <meta name="author" content="Axis Scaffolding Ltd">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="robots" content="{robots}, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <link rel="canonical" href="{canonical}">
   <link rel="alternate" hreflang="en-gb" href="{canonical}">
   <meta property="og:title" content="{title}">
@@ -824,19 +825,18 @@ def footer() -> str:
     # Real links to every area page, not a truncated, unlinked name list —
     # the footer appears on every page, so this was previously providing
     # zero navigational value to any of the 12 real area pages.
-    area = "".join(f'<li><a href="/areas/{data["slug"]}">{name}</a></li>' for name, data in AREA_DATA.items())
+    area = "".join(f'<li><a href="/areas/{slug}">{name}</a></li>' for name, slug in all_area_entries())
     # Phase H PR H1: London gets the same sitewide structural link the core
     # 12 towns get here (previously reachable from one place only, the
     # /areas hub) — structural discoverability parity, not a copy of the
     # core-town page architecture. Brentwood/Loughton are deliberately not
     # added: their individual paid performance is still unconfirmed, unlike
     # London's (top-spending location, 12 conversions, PR#43 §A.8/§G).
-    area += f'<li><a href="/areas/{EXPANSION_AREA_DATA["London"]["slug"]}">London</a></li>'
     return f"""
 <footer class="site-footer">
   <div class="container footer-grid">
     <section>
-      <h2>Brand</h2>
+      <p class="footer-heading">Brand</p>
       <span class="logo-circle logo-circle-footer">
         <img src="/images/logo-160w.webp" alt="Axis Scaffolding Ltd logo" width="80" height="80" loading="lazy" decoding="async">
       </span>
@@ -853,10 +853,10 @@ def footer() -> str:
         </a>
       </div>
     </section>
-    <section><h2>Our Services</h2><ul>{svc}</ul><p><a href="/guides">Scaffolding guides</a></p></section>
-    <section><h2>Areas We Cover</h2><ul>{area}</ul></section>
+    <section><p class="footer-heading">Our Services</p><nav aria-label="Our services"><ul>{svc}</ul></nav><p><a href="/guides">Scaffolding guides</a></p></section>
+    <section><p class="footer-heading">Areas We Cover</p><nav aria-label="Areas we cover"><ul>{area}</ul></nav></section>
     <section>
-      <h2>Contact Us</h2>
+      <p class="footer-heading">Contact Us</p>
       <p>{NAP["name"]}</p>
       <p><a href="tel:{NAP["phone_e164"]}">{NAP["phone"]}</a></p>
       <p><a href="mailto:{NAP["email"]}">{NAP["email"]}</a></p>
@@ -918,7 +918,7 @@ def project_lightbox() -> str:
   <button type="button" class="project-lightbox-next" aria-label="Next project">&rarr;</button>
   <button type="button" class="project-lightbox-close" aria-label="Close">&times;</button>
   <figure class="project-lightbox-figure">
-    <img class="project-lightbox-img" src="" alt="">
+    <img class="project-lightbox-img" alt="">
     <figcaption>
       <span class="project-lightbox-label"></span>
       <span class="project-lightbox-meta"></span>
@@ -933,7 +933,7 @@ def moved_site_banner() -> str:
     return """
 <div id="domain-move-banner" class="domain-move-banner" hidden>
   We've moved! Visit us at
-  <a href="https://www.axisscaffoldingessex.co.uk" rel="canonical">www.axisscaffoldingessex.co.uk</a>
+  <a href="https://www.axisscaffoldingessex.co.uk/">www.axisscaffoldingessex.co.uk</a>
 </div>
 """
 
@@ -1167,10 +1167,11 @@ def render_page(
     include_faq_schema: bool = False,
     preload_hero: bool = False,
     extra_schemas: list[dict] | None = None,
+    robots: str = "index, follow",
 ) -> str:
     return f"""<!doctype html>
 <html lang="en-GB">
-{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero, extra_schemas=extra_schemas)}
+{head_tags(title=title, desc=desc, path=path, breadcrumb_items=breadcrumb_items, include_faq_schema=include_faq_schema, preload_hero=preload_hero, extra_schemas=extra_schemas, robots=robots)}
 <body>
   <div id="mouse-glow" aria-hidden="true"></div>
   <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
@@ -2395,7 +2396,14 @@ body.lightbox-open { overflow:hidden; }
   border-top:1px solid rgba(255,255,255,0.08) !important;
   color:#9ca3af; padding-top:3rem;
 }
-.site-footer h2 { color:#fff; font-size:1.1rem; margin-bottom:0.8rem; }
+.map-embed { position:relative; width:100%; max-width:900px; aspect-ratio:16/9; border:1px solid rgba(255,255,255,0.12); border-radius:8px; overflow:hidden; background:#111; }
+.map-embed iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+.map-link { margin-top:0.6rem; }
+.guide-more-heading { font-size:1.1rem; margin:2rem 0 0.8rem; }
+.guide-more-list { list-style:none; padding:0; margin:0 0 1.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.5rem 1.5rem; }
+.guide-more-list a { color:#d1d5db; text-decoration:underline; text-underline-offset:3px; }
+.guide-more-list a:hover { color:var(--accent); }
+.site-footer .footer-heading { color:#fff; font-family:'Poppins','Poppins Fallback',sans-serif; font-weight:700; font-size:1.1rem; line-height:1.2; letter-spacing:-0.01em; margin:0 0 0.8rem; }
 .footer-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1.2rem; }
 .site-footer ul { list-style:none; padding:0; margin:0; }
 .site-footer li { margin-bottom:0.35rem; }
@@ -3828,7 +3836,7 @@ _CARD_PHOTO_WIDTH = {  # native widths from PROJECTS / UNTAGGED_PHOTOS
 }
 
 
-def _service_card_media(svc: dict) -> str:
+def _service_card_media(svc: dict, town: str | None = None) -> str:
     pslug = SERVICE_CARD_PHOTO.get(svc["slug"])
     if not pslug:
         return ""
@@ -3839,14 +3847,15 @@ def _service_card_media(svc: dict) -> str:
         candidates.append((f"/images/{pslug}.webp", native_w))
     src = candidates[-1][0]
     srcset = ", ".join(f"{u} {w}w" for u, w in candidates)
+    alt = f"{svc['name']} in {town}" if town else f"{svc['name']} by Axis Scaffolding in Essex"
     return (
         f'<div class="service-card-photo" aria-hidden="true"><img src="{src}" srcset="{srcset}" '
-        f'sizes="(max-width: 768px) 100vw, 420px" alt="" width="480" height="640" '
+        f'sizes="(max-width: 768px) 100vw, 420px" alt="{alt}" width="480" height="640" '
         f'loading="lazy" decoding="async"></div>'
     )
 
 
-def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service") -> str:
+def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Service", town: str | None = None) -> str:
     """The overview card's job is recognition, not education — "is this
     the service I need?", not the full page. Name, a visible audience
     pill (the fast visual cue), one short sentence, one CTA. The page
@@ -3854,7 +3863,7 @@ def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Servic
     urgent_class = " service-card-urgent" if svc["slug"] == "emergency-scaffolding" else ""
     return f"""
 <article class="service-card{urgent_class}">
-  {_service_card_media(svc)}
+  {_service_card_media(svc, town)}
   <{heading_tag}>{svc['name']}</{heading_tag}>
   <span class="service-card-audience">{svc['audience']}</span>
   <p>{svc['card_blurb']}</p>
@@ -3863,7 +3872,7 @@ def _service_card(svc: dict, *, heading_tag: str = "h3", cta: str = "View Servic
 """
 
 
-def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Service", group_heading_tag: str = "h3") -> str:
+def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Service", group_heading_tag: str = "h3", town: str | None = None) -> str:
     """The three functional groups (SERVICE_GROUPS), each a self-contained
     services-grid of exactly 3 cards — used on both the homepage and the
     /services index so a visitor sees the same understandable system
@@ -3875,7 +3884,7 @@ def services_grouped_section(*, heading_tag: str = "h3", cta: str = "View Servic
   <{group_heading_tag} class="services-group-heading">{group['name']}</{group_heading_tag}>
   <p class="services-group-intro">{group['intro']}</p>
   <div class="services-grid">
-    {"".join(_service_card(SERVICES_BY_SLUG[slug], heading_tag=heading_tag, cta=cta) for slug in group['slugs'])}
+    {"".join(_service_card(SERVICES_BY_SLUG[slug], heading_tag=heading_tag, cta=cta, town=town) for slug in group['slugs'])}
   </div>
 </div>
 """
@@ -3887,6 +3896,21 @@ def area_pills() -> str:
     return "".join(
         f'<li><a class="area-pill-link" href="/areas/{data["slug"]}">{name}</a></li>'
         for name, data in AREA_DATA.items()
+    )
+
+
+def all_area_entries() -> list[tuple[str, str]]:
+    """Every area page (24), core towns first, then London and the wider towns."""
+    out = [(n, d["slug"]) for n, d in AREA_DATA.items()]
+    out += [(n, d["slug"]) for n, d in EXPANSION_AREA_DATA.items()]
+    out += [(n, d["slug"]) for n, d in MORE_ESSEX_TOWNS.items()]
+    return out
+
+
+def all_area_pills() -> str:
+    return "".join(
+        f'<li><a class="area-pill-link" href="/areas/{slug}">{name}</a></li>'
+        for name, slug in all_area_entries()
     )
 
 
@@ -4375,7 +4399,7 @@ def homepage() -> str:
     <div class="why-grid">
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Qualified and insured</h3><p>CISRS-qualified scaffolders, fully insured, with a scaffold inspection certificate handed over on every job.</p></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Founder-led, direct communication</h3><p>You deal with the people who plan and build your scaffold, so decisions stay clear and nothing gets lost.</p></div>
-      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Quick quotes, on the agreed day</h3><p>We aim to respond to every enquiry the same working day, and to erect and strike when we said we would.</p></div>
+      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 22l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><h3>Quick quotes, on the agreed day</h3><p>We aim to respond to every enquiry within one working day, and to erect and strike when we said we would.</p></div>
     </div>
    </div>
   </div>
@@ -4384,7 +4408,7 @@ def homepage() -> str:
 <section class="section section-light hex-texture" aria-labelledby="services-heading">
   <div class="container">
     <h2 id="services-heading">Our Scaffolding Services</h2>
-    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/roof-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait.</p>
+    <p class="section-intro">Axis Scaffolding Ltd is a founder-led, CISRS-qualified team based in Rayleigh, providing safe, fully insured scaffold access across <a href="/areas">South Essex</a> — from a single <a href="/services/chimney-scaffolding">chimney scaffold</a> to a full <a href="/services/commercial-scaffolding">commercial site package</a>, with <a href="/services/emergency-scaffolding">emergency access</a> when it can't wait.</p>
     {services_grouped_section(heading_tag="h4")}
   </div>
 </section>
@@ -4429,7 +4453,7 @@ def homepage() -> str:
     <ol class="process-steps">
       <li class="process-step"><span class="process-num" aria-hidden="true">1</span><div><h3>Tell us about your project</h3><p>Call <a href="tel:{NAP['phone_e164']}">{NAP['phone']}</a> or complete the short quote form. Tell us what work you are having done, your address and when you need access.</p></div></li>
       <li class="process-step"><span class="process-num" aria-hidden="true">2</span><div><h3>We assess the requirements</h3><p>We establish property and site access, the right scaffold type, any access constraints and your timeline. We advise on highway licence requirements if relevant.</p></div></li>
-      <li class="process-step"><span class="process-num" aria-hidden="true">3</span><div><h3>You receive a clear quote</h3><p>We aim to respond to all quote requests the same working day. Your quote is clear and no-obligation — no hidden extras.</p></div></li>
+      <li class="process-step"><span class="process-num" aria-hidden="true">3</span><div><h3>You receive a clear quote</h3><p>We aim to respond to all quote requests within one working day. Your quote is clear and no-obligation — no hidden extras.</p></div></li>
       <li class="process-step"><span class="process-num" aria-hidden="true">4</span><div><h3>We erect safely and on time</h3><p>Our CISRS-qualified team installs the agreed scaffold, working around your roofer, builder or site schedule.</p></div></li>
       <li class="process-step"><span class="process-num" aria-hidden="true">5</span><div><h3>We dismantle and leave you tidy</h3><p>Once your work is finished, we return promptly to dismantle and remove all scaffold. Tidy handover — no materials left on site.</p></div></li>
     </ol>
@@ -4439,8 +4463,8 @@ def homepage() -> str:
 <section class="section hex-texture" id="areas-covered" aria-labelledby="areas-heading">
   <div class="container">
     <h2 id="areas-heading">Areas We Cover in Essex</h2>
-    <p>Based in Rayleigh, Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding across Benfleet, Canvey Island, Southend-on-Sea, Basildon, Chelmsford, Wickford, Hadleigh, Leigh-on-Sea, Thundersley, Hockley and Rochford. Contact us to confirm coverage for your specific location.</p>
-    <ul class="area-pills">{area_pills()}</ul>
+    <p>Based in Rayleigh, Axis Scaffolding Ltd provides domestic, residential and commercial scaffolding across Essex, from Southend, Rayleigh and Basildon to Chelmsford, Colchester and Grays, and into East London. Pick your area below, or <a href="/areas">see all areas we cover</a>, and contact us to confirm coverage for your specific location.</p>
+    <ul class="area-pills">{all_area_pills()}</ul>
   </div>
 </section>
 
@@ -4467,7 +4491,9 @@ def homepage() -> str:
     <h2 id="guides-heading">Scaffolding Guides for Essex Homeowners and Trades</h2>
     <p class="section-intro">Plain-English answers before you book: what it costs, how scaffold hire works, how to choose a company and what the law requires.</p>
     <div class="services-grid">{"".join(f'<article class="service-card"><h3>{GUIDES_BY_SLUG[g]["title"]}</h3><p>{GUIDES_BY_SLUG[g]["summary"]}</p><a href="/guides/{g}">Read Guide &rarr;</a></article>' for g in ["scaffolding-cost-essex", "scaffolding-hire-essex", "choose-a-scaffolding-company"])}</div>
-    <p class="centered"><a class="btn btn-outline-orange" href="/guides">All Guides &rarr;</a></p>
+    <h3 class="guide-more-heading">More scaffolding guides</h3>
+    <ul class="guide-more-list">{"".join(f'<li><a href="/guides/{g["slug"]}">{g["title"]}</a></li>' for g in GUIDES if g["slug"] not in ("scaffolding-cost-essex", "scaffolding-hire-essex", "choose-a-scaffolding-company"))}</ul>
+    <p class="centered"><a class="btn btn-outline-orange" href="/guides">View all guides &rarr;</a></p>
   </div>
 </section>
 
@@ -4553,7 +4579,7 @@ SERVICE_DETAIL: dict[str, dict] = {
         "pricing": "Scaffold for homes in Essex typically costs <strong>£400–£900</strong> for a chimney scaffold, <strong>£650–£1,300</strong> for a single elevation, <strong>£650–£1,300</strong> for a side or rear extension scaffold and <strong>£1,350–£2,600</strong> for a full roof scaffold on a standard semi-detached or detached house. Pricing depends on height, footprint, number of elevations, access, duration and whether a highway licence is needed.",
         "process_steps": [
             ("Tell us about your project", "Call 01702 820468 or complete the quote form with your address, the work being done and your required dates."),
-            ("We assess and quote", "We evaluate access, scaffold type, height and any licence requirements. You receive a clear, itemised quote — usually same day."),
+            ("We assess and quote", "We evaluate access, scaffold type, height and any licence requirements. You receive a clear, itemised quote, and we aim to respond within one working day."),
             ("Scaffold is erected", "Our CISRS-qualified team erects to the agreed specification, coordinating with your roofer or builder."),
             ("Works proceed safely", "The scaffold is checked regularly. We can adjust if your project scope changes."),
             ("Dismantling and clear-up", "Once works are complete, we return promptly to dismantle and remove all scaffold materials."),
@@ -4982,6 +5008,26 @@ SERVICE_DETAIL: dict[str, dict] = {
 }
 
 
+# Contextual guide links per service page (one short sentence in the main content).
+SERVICE_RELATED_GUIDES: dict[str, list[str]] = {
+    "emergency-scaffolding": ["emergency-scaffolding-storm-damage", "how-long-does-scaffolding-stay-up"],
+    "residential-scaffolding": ["do-i-need-scaffolding", "safe-scaffold-homeowner-checklist", "scaffolding-cost-essex"],
+    "commercial-scaffolding": ["commercial-industrial-scaffolding-essex", "scaffold-inspection-requirements"],
+    "industrial-scaffolding": ["commercial-industrial-scaffolding-essex", "scaffold-inspection-requirements"],
+    "roof-scaffolding": ["scaffolding-for-roof-and-solar-work", "how-long-does-scaffolding-stay-up"],
+    "roof-replacement-scaffolding": ["scaffolding-for-roof-and-solar-work", "scaffolding-cost-essex"],
+    "solar-panel-scaffolding": ["scaffolding-for-roof-and-solar-work", "how-long-does-scaffolding-stay-up"],
+    "chimney-scaffolding": ["scaffolding-cost-essex", "types-of-scaffolding"],
+    "render-scaffolding": ["how-long-does-scaffolding-stay-up", "highway-licence-scaffolding"],
+    "extension-loft-scaffolding": ["do-i-need-scaffolding", "highway-licence-scaffolding"],
+    "temporary-roofing": ["emergency-scaffolding-storm-damage", "types-of-scaffolding"],
+    "access-specialist-scaffolding": ["types-of-scaffolding", "scaffold-inspection-requirements"],
+    "scaffold-supply-erection": ["scaffolding-hire-essex", "choose-a-scaffolding-company"],
+    "loading-bay-scaffolding": ["commercial-industrial-scaffolding-essex"],
+    "dismantling-scaffolding": ["how-long-does-scaffolding-stay-up", "safe-scaffold-homeowner-checklist"],
+}
+
+
 def service_detail_body(service: dict) -> str:
     slug = service["slug"]
     detail = SERVICE_DETAIL.get(slug, {})
@@ -4999,11 +5045,15 @@ def service_detail_body(service: dict) -> str:
     # Phase H PR H2: exactly one guide link per service page, per the fixed
     # SERVICE_TO_GUIDE_SLUG mapping — no blanket "read our guides" link,
     # no guide for services the mapping doesn't cover (see its docstring).
-    guide_slug = SERVICE_TO_GUIDE_SLUG.get(slug)
-    guide_link_html = (
-        f'<p class="centered" style="margin-top:1.5rem;">Read our guide: <a href="/guides/{guide_slug}">{GUIDES_BY_SLUG[guide_slug]["title"]}</a></p>'
-        if guide_slug else ""
-    )
+    related_guides = list(SERVICE_RELATED_GUIDES.get(slug, []))
+    legacy_guide = SERVICE_TO_GUIDE_SLUG.get(slug)
+    if legacy_guide and legacy_guide not in related_guides:
+        related_guides.append(legacy_guide)
+    guide_link_html = ""
+    if related_guides:
+        links = [f'<a href="/guides/{g}">{GUIDES_BY_SLUG[g]["title"]}</a>' for g in related_guides]
+        joined = links[0] if len(links) == 1 else ", ".join(links[:-1]) + " and " + links[-1]
+        guide_link_html = f'<p class="centered" style="margin-top:1.5rem;">Related guides: {joined}.</p>'
     cta_label = detail.get("cta_label", f"Need {service['name'].lower()}?")
     cta_is_phone = detail.get("cta_is_phone", False)
 
@@ -5347,7 +5397,7 @@ EXPANSION_AREA_DATA: dict[str, dict] = {
             ("Pilgrims Hatch and Warley", "CM15"),
         ],
         "faqs": [
-            ("How quickly can you erect scaffolding in Brentwood?", "We typically respond to Brentwood enquiries within the same working day and can have scaffolding erected within 2-5 days of quote approval. For emergencies, call 01702 820468 directly."),
+            ("How quickly can you erect scaffolding in Brentwood?", "We aim to respond to Brentwood enquiries within one working day and can have scaffolding erected within 2-5 days of quote approval. For emergencies, call 01702 820468 directly."),
             ("Do you cover Shenfield and Hutton?", "Yes. Our Rayleigh base means we cover the full CM13, CM14 and CM15 postcode areas including Shenfield, Hutton, Warley and Pilgrims Hatch. Call 01702 820468 for availability."),
             ("Are you CISRS certified for Brentwood scaffolding work?", "Yes. All Axis Scaffolding scaffolders hold current CISRS cards. We are a registered limited company (No. 15050136) and are fully insured for all residential and commercial work in Brentwood."),
         ],
@@ -5422,6 +5472,54 @@ AREA_SERVICE_LINKS = [
 ]
 
 
+# Nearby-area links: real neighbours, made reciprocal so the newer area pages are
+# reachable from the pages around them (each pair is added in both directions).
+_NEARBY_PAIRS = {
+    "Grays": ["Basildon", "Laindon", "Brentwood", "London"],
+    "Billericay": ["Basildon", "Wickford", "Brentwood", "Chelmsford", "Laindon"],
+    "Brentwood": ["Billericay", "Basildon", "Chelmsford", "Loughton", "Grays"],
+    "Colchester": ["Maldon", "Chelmsford"],
+    "Hawkwell": ["Hockley", "Rochford", "Rayleigh", "Southend-on-Sea"],
+    "Laindon": ["Basildon", "Billericay", "Pitsea", "Wickford", "Grays"],
+    "Loughton": ["London", "Brentwood"],
+    "Maldon": ["Chelmsford", "Colchester", "Wickford"],
+    "Pitsea": ["Basildon", "Benfleet", "Laindon", "Canvey Island", "Wickford"],
+    "Shoebury": ["Southend-on-Sea", "Rochford", "Westcliff-on-Sea"],
+    "Westcliff-on-Sea": ["Southend-on-Sea", "Leigh-on-Sea", "Shoebury"],
+}
+
+
+def _apply_nearby_pairs() -> None:
+    everything = {**AREA_DATA, **EXPANSION_AREA_DATA, **MORE_ESSEX_TOWNS}
+    for a, others in _NEARBY_PAIRS.items():
+        for b in others:
+            for x, y in ((a, b), (b, a)):
+                nearby = everything[x].setdefault("nearby", [])
+                if y not in nearby:
+                    nearby.append(y)
+
+
+_apply_nearby_pairs()
+
+
+def map_embed() -> str:
+    """Responsive, lazy Google Map of the Arterial Road base (keyless embed)."""
+    return (
+        '<div class="map-embed"><iframe title="Map showing Axis Scaffolding Ltd, Arterial Road, Rayleigh SS6 7XT" '
+        'src="https://www.google.com/maps?q=Axis+Scaffolding+Ltd,+Arterial+Road,+Rayleigh+SS6+7XT&amp;output=embed" '
+        'loading="lazy" referrerpolicy="no-referrer-when-downgrade" width="600" height="400"></iframe></div>'
+        '<p class="map-link"><a href="https://www.google.com/maps/search/?api=1&amp;query=Axis+Scaffolding+Ltd,+Arterial+Road,+Rayleigh+SS6+7XT" '
+        'target="_blank" rel="noopener noreferrer">Open in Google Maps</a></p>'
+    )
+
+
+def area_h1(area_name: str) -> str:
+    """H1 for an area page. London is not in Essex, so it is the one exception."""
+    if area_name == "London":
+        return "Scaffolding in East London"
+    return f"Scaffolding in {area_name}, Essex"
+
+
 def area_service_links(area_name: str) -> str:
     """Keyword-anchored links from each town page to the job pages: lets a
     visitor (and a search engine) see exactly which jobs we do in that town."""
@@ -5437,8 +5535,8 @@ def area_page_body(area_name: str, data: dict) -> str:
     # Benfleet" for "Benfleet"); falling back to /contact only if a name
     # genuinely has no area page rather than breaking the build.
     nearby_links = " &bull; ".join(
-        (lambda target=AREA_DATA.get(AREA_NAME_ALIASES.get(n, n)):
-         f'<a href="/areas/{target["slug"]}">{n}</a>' if target else f'<a href="/contact">{n}</a>')()
+        (lambda slug=_expansion_nearby_slug(n):
+         f'<a href="/areas/{slug}">{n}</a>' if slug else f'<a href="/contact">{n}</a>')()
         for n in data.get("nearby", [])
     )
     # Phase H PR H2: a guide link is added only where this area's own
@@ -5453,13 +5551,13 @@ def area_page_body(area_name: str, data: dict) -> str:
     return (
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
-            f"Scaffolding in {area_name}, Essex",
+            area_h1(area_name),
             data["intro"],
         )
         + f"""
 <section class="section section-light hex-texture">
   <div class="container">
-    <p class="direct-answer">Axis Scaffolding Ltd provides scaffolding in {area_name}, Essex &mdash; residential, roof and commercial access from a Rayleigh base. CISRS-qualified and fully insured, with free quotes and a same-working-day response aim: call {NAP['phone']}.</p>
+    <p class="direct-answer">Axis Scaffolding Ltd provides scaffolding in {area_name}, Essex &mdash; residential, roof and commercial access from a Rayleigh base. CISRS-qualified and fully insured, with free quotes and a response within one working day: call {NAP['phone']}.</p>
     <h2>Housing and Properties in {area_name}</h2>
     <p>{data['housing']}</p>
     <h2>Typical Scaffolding Projects in {area_name}</h2>
@@ -5474,6 +5572,7 @@ def area_page_body(area_name: str, data: dict) -> str:
     {licence_guide_html}<h2>Nearby Areas We Also Cover</h2>
     <p>{nearby_links}</p>
     <p>We cover all of South Essex. <a href="/contact">Contact us</a> to confirm coverage for your specific location.</p>
+    {('<h2>Find Us in Rayleigh</h2><p>Our base is on Arterial Road, Rayleigh, Essex, SS6 7XT.</p>' + map_embed()) if data['slug'] == 'rayleigh' else ''}
   </div>
 </section>
 
@@ -5482,7 +5581,7 @@ def area_page_body(area_name: str, data: dict) -> str:
     <h2>Our Services in {area_name}</h2>
     <p class="section-intro">Every job we scaffold in {area_name}:</p>
     {area_service_links(area_name)}
-    {services_grouped_section(heading_tag="h4")}
+    {services_grouped_section(heading_tag="h4", town=area_name)}
   </div>
 </section>
 
@@ -5505,7 +5604,7 @@ def area_page_body(area_name: str, data: dict) -> str:
   <div class="container cta-banner-inner">
     <div>
       <h2>Scaffolding in {area_name}?</h2>
-      <p>Call us for a same-day quote &middot; CISRS qualified &middot; Free quotes</p>
+      <p>Call us for a quote &middot; CISRS qualified &middot; Free quotes</p>
     </div>
     <div class="hero-cta-row">
       <a class="btn btn-primary" href="tel:{NAP['phone_e164']}">{NAP['phone']}</a>
@@ -5548,7 +5647,7 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
     return (
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (area_name, f"/areas/{data['slug']}")],
-            f"Scaffolding in {area_name}, Essex",
+            area_h1(area_name),
             data["intro"],
         )
         + f"""
@@ -5565,7 +5664,7 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
     <h2>Our Scaffolding Services</h2>
     <p class="section-intro">Every job we scaffold in {area_name}:</p>
     {area_service_links(area_name)}
-    {services_grouped_section(heading_tag="h4")}
+    {services_grouped_section(heading_tag="h4", town=area_name)}
   </div>
 </section>
 
@@ -5638,7 +5737,7 @@ def essex_town_page_body(town: str, d: dict) -> str:
     return (
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (town, f"/areas/{d['slug']}")],
-            f"Scaffolding in {town}, Essex",
+            area_h1(town),
             f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
             "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes.",
         )
@@ -5700,10 +5799,17 @@ def essex_town_page_body(town: str, d: dict) -> str:
 
 
 def area_title(area_name: str) -> str:
+    if area_name == "London":
+        return "Scaffolding in East London | Axis Scaffolding"
     return f"Scaffolding in {area_name} \u2013 Local Scaffolders | Axis"
 
 
 def area_desc(area_name: str) -> str:
+    if area_name == "London":
+        return (
+            "Rayleigh-based scaffolders covering East London: homes, roofs and commercial. CISRS-qualified, fully insured, "
+            f"{APPROVED_RATING['ratingValue']} from {APPROVED_RATING['reviewCount']} Google reviews. Free quote: {NAP['phone']}."
+        )
     return (
         f"Local {area_name} scaffolders: homes, roofs and commercial. CISRS-qualified, fully insured, "
         f"{APPROVED_RATING['ratingValue']} from {APPROVED_RATING['reviewCount']} Google reviews. Free quote: {NAP['phone']}."
@@ -5738,7 +5844,7 @@ def generate_pages() -> None:
     write(
         "services/index.html",
         render_page(
-            title="Scaffolding Services in Essex | Axis Scaffolding Team",
+            title="Scaffolding Services in Essex | Axis Scaffolding",
             desc="Explore scaffolding Essex services from Rayleigh including domestic, roof and emergency access by Axis Scaffolding. Contact us and get a free quote today.",
             path="/services",
             body=services_body,
@@ -5832,7 +5938,7 @@ def generate_pages() -> None:
     write(
         "about/index.html",
         render_page(
-            title="About Axis Scaffolding Ltd | Essex Scaffolders Team",
+            title="About Axis Scaffolding Ltd | Rayleigh, Essex",
             desc="Learn about Axis Scaffolding in Rayleigh delivering scaffolding Essex support with CISRS certification and full insurance. Contact us for a free quote today.",
             path="/about",
             body=about_body,
@@ -5848,12 +5954,13 @@ def generate_pages() -> None:
         )
         + f"""
 <section class="section"><div class="container two-col"><article class="contact-card"><h2>Contact Us</h2><p><strong>Name:</strong> Axis Scaffolding Ltd</p><p><strong>Phone:</strong> <a href="tel:+441702820468">01702 820468</a></p><p><strong>WhatsApp:</strong> <a href="{WHATSAPP_URL}" target="_blank" rel="noopener noreferrer">{WHATSAPP_DISPLAY}</a></p><p><strong>Email:</strong> <a href="mailto:axis-scaffolding@outlook.com">axis-scaffolding@outlook.com</a></p><p><strong>Address:</strong> Arterial Road, Rayleigh, Essex, SS6 7XT</p><p>Email us: <a href="mailto:axis-scaffolding@outlook.com" style="color:#c8cdd4;">axis-scaffolding@outlook.com</a></p></article>{quote_form("contact", "Request a Free Scaffolding Quote")}</div></section>
+<section class="section hex-texture"><div class="container"><h2>Find Us</h2><p>Axis Scaffolding Ltd, Arterial Road, Rayleigh, Essex, SS6 7XT.</p>""" + map_embed() + """</div></section>
 """
     )
     write(
         "contact/index.html",
         render_page(
-            title="Contact Axis Scaffolding Essex | Free Quote Support",
+            title="Contact Axis Scaffolding | Rayleigh, Essex",
             desc="Contact Axis Scaffolding in Rayleigh for scaffolding Essex residential and commercial support. Speak to our team now and get a free quote today.",
             path="/contact",
             body=contact_body,
@@ -5883,19 +5990,19 @@ def generate_pages() -> None:
     policy_defs = [
         (
             "privacy-policy",
-            "Privacy Policy | Axis Scaffolding Essex Rayleigh Team",
+            "Privacy Policy | Axis Scaffolding",
             "Read how Axis Scaffolding in Benfleet handles personal data for scaffolding Essex enquiries and projects. Review our policy and get a free quote today.",
             "Privacy Policy",
         ),
         (
             "terms-and-conditions",
-            "Terms and Conditions | Axis Scaffolding Essex Team UK",
+            "Terms and Conditions | Axis Scaffolding",
             "Review Axis Scaffolding terms for Benfleet and scaffolding Essex services including quotations and payment terms. Contact us and get a free quote today.",
             "Terms and Conditions",
         ),
         (
             "cookie-policy",
-            "Cookie Policy | Axis Scaffolding Essex Rayleigh Team",
+            "Cookie Policy | Axis Scaffolding",
             "Understand how Axis Scaffolding uses cookies on this Benfleet scaffolding Essex website. Manage preferences anytime and get a free quote today.",
             "Cookie Policy",
         ),
@@ -5913,6 +6020,7 @@ def generate_pages() -> None:
                 path=f"/{slug}",
                 body=body,
                 breadcrumb_items=[("Home", "/"), (heading, f"/{slug}")],
+                robots="noindex, follow",
             ),
         )
 
@@ -6339,7 +6447,7 @@ def generate_pages() -> None:
         ("8. What do other customers say?", "Read recent reviews. Axis has 5.0 from 31 Google reviews, which you can read on our Google profile."),
     ])}""",
         f"""<h2>Why Local Matters</h2>
-    <p>A scaffolder based nearby can respond quickly, knows local access and parking, and is easier to reach if something changes mid-job. We are based in Rayleigh and aim to respond to quote requests the same working day.</p>
+    <p>A scaffolder based nearby can respond quickly, knows local access and parking, and is easier to reach if something changes mid-job. We are based in Rayleigh and aim to respond to quote requests within one working day.</p>
     <p>Related: <a href="/guides/scaffold-inspection-requirements">what the law requires for scaffold inspections</a>, <a href="/guides/scaffolding-cost-essex">what scaffolding costs in Essex</a>, and <a href="/about">about Axis Scaffolding</a>.</p>
     {_src(("HSE &mdash; scaffolding", "https://www.hse.gov.uk/construction/faq-scaffold.htm"), ("NOCN card checker", "https://cardchecker.nocn.org/"))}""",
     )
@@ -6843,7 +6951,7 @@ def generate_llms_txt() -> None:
 - WhatsApp: {WHATSAPP_DISPLAY}
 - Email: {NAP['email']}
 - Reviews: {APPROVED_RATING['ratingValue']} from {APPROVED_RATING['reviewCount']} Google reviews ({GOOGLE_BUSINESS_URL})
-- Response: we aim to respond to every enquiry the same working day
+- Response: we aim to respond to every enquiry within one working day
 - Pricing guidance: {FAQS_BY_SLUG['cost'][1].split(' The final price')[0]}
 - Highway licence: scaffolding on a pavement or road needs a licence under Section 169 of the Highways Act 1980; we advise on the process.
 

@@ -172,6 +172,11 @@ jobs:
               print("Validation passed.")
           EOF
 
+      - name: Keep repository notes out of the published site
+        # The artifact is the repo root; README.md and the internal planning notes
+        # (root-level *.md) are not site content, so drop them from the upload only.
+        run: rm -f ./*.md
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
