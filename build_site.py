@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 from pathlib import Path
 from typing import Iterable
@@ -2170,6 +2171,10 @@ body.lightbox-open { overflow:hidden; }
 }
 
 /* ── AREA PILLS ── */
+.area-detail-list { list-style:none; padding:0; margin:0 0 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:0.9rem 2rem; }
+.area-detail-list li { color:#d1d5db; line-height:1.5; }
+.area-detail-link { font-weight:600; color:#fff; text-decoration:underline; text-underline-offset:3px; margin-right:0.25rem; }
+.area-detail-link:hover { color:var(--accent); }
 .area-pills { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.6rem; }
 .area-pills li { display:inline-flex; }
 .area-pill-link {
@@ -5743,6 +5748,27 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
 
 
 
+def _essex_town_intro(town: str, d: dict) -> str:
+    return (
+        f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
+        "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes."
+    )
+
+
+def area_hub_sentence(name: str, data: dict, *, more: bool = False) -> str:
+    """First sentence of the town's own page intro (verbatim), for the /areas/ hub."""
+    intro = _essex_town_intro(name, data) if more else data["intro"]
+    return re.split(r"(?<=[.!?])\s+", intro.strip())[0]
+
+
+def area_hub_list(entries) -> str:
+    items = "".join(
+        f'<li><a class="area-detail-link" href="/areas/{d["slug"]}">{name}</a> <span>{area_hub_sentence(name, d, more=more)}</span></li>'
+        for name, d, more in entries
+    )
+    return f'<ul class="area-detail-list">{items}</ul>'
+
+
 def essex_town_page_body(town: str, d: dict) -> str:
     nearby = " &bull; ".join(
         f'<a href="/areas/{_expansion_nearby_slug(n)}">{n}</a>' for n in d["nearby"] if _expansion_nearby_slug(n)
@@ -5763,8 +5789,7 @@ def essex_town_page_body(town: str, d: dict) -> str:
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (town, f"/areas/{d['slug']}")],
             area_h1(town),
-            f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
-            "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes.",
+            _essex_town_intro(town, d),
         )
         + f"""
 <section class="section section-light hex-texture">
@@ -6751,7 +6776,9 @@ def generate_pages() -> None:
         + f"""
 <section class="section section-light hex-texture">
   <div class="container">
-    <ul class="area-pills">{area_pills()}</ul>
+    <p class="direct-answer">Axis Scaffolding Ltd works from its base in Rayleigh and covers all of Essex, plus East London. Every job is CISRS-qualified and fully insured, and we aim to respond to every enquiry within one working day. Find your town below, then call {NAP['phone']} or ask for a free quote.</p>
+    <h2>Our Core Towns</h2>
+    {area_hub_list((n, d, False) for n, d in AREA_DATA.items())}
   </div>
 </section>
 
@@ -6759,7 +6786,7 @@ def generate_pages() -> None:
   <div class="container">
     <h2>Also Serving</h2>
     <p class="section-intro">Beyond our core South Essex coverage above, we also regularly take on work in these areas.</p>
-    <ul class="area-pills">{expansion_area_pills()}</ul>
+    {area_hub_list((n, d, False) for n, d in EXPANSION_AREA_DATA.items())}
   </div>
 </section>
 
@@ -6767,7 +6794,7 @@ def generate_pages() -> None:
   <div class="container">
     <h2>More Towns Across Essex</h2>
     <p class="section-intro">We work everywhere in Essex. These towns have their own pages too.</p>
-    <ul class="area-pills">{"".join(f'<li><a class="area-pill-link" href="/areas/{d["slug"]}">{n}</a></li>' for n, d in MORE_ESSEX_TOWNS.items())}</ul>
+    {area_hub_list((n, d, True) for n, d in MORE_ESSEX_TOWNS.items())}
   </div>
 </section>
 
@@ -7058,7 +7085,7 @@ def generate_robots_sitemap() -> None:
         ("/guides/types-of-scaffolding", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
-    ]
+    ] + [(f"/areas/{data['slug']}", "0.6", "monthly") for data in MORE_ESSEX_TOWNS.values()]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     seen: set[str] = set()
     for path, priority, changefreq in pages:
