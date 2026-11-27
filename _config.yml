@@ -13,3 +13,11 @@ exclude:
   - README.md
   - SEO_TECHNICAL_AUDIT.md
   - TRAFFIC_GROWTH_PLAN.md
+  - ADS_ALL_KEYWORDS.txt
+  - ADS_NEGATIVE_KEYWORDS.txt
+  - ADS_NEW_KEYWORDS.txt
+  - ads_keywords_editor.csv
+  - build_site.py
+  - Caddyfile
+  - nixpacks.toml
+  - scripts
