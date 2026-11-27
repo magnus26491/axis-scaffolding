@@ -2397,6 +2397,7 @@ body.lightbox-open { overflow:hidden; }
   color:#9ca3af; padding-top:3rem;
 }
 .map-embed { position:relative; width:100%; max-width:900px; aspect-ratio:16/9; border:1px solid rgba(255,255,255,0.12); border-radius:8px; overflow:hidden; background:#111; }
+.map-placeholder { position:absolute; inset:0; margin:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:1rem; color:#d1d5db; }
 .map-embed iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
 .map-link { margin-top:0.6rem; }
 .guide-more-heading { font-size:1.1rem; margin:2rem 0 0.8rem; }
@@ -3207,12 +3208,35 @@ def generate_js() -> None:
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
     loadGA4();
     updateGoogleConsent(categories);
+    syncMaps(categories);
+  }
+  // Google Maps can set its own cookies, so the embed only loads after the visitor
+  // accepts marketing cookies and is removed again if consent is withdrawn.
+  function syncMaps(categories) {
+    document.querySelectorAll('.map-embed[data-map-src]').forEach(function(box) {
+      var frame = box.querySelector('iframe');
+      if (categories && categories.marketing) {
+        if (frame) return;
+        frame = document.createElement('iframe');
+        frame.src = box.getAttribute('data-map-src');
+        frame.title = box.getAttribute('data-map-title') || 'Map';
+        frame.loading = 'lazy';
+        frame.referrerPolicy = 'no-referrer-when-downgrade';
+        box.appendChild(frame);
+        var note = box.querySelector('.map-placeholder');
+        if (note) note.hidden = true;
+      } else if (frame) {
+        frame.remove();
+        var note2 = box.querySelector('.map-placeholder');
+        if (note2) note2.hidden = false;
+      }
+    });
   }
   (function restoreConsent() {
     try {
       const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY) || 'null');
       loadGA4();
-      if (stored) updateGoogleConsent(stored);
+      if (stored) { updateGoogleConsent(stored); syncMaps(stored); }
     } catch (_err) { /* ignore malformed stored consent */ }
   })();
   document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
@@ -3525,6 +3549,7 @@ def generate_js() -> None:
     footerBtn.addEventListener('click', function() {
       localStorage.removeItem(CONSENT_KEY);
       localStorage.removeItem(CATEGORIES_KEY);
+      syncMaps(null);
       showBar();
     });
   }
@@ -5505,9 +5530,9 @@ _apply_nearby_pairs()
 def map_embed() -> str:
     """Responsive, lazy Google Map of the Arterial Road base (keyless embed)."""
     return (
-        '<div class="map-embed"><iframe title="Map showing Axis Scaffolding Ltd, Arterial Road, Rayleigh SS6 7XT" '
-        'src="https://www.google.com/maps?q=Axis+Scaffolding+Ltd,+Arterial+Road,+Rayleigh+SS6+7XT&amp;output=embed" '
-        'loading="lazy" referrerpolicy="no-referrer-when-downgrade" width="600" height="400"></iframe></div>'
+        '<div class="map-embed" data-map-src="https://www.google.com/maps?q=Axis+Scaffolding+Ltd,+Arterial+Road,+Rayleigh+SS6+7XT&amp;output=embed" '
+        'data-map-title="Map showing Axis Scaffolding Ltd, Arterial Road, Rayleigh SS6 7XT">'
+        '<p class="map-placeholder">The map loads once you accept cookies. You can always use the link below.</p></div>'
         '<p class="map-link"><a href="https://www.google.com/maps/search/?api=1&amp;query=Axis+Scaffolding+Ltd,+Arterial+Road,+Rayleigh+SS6+7XT" '
         'target="_blank" rel="noopener noreferrer">Open in Google Maps</a></p>'
     )
