@@ -1,0 +1,15 @@
+# Jekyll config (GitHub Pages publishes this branch directly). Keep repo notes out of the live site.
+exclude:
+  - AEO_GEO_SEO_PASS.md
+  - ALIGNMENT_SYSTEM.md
+  - AXIS_SEARCH_INTELLIGENCE_MAP.md
+  - CLAIM_VERIFICATION.md
+  - GOOGLE_ADS_AND_SEARCH_PLAN.md
+  - PHASE_A_WEBSITE_AUDIT.md
+  - PHASE_C_UX_POLISH_AUDIT.md
+  - PHASE_E1_RAYLEIGH_ATTRIBUTION_INVESTIGATION.md
+  - PHASE_E3_PHOTO_INVENTORY.md
+  - PHASE_E3_PREMIUM_VISUAL_REFINEMENT.md
+  - README.md
+  - SEO_TECHNICAL_AUDIT.md
+  - TRAFFIC_GROWTH_PLAN.md
