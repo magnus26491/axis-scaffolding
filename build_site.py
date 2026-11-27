@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 from pathlib import Path
 from typing import Iterable
@@ -2170,6 +2171,10 @@ body.lightbox-open { overflow:hidden; }
 }
 
 /* ── AREA PILLS ── */
+.area-detail-list { list-style:none; padding:0; margin:0 0 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:0.9rem 2rem; }
+.area-detail-list li { color:#d1d5db; line-height:1.5; }
+.area-detail-link { font-weight:600; color:#fff; text-decoration:underline; text-underline-offset:3px; margin-right:0.25rem; }
+.area-detail-link:hover { color:var(--accent); }
 .area-pills { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.6rem; }
 .area-pills li { display:inline-flex; }
 .area-pill-link {
@@ -5743,6 +5748,61 @@ def expansion_area_page_body(area_name: str, data: dict) -> str:
 
 
 
+def _essex_town_intro(town: str, d: dict) -> str:
+    return (
+        f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
+        "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes."
+    )
+
+
+# One-line blurbs for the /areas/ hub, reworded from each town's own page intro (company name
+# dropped, openings varied). Facts are only those already on that town's page: postcodes,
+# neighbouring places and services named there.
+AREA_HUB_BLURBS: dict[str, str] = {
+    "Benfleet": "Residential, commercial and roof scaffolding in SS7.",
+    "Canvey Island": "Scaffolding services across the island, SS8.",
+    "Rayleigh": "Our home town (SS6), which makes us the most local scaffolding company available for residential and commercial projects here.",
+    "Southend-on-Sea": "Covering SS1, SS2 and the surrounding areas.",
+    "Basildon": "Covering the town and surrounding areas including Laindon, Pitsea, Billericay and Wickford.",
+    "Chelmsford": "Covering the surrounding villages including Galleywood, Sandon and Springfield.",
+    "Wickford": "Covering the town and surrounding villages from our Rayleigh base.",
+    "Hadleigh": "Scaffolding in SS7.",
+    "Leigh-on-Sea": "Across the SS9 postcode, from the Old Town area to Eastwood and Belfairs.",
+    "Thundersley": "Covered in SS7.",
+    "Hockley": "Scaffolding in SS5.",
+    "Rochford": "SS4, a short drive from our Rayleigh base.",
+    "London": "Fully certified scaffolding across East and North-East London, working from our Rayleigh base in South Essex.",
+    "Brentwood": "Fully certified scaffolding across the town and the surrounding CM postcode areas.",
+    "Loughton": "Professional scaffolding across Loughton, Buckhurst Hill, Debden and the wider IG10 postcode area.",
+}
+AREA_HUB_BLURBS_MORE = {
+    "Westcliff-on-Sea": "Domestic, roof, solar, chimney and commercial scaffolding in {pc}, with free quotes.",
+    "Shoebury": "Reached from our Rayleigh base, postcode {pc}.",
+    "Laindon": "Free quotes for domestic, roof and commercial scaffolding in {pc}.",
+    "Pitsea": "Part of our coverage across all of Essex, postcode {pc}.",
+    "Hawkwell": "Chimney, solar, roof and domestic scaffolding in {pc}, plus commercial work.",
+    "Billericay": "Scaffolding for homes, roofs, solar panels, chimneys and commercial sites in {pc}.",
+    "Maldon": "Within our all-Essex coverage from Rayleigh, postcode {pc}.",
+    "Colchester": "We cover all of Essex, including {pc}, with free quotes.",
+    "Grays": "Domestic, roof, solar, chimney and commercial scaffolding in {pc}.",
+}
+
+
+def area_hub_sentence(name: str, data: dict, *, more: bool = False) -> str:
+    """Short description for the /areas/ hub, taken from the town's own page intro."""
+    if more:
+        return AREA_HUB_BLURBS_MORE[name].format(pc=data["postcode"])
+    return AREA_HUB_BLURBS[name]
+
+
+def area_hub_list(entries) -> str:
+    items = "".join(
+        f'<li><a class="area-detail-link" href="/areas/{d["slug"]}">{name}</a> <span>{area_hub_sentence(name, d, more=more)}</span></li>'
+        for name, d, more in entries
+    )
+    return f'<ul class="area-detail-list">{items}</ul>'
+
+
 def essex_town_page_body(town: str, d: dict) -> str:
     nearby = " &bull; ".join(
         f'<a href="/areas/{_expansion_nearby_slug(n)}">{n}</a>' for n in d["nearby"] if _expansion_nearby_slug(n)
@@ -5763,8 +5823,7 @@ def essex_town_page_body(town: str, d: dict) -> str:
         inner_hero(
             [("Home", "/"), ("Areas", "/areas"), (town, f"/areas/{d['slug']}")],
             area_h1(town),
-            f"Axis Scaffolding is based in Rayleigh and covers all of Essex, including {town} ({d['postcode']}). "
-            "Domestic, roof, solar, chimney and commercial scaffolding, with free quotes.",
+            _essex_town_intro(town, d),
         )
         + f"""
 <section class="section section-light hex-texture">
@@ -6751,7 +6810,9 @@ def generate_pages() -> None:
         + f"""
 <section class="section section-light hex-texture">
   <div class="container">
-    <ul class="area-pills">{area_pills()}</ul>
+    <p class="direct-answer">Axis Scaffolding Ltd works from its base in Rayleigh and covers all of Essex, plus East London. Every job is CISRS-qualified and fully insured, and we aim to respond to every enquiry within one working day. Find your town below, then call {NAP['phone']} or ask for a free quote.</p>
+    <h2>Our Core Towns</h2>
+    {area_hub_list((n, d, False) for n, d in AREA_DATA.items())}
   </div>
 </section>
 
@@ -6759,7 +6820,7 @@ def generate_pages() -> None:
   <div class="container">
     <h2>Also Serving</h2>
     <p class="section-intro">Beyond our core South Essex coverage above, we also regularly take on work in these areas.</p>
-    <ul class="area-pills">{expansion_area_pills()}</ul>
+    {area_hub_list((n, d, False) for n, d in EXPANSION_AREA_DATA.items())}
   </div>
 </section>
 
@@ -6767,7 +6828,7 @@ def generate_pages() -> None:
   <div class="container">
     <h2>More Towns Across Essex</h2>
     <p class="section-intro">We work everywhere in Essex. These towns have their own pages too.</p>
-    <ul class="area-pills">{"".join(f'<li><a class="area-pill-link" href="/areas/{d["slug"]}">{n}</a></li>' for n, d in MORE_ESSEX_TOWNS.items())}</ul>
+    {area_hub_list((n, d, True) for n, d in MORE_ESSEX_TOWNS.items())}
   </div>
 </section>
 
@@ -7058,7 +7119,7 @@ def generate_robots_sitemap() -> None:
         ("/guides/types-of-scaffolding", "0.7", "monthly"),
     ] + [(f"/areas/{data['slug']}", "0.7", "monthly") for data in AREA_DATA.values()] + [
         (f"/areas/{data['slug']}", "0.6", "monthly") for data in EXPANSION_AREA_DATA.values()
-    ]
+    ] + [(f"/areas/{data['slug']}", "0.6", "monthly") for data in MORE_ESSEX_TOWNS.values()]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     seen: set[str] = set()
     for path, priority, changefreq in pages:

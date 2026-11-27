@@ -143,24 +143,41 @@ def write_redirects() -> None:
     (ROOT / "_redirects").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _page_lastmod(url: str) -> str:
+    """Date the page's HTML last changed: today if the working copy differs from the last
+    commit (or is new), otherwise the date of the last commit that touched it. Runs after
+    the build and the normalisation above, so an unchanged page keeps its old date."""
+    import datetime
+    import subprocess
+    rel = url.removeprefix(SITE).strip("/")
+    rel = f"{rel}/index.html" if rel else "index.html"
+    if not (ROOT / rel).exists():
+        return ""
+    def git(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True, timeout=30)
+    tracked = git("ls-files", "--error-unmatch", "--", rel).returncode == 0
+    if not tracked or git("diff", "--quiet", "HEAD", "--", rel).returncode != 0:
+        return datetime.date.today().isoformat()
+    return git("log", "-1", "--format=%cs", "--", rel).stdout.strip()
+
+
 def update_sitemap() -> None:
     path = ROOT / "sitemap.xml"
     if not path.exists():
         return
-    xml = path.read_text(encoding="utf-8")
+    xml = add_trailing_slashes(path.read_text(encoding="utf-8"))
 
-    xml = add_trailing_slashes(xml)
-    existing = set(re.findall(r"<loc>(.*?)</loc>", xml))
-    additions = []
-    for slug in ("brentwood", "loughton", "london", "westcliff-on-sea", "shoebury", "laindon", "pitsea", "hawkwell", "billericay", "maldon", "colchester", "grays"):
-        url = f"{SITE}/areas/{slug}/"
-        if url not in existing and (ROOT / "areas" / slug / "index.html").exists():
-            additions.append(
-                f"  <url><loc>{url}</loc><lastmod>2026-08-26</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>"
-            )
-    if additions:
-        xml = xml.replace("</urlset>", "\n" + "\n".join(additions) + "\n</urlset>")
-    path.write_text(add_trailing_slashes(xml), encoding="utf-8")
+    def refresh(match: re.Match) -> str:
+        block = match.group(0)
+        loc = re.search(r"<loc>(.*?)</loc>", block).group(1)
+        lastmod = _page_lastmod(loc)
+        block = re.sub(r"<lastmod>.*?</lastmod>", "", block)
+        if lastmod:
+            block = block.replace("</loc>", f"</loc><lastmod>{lastmod}</lastmod>", 1)
+        return block
+
+    xml = re.sub(r"<url>.*?</url>", refresh, xml)
+    path.write_text(xml, encoding="utf-8")
 
 
 def main() -> None:
