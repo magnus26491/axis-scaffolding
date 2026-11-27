@@ -5755,10 +5755,44 @@ def _essex_town_intro(town: str, d: dict) -> str:
     )
 
 
+# One-line blurbs for the /areas/ hub, reworded from each town's own page intro (company name
+# dropped, openings varied). Facts are only those already on that town's page: postcodes,
+# neighbouring places and services named there.
+AREA_HUB_BLURBS: dict[str, str] = {
+    "Benfleet": "Residential, commercial and roof scaffolding in SS7.",
+    "Canvey Island": "Scaffolding services across the island, SS8.",
+    "Rayleigh": "Our home town (SS6), which makes us the most local scaffolding company available for residential and commercial projects here.",
+    "Southend-on-Sea": "Covering SS1, SS2 and the surrounding areas.",
+    "Basildon": "Covering the town and surrounding areas including Laindon, Pitsea, Billericay and Wickford.",
+    "Chelmsford": "Covering the surrounding villages including Galleywood, Sandon and Springfield.",
+    "Wickford": "Covering the town and surrounding villages from our Rayleigh base.",
+    "Hadleigh": "Scaffolding in SS7.",
+    "Leigh-on-Sea": "Across the SS9 postcode, from the Old Town area to Eastwood and Belfairs.",
+    "Thundersley": "Covered in SS7.",
+    "Hockley": "Scaffolding in SS5.",
+    "Rochford": "SS4, a short drive from our Rayleigh base.",
+    "London": "Fully certified scaffolding across East and North-East London, working from our Rayleigh base in South Essex.",
+    "Brentwood": "Fully certified scaffolding across the town and the surrounding CM postcode areas.",
+    "Loughton": "Professional scaffolding across Loughton, Buckhurst Hill, Debden and the wider IG10 postcode area.",
+}
+AREA_HUB_BLURBS_MORE = {
+    "Westcliff-on-Sea": "Domestic, roof, solar, chimney and commercial scaffolding in {pc}, with free quotes.",
+    "Shoebury": "Reached from our Rayleigh base, postcode {pc}.",
+    "Laindon": "Free quotes for domestic, roof and commercial scaffolding in {pc}.",
+    "Pitsea": "Part of our coverage across all of Essex, postcode {pc}.",
+    "Hawkwell": "Chimney, solar, roof and domestic scaffolding in {pc}, plus commercial work.",
+    "Billericay": "Scaffolding for homes, roofs, solar panels, chimneys and commercial sites in {pc}.",
+    "Maldon": "Within our all-Essex coverage from Rayleigh, postcode {pc}.",
+    "Colchester": "We cover all of Essex, including {pc}, with free quotes.",
+    "Grays": "Domestic, roof, solar, chimney and commercial scaffolding in {pc}.",
+}
+
+
 def area_hub_sentence(name: str, data: dict, *, more: bool = False) -> str:
-    """First sentence of the town's own page intro (verbatim), for the /areas/ hub."""
-    intro = _essex_town_intro(name, data) if more else data["intro"]
-    return re.split(r"(?<=[.!?])\s+", intro.strip())[0]
+    """Short description for the /areas/ hub, taken from the town's own page intro."""
+    if more:
+        return AREA_HUB_BLURBS_MORE[name].format(pc=data["postcode"])
+    return AREA_HUB_BLURBS[name]
 
 
 def area_hub_list(entries) -> str:
